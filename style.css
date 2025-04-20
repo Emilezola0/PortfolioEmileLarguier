@@ -1,39 +1,68 @@
-﻿body {
-    margin: 0;
-    display: flex;
-    height: 100vh;
-    background-color: #f0e4d7;
-    font-family: sans-serif;
+body {
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background-color: #f0e4d7;
+  font-family: sans-serif;
 }
 
 #toolbox {
-    width: 80px;
-    background: #c2b280;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 20px;
+  width: 80px;
+  background: #c2b280;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
 }
 
 #brush {
   font-size: 30px;
   cursor: grab;
   user-select: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Quand le pinceau est sélectionné */
-#brush.active {
-  transform: scale(1.2); /* Agrandit légèrement l'icône */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Ombre autour du pinceau */
 }
 
 canvas#digZone {
-    border: 2px solid #8b6f47;
-    background-image: url('projects.png'); /* ton image "sous le sable" */
-    background-size: cover;
-    background-repeat: no-repeat;
-    position: relative;
-    margin: auto;
-    display: block;
+  border: 2px solid #8b6f47;
+  background-image: url('projects.png'); /* image sous le sable */
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+  margin: auto;
+  display: block;
+}
+
+#dossiers {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.folder {
+  background-color: #8b6f47;
+  padding: 10px 15px;
+  margin: 5px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#dropZone {
+  position: absolute;
+  top: 300px;
+  left: 400px;
+  width: 150px;
+  height: 150px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 2px dashed #8b6f47;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #8b6f47;
+}
+
+#dropZone p {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
 }
