@@ -1,68 +1,64 @@
 body {
-  margin: 0;
-  display: flex;
-  height: 100vh;
-  background-color: #f0e4d7;
-  font-family: sans-serif;
+    margin: 0;
+    font-family: sans-serif;
+    display: flex;
+    height: 100vh;
 }
 
-#toolbox {
-  width: 80px;
-  background: #c2b280;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 20px;
+#tools {
+    width: 80px;
+    background: #eee;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
 }
 
-#brush {
-  font-size: 30px;
-  cursor: grab;
-  user-select: none;
+    #tools button {
+        padding: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        border: none;
+        background: white;
+        border-radius: 8px;
+    }
+
+        #tools button.active {
+            background: #c0eaff;
+        }
+
+#digZoneWrapper {
+    position: relative;
+    flex: 1;
+    background: #f2e2c4;
+    overflow: hidden;
 }
 
-canvas#digZone {
-  border: 2px solid #8b6f47;
-  background-image: url('projects.png'); /* image sous le sable */
-  background-size: cover;
-  background-repeat: no-repeat;
-  position: relative;
-  margin: auto;
-  display: block;
-}
-
-#dossiers {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+canvas#dustLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #a98b5c;
 }
 
 .folder {
-  background-color: #8b6f47;
-  padding: 10px 15px;
-  margin: 5px;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 16px;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.5s;
 }
 
-#dropZone {
-  position: absolute;
-  top: 300px;
-  left: 400px;
-  width: 150px;
-  height: 150px;
-  background-color: rgba(0, 0, 0, 0.1);
-  border: 2px dashed #8b6f47;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #8b6f47;
-}
+    .folder.revealed {
+        opacity: 1;
+    }
 
-#dropZone p {
-  text-align: center;
-  font-size: 16px;
-  font-weight: bold;
+#storage {
+    width: 250px;
+    background: #f4f4f4;
+    border-left: 2px solid #ccc;
+    padding: 10px;
 }

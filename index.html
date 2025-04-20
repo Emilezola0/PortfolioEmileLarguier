@@ -2,28 +2,26 @@
 
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Fouille Archéologique</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zone Archéologique - Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="toolbox">
-    <div id="brush" draggable="true">🖌️</div>
-  </div>
+    <div id="tools">
+        <button id="brush" class="active">🖌️</button>
+        <button id="hand">✋</button>
+    </div>
 
-  <canvas id="digZone" width="800" height="600"></canvas>
+    <div id="digZoneWrapper">
+        <canvas id="dustLayer"></canvas>
+        <!-- Les dossiers seront ajoutés dynamiquement ici -->
+    </div>
 
-  <!-- Ajout des "dossiers" -->
-  <div id="dossiers">
-    <div class="folder" id="folder1" draggable="true">📁 Dossier 1</div>
-    <div class="folder" id="folder2" draggable="true">📁 Dossier 2</div>
-    <div class="folder" id="folder3" draggable="true">📁 Dossier 3</div>
-  </div>
+    <div id="storage">
+        <h2>Zone de stockage</h2>
+    </div>
 
-  <div id="dropZone">
-    <p>Dépose ici pour ouvrir le dossier</p>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
