@@ -3,6 +3,9 @@ const handBtn = document.getElementById("hand");
 const bucketBtn = document.getElementById("bucket");
 
 let currentTool = "brush"; // Définir l'outil initial comme pinceau
+let dustLayers = []; // Tableau pour stocker les différentes couches de poussière
+let maxDustOpacity = 0.5; // Opacité maximale de la poussière
+let currentDustOpacity = 0.5; // Opacité actuelle de la poussière
 
 // Sélection de l'outil pinceau
 brushBtn.onclick = () => {
@@ -98,48 +101,57 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth - 330;
 canvas.height = window.innerHeight;
 
+// Ajouter un dégradé clair pour la poussière
+function createDustGradient() {
+    let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#a98b5c"); // Couleur foncée pour le bas
+    gradient.addColorStop(1, "#f2e2c4"); // Couleur claire pour le haut
+    return gradient;
+}
+
+// Fonction pour dessiner les couches de poussière
+function addDustLayer(x, y) {
+    let dustLayer = document.createElement('canvas');
+    dustLayer.width = canvas.width;
+    dustLayer.height = canvas.height;
+    let dustCtx = dustLayer.getContext("2d");
+
+    // Créer un dégradé pour la poussière
+    dustCtx.fillStyle = createDustGradient();
+    dustCtx.globalAlpha = currentDustOpacity;
+    dustCtx.beginPath();
+    dustCtx.arc(x, y, 30, 0, Math.PI * 2);
+    dustCtx.fill();
+
+    dustLayers.push(dustLayer);
+    currentDustOpacity = Math.max(0.1, currentDustOpacity - 0.1); // Réduire l'intensité de la poussière
+
+    // Ajouter la poussière au canvas principal
+    ctx.drawImage(dustLayer, 0, 0);
+}
+
+// Fonction pour créer un dégradé de poussière clair avec le sceau
+function fillWithDust() {
+    ctx.fillStyle = createDustGradient();
+    ctx.globalAlpha = 1; // Rétablir l'opacité de remplissage
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Remplir le fond avec un dégradé
+}
+
+// Mise à jour du canvas lors du redimensionnement
 window.addEventListener("resize", () => {
     canvas.width = window.innerWidth - 330;
     canvas.height = window.innerHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Réinitialiser le canvas
-    ctx.fillStyle = "#a98b5c"; // Redessiner la couche de poussière
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    fillWithDust(); // Garder la couleur de fond claire
 });
 
-// Ajout des dossiers à partir du fichier JSON
-fetch('public/projects.json')
-    .then(response => response.json())
-    .then(projects => {
-        projects.forEach(project => {
-            const folder = document.createElement('div');
-            folder.className = 'folder';
-            folder.textContent = `📁 ${project.name}`;
-            folder.dataset.projectPath = project.path; // Enregistrer le chemin du projet
-            folder.dataset.isEmpty = project.isEmpty; // Enregistrer si le dossier est vide
-
-            // Position aléatoire des dossiers
-            const x = Math.random() * (canvas.width - 100);
-            const y = Math.random() * (canvas.height - 50);
-            folder.style.left = `${x}px`;
-            folder.style.top = `${y}px`;
-
-            document.getElementById('digZoneWrapper').appendChild(folder);
-
-            makeDraggable(folder);
-
-            // Ajouter un événement au clic pour ouvrir un dossier
-            folder.onclick = () => {
-                if (folder.dataset.isEmpty === 'true') {
-                    showErrorAnimation(folder);
-                } else {
-                    alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
-                }
-            };
-        });
-    })
-    .catch((error) => {
-        console.error('Erreur lors du chargement des projets :', error);
-    });
+// Gestion de la fouille (avec le pinceau)
+canvas.addEventListener("mousemove", (e) => {
+    if (currentTool === "brush" && e.buttons === 1) {
+        // Ajouter plusieurs couches de poussière
+        addDustLayer(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
+});
 
 // Fonction pour gérer le déplacement des dossiers
 function makeDraggable(elem) {
@@ -184,18 +196,3 @@ function isInsideStorage(x, y) {
 function openFolder(name) {
     alert(`📂 Contenu de ${name}`);
 }
-
-// Gestion de la fouille
-canvas.addEventListener("mousemove", (e) => {
-    if (currentTool === "brush" && e.buttons === 1) {
-        // Créer des effets de poussière au niveau du curseur
-        createDustEffect(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-
-        // Gratter la zone et faire disparaître la poussière
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.beginPath();
-        ctx.arc(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, 30, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalCompositeOperation = "source-over";
-    }
-});
