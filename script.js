@@ -1,22 +1,26 @@
 const brushBtn = document.getElementById("brush");
 const handBtn = document.getElementById("hand");
-let currentTool = "brush";
+const bucketBtn = document.getElementById("bucket");
 
-// Outils sélection
+let currentTool = "brush"; // Définir l'outil initial comme pinceau
+
+// Sélection de l'outil pinceau
 brushBtn.onclick = () => {
     currentTool = "brush";
     brushBtn.classList.add("active");
     handBtn.classList.remove("active");
+    bucketBtn.classList.remove("active");
 };
 
+// Sélection de l'outil main
 handBtn.onclick = () => {
     currentTool = "hand";
-    brushBtn.classList.remove("active");
     handBtn.classList.add("active");
+    brushBtn.classList.remove("active");
+    bucketBtn.classList.remove("active");
 };
 
-const bucketBtn = document.getElementById("bucket");
-
+// Sélection de l'outil sceau
 bucketBtn.onclick = () => {
     currentTool = "bucket";
     bucketBtn.classList.add("active");
@@ -37,12 +41,7 @@ bucketBtn.onclick = () => {
     });
 };
 
-folder.onclick = () => {
-    alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
-    // Tu peux afficher les fichiers spécifiques à ce projet, ou le charger dans une nouvelle fenêtre/section
-};
-
-let dustOpacity = 1; // opacité initiale de la poussière
+let dustOpacity = 1; // Opacité initiale de la poussière
 let fading = false;
 
 // Fonction pour appliquer le fondu
@@ -128,9 +127,6 @@ canvas.addEventListener("mousemove", (e) => {
 fetch("projects.json")
     .then((res) => res.json())
     .then((projects) => {
-        folder.dataset.name = project.name;
-        const digZone = document.getElementById("digZoneWrapper");
-
         projects.forEach((project, i) => {
             const folder = document.createElement("div");
             folder.className = "folder";
@@ -147,7 +143,7 @@ fetch("projects.json")
             folder.dataset.revealed = "false";
 
             makeDraggable(folder);
-            digZone.appendChild(folder);
+            document.getElementById('digZoneWrapper').appendChild(folder);
         });
     });
 
