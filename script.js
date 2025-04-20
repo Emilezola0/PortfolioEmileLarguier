@@ -15,6 +15,94 @@ handBtn.onclick = () => {
     handBtn.classList.add("active");
 };
 
+const bucketBtn = document.getElementById("bucket");
+
+bucketBtn.onclick = () => {
+    currentTool = "bucket";
+    bucketBtn.classList.add("active");
+    brushBtn.classList.remove("active");
+    handBtn.classList.remove("active");
+
+    // Déclenche l'animation de fondu pour tout révéler
+    if (!fading) {
+        fadeDust();
+    }
+
+    // Révéler tous les dossiers progressivement pendant le fondu
+    document.querySelectorAll(".folder").forEach((folder) => {
+        setTimeout(() => {
+            folder.dataset.revealed = "true";
+            folder.classList.add("revealed");
+        }, 50); // Délai pour une révélation progressive des dossiers
+    });
+};
+
+folder.onclick = () => {
+    alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
+    // Tu peux afficher les fichiers spécifiques à ce projet, ou le charger dans une nouvelle fenêtre/section
+};
+
+let dustOpacity = 1; // opacité initiale de la poussière
+let fading = false;
+
+// Fonction pour appliquer le fondu
+function fadeDust() {
+    if (dustOpacity <= 0) return;
+    fading = true;
+    dustOpacity -= 0.01; // Diminue progressivement l'opacité de la poussière
+    ctx.globalAlpha = dustOpacity;
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Applique la poussière avec opacité réduite
+
+    if (dustOpacity > 0) {
+        requestAnimationFrame(fadeDust); // Répéter l'animation
+    } else {
+        fading = false; // Une fois le fondu terminé
+    }
+}
+
+fetch('projects.json')
+    .then(response => response.json())
+    .then(projects => {
+        projects.forEach(project => {
+            const folder = document.createElement('div');
+            folder.className = 'folder';
+            folder.textContent = `📁 ${project.name}`;
+            folder.dataset.projectPath = project.path; // Enregistrer le chemin du projet
+            folder.dataset.isEmpty = project.isEmpty; // Enregistrer si le dossier est vide
+
+            // Position aléatoire des dossiers
+            const x = Math.random() * (canvas.width - 100);
+            const y = Math.random() * (canvas.height - 50);
+            folder.style.left = `${x}px`;
+            folder.style.top = `${y}px`;
+
+            document.getElementById('digZoneWrapper').appendChild(folder);
+
+            makeDraggable(folder);
+
+            // Ajouter un événement au clic pour ouvrir un dossier
+            folder.onclick = () => {
+                if (folder.dataset.isEmpty === 'true') {
+                    showErrorAnimation(folder);
+                } else {
+                    alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
+                    // Tu peux ici ouvrir une nouvelle vue, une fenêtre modale, ou d'autres informations sur le projet
+                }
+            };
+        });
+    });
+
+// Fonction pour afficher une animation d'erreur
+function showErrorAnimation(folder) {
+    folder.classList.add('error-animation'); // Ajouter une classe pour l'animation
+
+    // Ajouter un message d'erreur après un délai pour l'animation
+    setTimeout(() => {
+        alert(`Le dossier ${folder.textContent} est vide !`);
+        folder.classList.remove('error-animation'); // Supprimer la classe après l'animation
+    }, 1000); // Attendre 1 seconde pour la fin de l'animation
+}
+
 // Zone de fouille
 const canvas = document.getElementById("dustLayer");
 const ctx = canvas.getContext("2d");

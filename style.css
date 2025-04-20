@@ -42,6 +42,7 @@ canvas#dustLayer {
 }
 
 .folder {
+    transition: opacity 1s ease-out;
     position: absolute;
     background: #fff;
     border: 1px solid #333;
@@ -68,4 +69,30 @@ canvas#dustLayer {
     cursor: pointer;
     left: auto !important;
     top: auto !important;
+}
+
+.folder.error-animation {
+    animation: shake 0.5s ease-out; /* Secouer le dossier comme erreur */
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    50% {
+        transform: translateX(10px);
+    }
+
+    75% {
+        transform: translateX(-10px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
