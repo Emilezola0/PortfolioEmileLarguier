@@ -16,9 +16,10 @@
 }
 
 #brush {
-    font-size: 30px;
-    cursor: grab;
-    user-select: none;
+  font-size: 30px;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Quand le pinceau est sélectionné */
