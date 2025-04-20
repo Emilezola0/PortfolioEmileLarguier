@@ -62,3 +62,10 @@ canvas#dustLayer {
     border-left: 2px solid #ccc;
     padding: 10px;
 }
+
+.folder.in-storage {
+    margin-bottom: 10px;
+    cursor: pointer;
+    left: auto !important;
+    top: auto !important;
+}

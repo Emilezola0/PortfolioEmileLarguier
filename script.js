@@ -40,6 +40,7 @@ canvas.addEventListener("mousemove", (e) => {
 fetch("projects.json")
     .then((res) => res.json())
     .then((projects) => {
+        folder.dataset.name = project.name;
         const digZone = document.getElementById("digZoneWrapper");
 
         projects.forEach((project, i) => {
@@ -87,7 +88,6 @@ function makeDraggable(elem) {
         if (currentTool !== "hand" || elem.dataset.revealed !== "true") return;
         offsetX = e.offsetX;
         offsetY = e.offsetY;
-        elem.style.position = "absolute";
         elem.style.zIndex = 1000;
 
         function move(e) {
@@ -95,12 +95,31 @@ function makeDraggable(elem) {
             elem.style.top = e.pageY - offsetY + "px";
         }
 
-        function stop() {
+        function stop(e) {
             document.removeEventListener("mousemove", move);
             document.removeEventListener("mouseup", stop);
+
+            if (isInsideStorage(e.pageX, e.pageY)) {
+                elem.style.position = "static";
+                elem.style.zIndex = "auto";
+                storageZone.appendChild(elem);
+                elem.classList.add("in-storage");
+                elem.onclick = () => openFolder(elem.dataset.name);
+            }
         }
 
         document.addEventListener("mousemove", move);
         document.addEventListener("mouseup", stop);
     });
+}
+
+const storageZone = document.getElementById("storage");
+
+function isInsideStorage(x, y) {
+    const rect = storageZone.getBoundingClientRect();
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+function openFolder(name) {
+    alert(`📂 Contenu de ${name}\n(Tu pourras bientôt afficher les fichiers ici 😄)`);
 }
