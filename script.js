@@ -29,31 +29,13 @@ bucketBtn.onclick = (e) => {
             folder.classList.add("revealed");
         });
     }, 1000);
-
-    // Appliquer l'effet de creusage général avec le sceau
-    applyDiggingEffect();
 };
 
-// Fonction pour appliquer l'effet de creusage sur toute la zone de fouille (sceau)
-function applyDiggingEffect() {
-    const diggedArea = document.createElement("div");
-    diggedArea.classList.add("digged-area");
-    diggedArea.style.left = "0px"; // Appliquer à toute la zone
-    diggedArea.style.top = "0px";
-    diggedArea.style.width = `${digWrapper.clientWidth}px`;
-    diggedArea.style.height = `${digWrapper.clientHeight}px`;
-
-    digWrapper.appendChild(diggedArea);
-    diggedArea.classList.add("revealed");
-}
-
-// Fonction pour activer l'outil sélectionné
 function setActiveTool(activeBtn) {
     [brushBtn, handBtn, bucketBtn].forEach(btn => btn.classList.remove("active"));
     activeBtn.classList.add("active");
 }
 
-// Fonction pour déclencher l'effet visuel du sceau (ripple)
 function triggerRipple(target, e) {
     const ripple = document.createElement("span");
     ripple.classList.add("ripple");
@@ -148,7 +130,6 @@ digWrapper.addEventListener("mousemove", (e) => {
     }
 });
 
-// Fonction pour créer l'effet de poussière lors du creusage avec le pinceau
 function createDustEffect(x, y) {
     const dust = document.createElement("div");
     dust.className = "dust";
