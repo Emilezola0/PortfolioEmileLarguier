@@ -58,11 +58,17 @@ canvas#dustLayer {
 }
 
 #storage {
-    width: 250px;
-    background: #f4f4f4;
-    border-left: 2px solid #ccc;
+    position: relative;
+    border: 2px dashed #aaa; /* Pointillés pour délimiter la zone de stockage */
     padding: 10px;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s;
 }
+
+    #storage:hover {
+        background-color: #e0e0e0; /* Changer la couleur lorsque tu survoles la zone */
+    }
+
 
 .folder.in-storage {
     margin-bottom: 10px;
@@ -131,6 +137,27 @@ canvas#dustLayer {
 @keyframes rippleEffect {
     to {
         transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.dust {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #a98b5c;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+@keyframes dustEffect {
+    from {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    to {
+        transform: scale(0);
         opacity: 0;
     }
 }

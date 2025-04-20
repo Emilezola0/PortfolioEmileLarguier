@@ -92,6 +92,10 @@ fetch('public/projects.json')
             folder.style.left = `${x}px`;
             folder.style.top = `${y}px`;
 
+            // Ajouter les coordonnées x et y dans le dataset
+            folder.dataset.x = x;  // Ajouter cette ligne
+            folder.dataset.y = y;  // Ajouter cette ligne
+
             document.getElementById('digZoneWrapper').appendChild(folder);
 
             makeDraggable(folder);
@@ -124,6 +128,36 @@ const canvas = document.getElementById("dustLayer");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth - 330;
 canvas.height = window.innerHeight;
+
+canvas.addEventListener("mousemove", (e) => {
+    if (currentTool !== "brush" || e.buttons !== 1) return;
+
+    // Créer des effets de poussière au niveau du curseur
+    createDustEffect(e.offsetX, e.offsetY);
+
+    // Gratter la zone et faire disparaître la poussière
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(e.offsetX, e.offsetY, 30, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+});
+
+// Fonction pour créer un effet de poussière à l'endroit où la souris passe
+function createDustEffect(x, y) {
+    const dust = document.createElement('div');
+    dust.classList.add('dust'); // Assure-toi d'ajouter une classe pour la poussière
+    dust.style.left = `${x - 10}px`;  // Un léger décalage pour centrer la poussière
+    dust.style.top = `${y - 10}px`;
+    dust.style.animation = "dustEffect 0.5s forwards"; // Animation pour faire disparaître la poussière
+
+    document.body.appendChild(dust);
+
+    // Supprimer l'élément de poussière après l'animation
+    setTimeout(() => {
+        dust.remove();
+    }, 500);
+}
 
 // Couche de poussière
 ctx.fillStyle = "#a98b5c";
@@ -214,7 +248,7 @@ function makeDraggable(elem) {
 
             if (isInsideStorage(e.pageX, e.pageY)) {
                 elem.style.position = "static";
-                elem.style.zIndex = "auto";
+                elem.style.zIndex = "1000"; // Mettre un z-index plus élevé pour qu'il soit au-dessus du stockage
                 storageZone.appendChild(elem);
                 elem.classList.add("in-storage");
                 elem.onclick = () => openFolder(elem.dataset.name);
