@@ -76,7 +76,7 @@ function fadeDust() {
     }
 }
 
-fetch('projects.json')
+fetch('public/projects.json')
     .then(response => response.json())
     .then(projects => {
         projects.forEach(project => {
