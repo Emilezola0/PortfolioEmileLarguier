@@ -21,23 +21,40 @@ handBtn.onclick = () => {
 };
 
 // Sélection de l'outil sceau
-bucketBtn.onclick = () => {
+bucketBtn.onclick = (e) => {
     currentTool = "bucket";
     bucketBtn.classList.add("active");
     brushBtn.classList.remove("active");
     handBtn.classList.remove("active");
 
-    // Déclenche l'animation de fondu pour tout révéler
+    // Créer le ripple
+    const ripple = document.createElement("span");
+    ripple.classList.add("ripple");
+    const rect = bucketBtn.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.width = ripple.style.height = "100px";
+
+    bucketBtn.appendChild(ripple);
+
+    // Supprimer après l'animation
+    setTimeout(() => {
+        ripple.remove();
+    }, 600);
+
+    // Déclencher le fondu de la poussière
     if (!fading) {
         fadeDust();
     }
 
-    // Révéler tous les dossiers progressivement pendant le fondu
+    // Révéler les dossiers
     document.querySelectorAll(".folder").forEach((folder) => {
         setTimeout(() => {
             folder.dataset.revealed = "true";
             folder.classList.add("revealed");
-        }, 50); // Délai pour une révélation progressive des dossiers
+        }, 50);
     });
 };
 
