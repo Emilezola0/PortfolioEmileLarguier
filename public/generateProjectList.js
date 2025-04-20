@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Dossier des projets
-const outputFile = path.join(__dirname, 'public', 'projects.json');
+const projectsDir = path.join(__dirname, 'projects');
 
 // Liste des projets
 const projects = [];
