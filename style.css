@@ -21,6 +21,12 @@
     user-select: none;
 }
 
+/* Quand le pinceau est sélectionné */
+#brush.active {
+  transform: scale(1.2); /* Agrandit légèrement l'icône */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Ombre autour du pinceau */
+}
+
 canvas#digZone {
     border: 2px solid #8b6f47;
     background-image: url('projects.png'); /* ton image "sous le sable" */
