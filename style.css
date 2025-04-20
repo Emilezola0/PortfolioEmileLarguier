@@ -1,9 +1,10 @@
+/* Mise en page générale */
 body {
     margin: 0;
     font-family: sans-serif;
     display: flex;
     height: 100vh;
-    background: #f2e2c4; /* couleur de fond claire du site */
+    background-color: #f4f4f4; /* Fond général */
 }
 
 #tools {
@@ -22,47 +23,29 @@ body {
         border: none;
         background: white;
         border-radius: 8px;
-        transition: transform 0.2s ease, background-color 0.3s ease;
     }
 
         #tools button.active {
             background: #c0eaff;
         }
 
-        #tools button:hover {
-            background-color: #d0e7f7;
-            transform: scale(1.05);
-        }
-
-        #tools button:active {
-            background-color: #b0d8f7;
-            transform: scale(0.95);
-        }
-
+/* Espace de fouille au centre */
 #digZoneWrapper {
     position: relative;
     flex: 1;
-    background: #f2e2c4;
+    background-color: #a98b5c; /* Terre */
     overflow: hidden;
 }
 
-/* Canvas empilés */
-canvas.dust-layer {
+.dust-layer {
     position: absolute;
     top: 0;
     left: 0;
-    background: transparent;
     z-index: 1;
 }
 
-/* Dernier layer tout en dessous */
-canvas#dustLayer0 {
-    background: #e7d2a3; /* Couche la plus claire */
-    z-index: 0;
-}
-
+/* Dossiers à découvrir */
 .folder {
-    transition: opacity 1s ease-out;
     position: absolute;
     background: #fff;
     border: 1px solid #333;
@@ -70,39 +53,105 @@ canvas#dustLayer0 {
     border-radius: 5px;
     cursor: grab;
     opacity: 0;
-    transition: opacity 0.5s;
-    z-index: 10;
+    transition: opacity 0.5s ease;
 }
 
     .folder.revealed {
         opacity: 1;
     }
 
+    .folder.in-storage {
+        position: static;
+        cursor: default;
+    }
+
+    .folder.error-animation {
+        animation: shake 0.5s ease-out; /* Secouer le dossier comme erreur */
+    }
+
+/* Effet de poussière */
+.dust {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #f2d597;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: dustEffect 0.5s forwards;
+}
+
+@keyframes dustEffect {
+    from {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    to {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Zone de stockage à droite */
 #storage {
-    position: relative;
-    border: 2px dashed #aaa;
-    padding: 10px;
+    width: 200px;
     background-color: #f0f0f0;
-    transition: background-color 0.3s, border-color 0.3s;
-    z-index: 20;
+    border-left: 2px dashed #aaa;
+    padding: 10px;
+    overflow-y: auto;
+    height: 100%;
+    transition: background-color 0.3s;
 }
 
     #storage:hover {
-        background-color: #e0e0e0;
-        border-color: #6fa3e2;
+        background-color: #e0e0e0; /* Changer la couleur lorsque tu survoles la zone */
     }
 
-.folder.in-storage {
-    margin-bottom: 10px;
-    cursor: pointer;
-    left: auto !important;
-    top: auto !important;
+/* Faux fenêtre style Windows */
+.fake-window {
+    position: absolute;
+    width: 400px;
+    height: 300px;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.folder.error-animation {
-    animation: shake 0.5s ease-out;
-}
+    .fake-window .window-header {
+        background: #0078d4;
+        color: white;
+        padding: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 5px 5px 0 0;
+    }
 
+    .fake-window .window-body {
+        padding: 15px;
+        background: #f9f9f9;
+        height: calc(100% - 40px);
+        overflow: auto;
+    }
+
+    .fake-window .close-btn {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+        .fake-window .close-btn:hover {
+            color: red;
+        }
+
+/* Animation pour le pincement et l'activation du pinceau */
 @keyframes shake {
     0% {
         transform: translateX(0);
@@ -125,29 +174,7 @@ canvas#dustLayer0 {
     }
 }
 
-@keyframes pop {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.3);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-#bucket.clicked {
-    animation: pop 0.3s ease-in-out;
-}
-
-#bucket {
-    position: relative;
-    overflow: hidden;
-}
-
+/* Ripple effect for the bucket */
 .ripple {
     position: absolute;
     border-radius: 50%;
@@ -164,26 +191,31 @@ canvas#dustLayer0 {
     }
 }
 
-.dust {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #f2d597;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: dustEffect 0.5s forwards;
-    pointer-events: none;
-    z-index: 5;
+/* Pinceau (brush) effect */
+#brush.active {
+    background-color: #8dbdff;
 }
 
-@keyframes dustEffect {
-    from {
+#bucket.clicked {
+    animation: pop 0.3s ease-in-out;
+}
+
+@keyframes pop {
+    0% {
         transform: scale(1);
-        opacity: 0.8;
     }
 
-    to {
-        transform: scale(0);
-        opacity: 0;
+    50% {
+        transform: scale(1.3);
     }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+#brush.active,
+#hand.active,
+#bucket.active {
+    background: #c0eaff;
 }

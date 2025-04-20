@@ -1,3 +1,4 @@
+// Sélection des outils
 const brushBtn = document.getElementById("brush");
 const handBtn = document.getElementById("hand");
 const bucketBtn = document.getElementById("bucket");
@@ -19,9 +20,10 @@ bucketBtn.onclick = (e) => {
     setActiveTool(bucketBtn);
     triggerRipple(bucketBtn, e);
 
+    // Fonction pour faire disparaître toutes les couches de poussière
     if (!fading) fadeAllDustLayers();
 
-    // Révéler les dossiers à la fin du fondu
+    // Révéler les dossiers après l'animation
     setTimeout(() => {
         document.querySelectorAll(".folder").forEach(folder => {
             folder.classList.add("revealed");
@@ -51,17 +53,22 @@ const layerCount = 6; // de 0 à 5
 const digWrapper = document.getElementById("digZoneWrapper");
 
 for (let i = 0; i < layerCount; i++) {
-    const canvas = document.getElementById(`dustLayer${i}`);
-    canvas.width = digWrapper.clientWidth;
-    canvas.height = digWrapper.clientHeight;
+    const canvas = document.createElement("canvas");
+    canvas.classList.add("dust-layer");
+    digWrapper.appendChild(canvas);
+
     const ctx = canvas.getContext("2d");
 
-    if (i > 0) {
-        // Couche de poussière (sombre -> clair)
-        ctx.fillStyle = `rgba(169, 139, 92, ${1 - i * 0.15})`;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Définition de la couleur de la couche
+    if (i === 0) {
+        ctx.fillStyle = "rgba(169, 139, 92, 1)";  // Couleur terre
+    } else {
+        ctx.fillStyle = `rgba(169, 139, 92, ${1 - i * 0.15})`;  // Couche plus claire pour les couches inférieures
     }
 
+    canvas.width = digWrapper.clientWidth;
+    canvas.height = digWrapper.clientHeight;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     layers.push({ canvas, ctx });
 }
 
@@ -69,13 +76,11 @@ window.addEventListener("resize", () => {
     layers.forEach(({ canvas, ctx }, i) => {
         canvas.width = digWrapper.clientWidth;
         canvas.height = digWrapper.clientHeight;
-        if (i > 0) {
-            ctx.fillStyle = `rgba(169, 139, 92, ${1 - i * 0.15})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     });
 });
 
+// Fonction pour effacer les couches lors de l'utilisation du pinceau
 let fading = false;
 function fadeAllDustLayers() {
     fading = true;
@@ -155,7 +160,7 @@ fetch("public/projects.json")
 
             folder.onclick = () => {
                 if (folder.dataset.isEmpty === "true") {
-                    showErrorAnimation(folder);
+                    openFakeWindow(folder);
                 } else {
                     alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
                 }
@@ -198,9 +203,19 @@ function isInsideStorage(x, y) {
     return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
-function showErrorAnimation(folder) {
-    folder.classList.add("error-animation");
-    setTimeout(() => folder.classList.remove("error-animation"), 500);
+function openFakeWindow(folder) {
+    const window = document.createElement("div");
+    window.className = "fake-window";
+    window.innerHTML = `
+        <div class="window-header">
+            <span>${folder.textContent}</span>
+            <button class="close-btn">✖</button>
+        </div>
+        <div class="window-body"></div>
+    `;
+    document.body.appendChild(window);
+
+    window.querySelector(".close-btn").onclick = () => window.remove();
 }
 
 const storageZone = document.getElementById("storage");
