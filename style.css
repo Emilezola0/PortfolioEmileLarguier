@@ -145,7 +145,7 @@ canvas#dustLayer {
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: #a98b5c;
+    background-color: #f2d597; /* Couleur plus visible pour la poussière */
     border-radius: 50%;
     opacity: 0.8;
 }

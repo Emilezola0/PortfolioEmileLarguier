@@ -76,73 +76,6 @@ function fadeDust() {
     }
 }
 
-fetch('public/projects.json')
-    .then(response => response.json())
-    .then(projects => {
-        projects.forEach(project => {
-            const folder = document.createElement('div');
-            folder.className = 'folder';
-            folder.textContent = `📁 ${project.name}`;
-            folder.dataset.projectPath = project.path; // Enregistrer le chemin du projet
-            folder.dataset.isEmpty = project.isEmpty; // Enregistrer si le dossier est vide
-
-            // Position aléatoire des dossiers
-            const x = Math.random() * (canvas.width - 100);
-            const y = Math.random() * (canvas.height - 50);
-            folder.style.left = `${x}px`;
-            folder.style.top = `${y}px`;
-
-            // Ajouter les coordonnées x et y dans le dataset
-            folder.dataset.x = x;  // Ajouter cette ligne
-            folder.dataset.y = y;  // Ajouter cette ligne
-
-            document.getElementById('digZoneWrapper').appendChild(folder);
-
-            makeDraggable(folder);
-
-            // Ajouter un événement au clic pour ouvrir un dossier
-            folder.onclick = () => {
-                if (folder.dataset.isEmpty === 'true') {
-                    showErrorAnimation(folder);
-                } else {
-                    alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
-                    // Tu peux ici ouvrir une nouvelle vue, une fenêtre modale, ou d'autres informations sur le projet
-                }
-            };
-        });
-    });
-
-// Fonction pour afficher une animation d'erreur
-function showErrorAnimation(folder) {
-    folder.classList.add('error-animation'); // Ajouter une classe pour l'animation
-
-    // Ajouter un message d'erreur après un délai pour l'animation
-    setTimeout(() => {
-        alert(`Le dossier ${folder.textContent} est vide !`);
-        folder.classList.remove('error-animation'); // Supprimer la classe après l'animation
-    }, 1000); // Attendre 1 seconde pour la fin de l'animation
-}
-
-// Zone de fouille
-const canvas = document.getElementById("dustLayer");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth - 330;
-canvas.height = window.innerHeight;
-
-canvas.addEventListener("mousemove", (e) => {
-    if (currentTool !== "brush" || e.buttons !== 1) return;
-
-    // Créer des effets de poussière au niveau du curseur
-    createDustEffect(e.offsetX, e.offsetY);
-
-    // Gratter la zone et faire disparaître la poussière
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.beginPath();
-    ctx.arc(e.offsetX, e.offsetY, 30, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalCompositeOperation = "source-over";
-});
-
 // Fonction pour créer un effet de poussière à l'endroit où la souris passe
 function createDustEffect(x, y) {
     const dust = document.createElement('div');
@@ -159,22 +92,21 @@ function createDustEffect(x, y) {
     }, 500);
 }
 
-// Couche de poussière
-ctx.fillStyle = "#a98b5c";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+// Zone de fouille
+const canvas = document.getElementById("dustLayer");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth - 330;
+canvas.height = window.innerHeight;
 
-// Grattage
-canvas.addEventListener("mousemove", (e) => {
-    if (currentTool !== "brush" || e.buttons !== 1) return;
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.beginPath();
-    ctx.arc(e.offsetX, e.offsetY, 30, 0, Math.PI * 2);
-    ctx.fill();
-    revealFolders(e.offsetX, e.offsetY);
-    ctx.globalCompositeOperation = "source-over";
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth - 330;
+    canvas.height = window.innerHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Réinitialiser le canvas
+    ctx.fillStyle = "#a98b5c"; // Redessiner la couche de poussière
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
 
-// Création des dossiers
+// Ajout des dossiers à partir du fichier JSON
 fetch('public/projects.json')
     .then(response => response.json())
     .then(projects => {
@@ -201,7 +133,6 @@ fetch('public/projects.json')
                     showErrorAnimation(folder);
                 } else {
                     alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
-                    // Tu peux ici ouvrir une nouvelle vue, une fenêtre modale, ou d'autres informations sur le projet
                 }
             };
         });
@@ -210,36 +141,24 @@ fetch('public/projects.json')
         console.error('Erreur lors du chargement des projets :', error);
     });
 
-function revealFolders(x, y) {
-    document.querySelectorAll(".folder").forEach((folder) => {
-        const fx = parseFloat(folder.dataset.x);
-        const fy = parseFloat(folder.dataset.y);
-
-        const dx = fx - x;
-        const dy = fy - y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 50 && folder.dataset.revealed === "false") {
-            folder.dataset.revealed = "true";
-            folder.classList.add("revealed");
-        }
-    });
-}
-
-// Déplacement des dossiers avec la main
+// Fonction pour gérer le déplacement des dossiers
+let offsetX = 0;
+let offsetY = 0;
 function makeDraggable(elem) {
-    let offsetX = 0;
-    let offsetY = 0;
+    let initialX = 0;
+    let initialY = 0;
 
     elem.addEventListener("mousedown", (e) => {
-        if (currentTool !== "hand" || elem.dataset.revealed !== "true") return;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
+        // Empêcher le drag sur un dossier déjà dans le stockage
+        if (elem.classList.contains('in-storage')) return;
+
+        initialX = e.offsetX;
+        initialY = e.offsetY;
         elem.style.zIndex = 1000;
 
         function move(e) {
-            elem.style.left = e.pageX - offsetX + "px";
-            elem.style.top = e.pageY - offsetY + "px";
+            elem.style.left = e.pageX - initialX + "px";
+            elem.style.top = e.pageY - initialY + "px";
         }
 
         function stop(e) {
@@ -248,10 +167,9 @@ function makeDraggable(elem) {
 
             if (isInsideStorage(e.pageX, e.pageY)) {
                 elem.style.position = "static";
-                elem.style.zIndex = "1000"; // Mettre un z-index plus élevé pour qu'il soit au-dessus du stockage
+                elem.style.zIndex = "auto"; // Remettre son z-index normal
                 storageZone.appendChild(elem);
                 elem.classList.add("in-storage");
-                elem.onclick = () => openFolder(elem.dataset.name);
             }
         }
 
@@ -260,6 +178,7 @@ function makeDraggable(elem) {
     });
 }
 
+// Zone de stockage
 const storageZone = document.getElementById("storage");
 
 function isInsideStorage(x, y) {
@@ -268,5 +187,5 @@ function isInsideStorage(x, y) {
 }
 
 function openFolder(name) {
-    alert(`📂 Contenu de ${name}\n(Tu pourras bientôt afficher les fichiers ici 😄)`);
+    alert(`📂 Contenu de ${name}`);
 }
