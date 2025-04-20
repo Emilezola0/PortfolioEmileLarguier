@@ -1,0 +1,32 @@
+﻿body {
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #f0e4d7;
+    font-family: sans-serif;
+}
+
+#toolbox {
+    width: 80px;
+    background: #c2b280;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+#brush {
+    font-size: 30px;
+    cursor: grab;
+    user-select: none;
+}
+
+canvas#digZone {
+    border: 2px solid #8b6f47;
+    background-image: url('projects.png'); /* ton image "sous le sable" */
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    margin: auto;
+    display: block;
+}
