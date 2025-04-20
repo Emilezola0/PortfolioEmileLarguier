@@ -1,31 +1,38 @@
 const fs = require('fs');
 const path = require('path');
 
-// Dossier des projets
+// Chemin vers le dossier 'public' où tu veux générer le fichier projects.json
+const publicDir = path.join(__dirname, 'public');
+
+// Chemin vers le dossier 'projects' où sont tes dossiers de projets
 const projectsDir = path.join(__dirname, 'projects');
 
-// Liste des projets
-const projects = [];
-
-// Lire les dossiers dans le dossier projects/
-fs.readdirSync(projectsDir).forEach((folder) => {
-    const folderPath = path.join(projectsDir, folder);
-
-    // Vérifie si c'est un dossier (et pas un fichier)
-    if (fs.statSync(folderPath).isDirectory()) {
-        const filesInFolder = fs.readdirSync(folderPath);
-        const isEmpty = filesInFolder.length === 0; // Vérifie si le dossier est vide
-
-        projects.push({
-            name: folder, // Le nom du dossier sera le nom du projet
-            path: folderPath, // Le chemin complet du projet (utile si tu veux l'ouvrir)
-            isEmpty: isEmpty // Ajoute un attribut pour savoir si le dossier est vide
-        });
+// Lire les dossiers dans 'projects'
+fs.readdir(projectsDir, (err, files) => {
+    if (err) {
+        console.error("Erreur lors de la lecture du dossier 'projects':", err);
+        return;
     }
+
+    const projects = files.map((file) => {
+        const projectPath = path.join(projectsDir, file);
+        const isEmpty = fs.readdirSync(projectPath).length === 0; // Vérifier si le dossier est vide
+        return {
+            name: file,
+            path: projectPath,
+            isEmpty: isEmpty
+        };
+    });
+
+    // Générer le chemin vers le fichier 'projects.json' dans le dossier 'public'
+    const outputFile = path.join(publicDir, 'projects.json');
+
+    // Écrire les projets dans un fichier JSON dans 'public'
+    fs.writeFile(outputFile, JSON.stringify(projects, null, 2), (err) => {
+        if (err) {
+            console.error("Erreur lors de l'écriture du fichier 'projects.json':", err);
+        } else {
+            console.log("Fichier 'projects.json' généré dans 'public'");
+        }
+    });
 });
-
-// Écrire la liste des projets dans un fichier JSON
-const outputPath = path.join(__dirname, 'public', 'projects.json');
-fs.writeFileSync(outputPath, JSON.stringify(projects, null, 2));
-
-console.log('projects.json généré avec succès !');
