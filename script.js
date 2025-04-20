@@ -142,16 +142,11 @@ fetch('public/projects.json')
     });
 
 // Fonction pour gérer le déplacement des dossiers
-let offsetX = 0;
-let offsetY = 0;
 function makeDraggable(elem) {
     let initialX = 0;
     let initialY = 0;
 
     elem.addEventListener("mousedown", (e) => {
-        // Empêcher le drag sur un dossier déjà dans le stockage
-        if (elem.classList.contains('in-storage')) return;
-
         initialX = e.offsetX;
         initialY = e.offsetY;
         elem.style.zIndex = 1000;
@@ -189,3 +184,18 @@ function isInsideStorage(x, y) {
 function openFolder(name) {
     alert(`📂 Contenu de ${name}`);
 }
+
+// Gestion de la fouille
+canvas.addEventListener("mousemove", (e) => {
+    if (currentTool === "brush" && e.buttons === 1) {
+        // Créer des effets de poussière au niveau du curseur
+        createDustEffect(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+
+        // Gratter la zone et faire disparaître la poussière
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.beginPath();
+        ctx.arc(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
+    }
+});
