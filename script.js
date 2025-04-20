@@ -141,27 +141,39 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 // Création des dossiers
-fetch("projects.json")
-    .then((res) => res.json())
-    .then((projects) => {
-        projects.forEach((project, i) => {
-            const folder = document.createElement("div");
-            folder.className = "folder";
-            folder.textContent = "📁 " + project.name;
+fetch('public/projects.json')
+    .then(response => response.json())
+    .then(projects => {
+        projects.forEach(project => {
+            const folder = document.createElement('div');
+            folder.className = 'folder';
+            folder.textContent = `📁 ${project.name}`;
+            folder.dataset.projectPath = project.path; // Enregistrer le chemin du projet
+            folder.dataset.isEmpty = project.isEmpty; // Enregistrer si le dossier est vide
 
+            // Position aléatoire des dossiers
             const x = Math.random() * (canvas.width - 100);
             const y = Math.random() * (canvas.height - 50);
+            folder.style.left = `${x}px`;
+            folder.style.top = `${y}px`;
 
-            folder.style.left = x + "px";
-            folder.style.top = y + "px";
-
-            folder.dataset.x = x;
-            folder.dataset.y = y;
-            folder.dataset.revealed = "false";
+            document.getElementById('digZoneWrapper').appendChild(folder);
 
             makeDraggable(folder);
-            document.getElementById('digZoneWrapper').appendChild(folder);
+
+            // Ajouter un événement au clic pour ouvrir un dossier
+            folder.onclick = () => {
+                if (folder.dataset.isEmpty === 'true') {
+                    showErrorAnimation(folder);
+                } else {
+                    alert(`Ouvrir le projet situé à ${folder.dataset.projectPath}`);
+                    // Tu peux ici ouvrir une nouvelle vue, une fenêtre modale, ou d'autres informations sur le projet
+                }
+            };
         });
+    })
+    .catch((error) => {
+        console.error('Erreur lors du chargement des projets :', error);
     });
 
 function revealFolders(x, y) {
