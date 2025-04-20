@@ -3,6 +3,7 @@ body {
     font-family: sans-serif;
     display: flex;
     height: 100vh;
+    background: #f2e2c4; /* couleur de fond claire du site */
 }
 
 #tools {
@@ -21,6 +22,7 @@ body {
         border: none;
         background: white;
         border-radius: 8px;
+        transition: transform 0.2s ease, background-color 0.3s ease;
     }
 
         #tools button.active {
@@ -40,15 +42,23 @@ body {
 #digZoneWrapper {
     position: relative;
     flex: 1;
-    background: #f2e2c4; /* Couleur de fond plus claire */
+    background: #f2e2c4;
     overflow: hidden;
 }
 
-canvas#dustLayer {
+/* Canvas empilés */
+canvas.dust-layer {
     position: absolute;
     top: 0;
     left: 0;
-    background: #a98b5c; /* Couleur initiale de la poussière */
+    background: transparent;
+    z-index: 1;
+}
+
+/* Dernier layer tout en dessous */
+canvas#dustLayer0 {
+    background: #e7d2a3; /* Couche la plus claire */
+    z-index: 0;
 }
 
 .folder {
@@ -61,6 +71,7 @@ canvas#dustLayer {
     cursor: grab;
     opacity: 0;
     transition: opacity 0.5s;
+    z-index: 10;
 }
 
     .folder.revealed {
@@ -69,15 +80,16 @@ canvas#dustLayer {
 
 #storage {
     position: relative;
-    border: 2px dashed #aaa; /* Pointillés pour délimiter la zone de stockage */
+    border: 2px dashed #aaa;
     padding: 10px;
     background-color: #f0f0f0;
     transition: background-color 0.3s, border-color 0.3s;
+    z-index: 20;
 }
 
     #storage:hover {
-        background-color: #e0e0e0; /* Changer la couleur lors du survol */
-        border-color: #6fa3e2; /* Changer la couleur du bord lors du survol */
+        background-color: #e0e0e0;
+        border-color: #6fa3e2;
     }
 
 .folder.in-storage {
@@ -88,7 +100,7 @@ canvas#dustLayer {
 }
 
 .folder.error-animation {
-    animation: shake 0.5s ease-out; /* Secouer le dossier comme erreur */
+    animation: shake 0.5s ease-out;
 }
 
 @keyframes shake {
@@ -156,10 +168,12 @@ canvas#dustLayer {
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: #f2d597; /* Couleur plus visible pour la poussière */
+    background-color: #f2d597;
     border-radius: 50%;
     opacity: 0.8;
-    transition: opacity 0.5s ease-out;
+    animation: dustEffect 0.5s forwards;
+    pointer-events: none;
+    z-index: 5;
 }
 
 @keyframes dustEffect {
@@ -172,25 +186,4 @@ canvas#dustLayer {
         transform: scale(0);
         opacity: 0;
     }
-}
-
-.dust.hidden {
-    display: none; /* Pour cacher les poussières après l'animation */
-}
-
-/* Zones interactives : stockage et boutons */
-#storage:hover {
-    background-color: #e0e0e0;
-    border-color: #6fa3e2;
-}
-
-/* Effets lors de l'utilisation du pinceau (couche de poussière de plus en plus claire) */
-.dustLayer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
-    pointer-events: none;
 }
