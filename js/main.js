@@ -58,11 +58,11 @@ function drawUI() {
 function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
+    folders.forEach(folder => folder.draw(ctx));
 
     // Folders
     folders.forEach(folder => {
-        folder.update(mobs, bullets);
-        folder.draw(ctx);
+        folder.update(mobs, bullets, voidZone.center, voidZone.radius);
     });
 
     // Mobs
@@ -75,6 +75,12 @@ function updateGame() {
             mobs.splice(i, 1);
             voidZone.grow(mob.nutrition);
         }
+    }
+
+    // Update voidParticles or so I think it is
+    for (const p of voidParticles) {
+        p.update(voidZone.center);
+        p.draw(ctx);
     }
 
     // Check if folders get sucked in
@@ -116,7 +122,6 @@ function updateGame() {
                 bullets.splice(i, 1);
 
                 if (mob.hp <= 0) {
-                    voidZone.grow(mob.nutrition);
                     mobs.splice(j, 1);
                     score++;
                 }
