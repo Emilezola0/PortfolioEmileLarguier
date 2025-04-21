@@ -27,7 +27,9 @@ export class Void {
     }
 
     setCenter(x, y) {
-        this.center.x = x;
-        this.center.y = y;
+        if (!this.locked) {
+            this.center.x = x;
+            this.center.y = y;
+        }
     }
 }
