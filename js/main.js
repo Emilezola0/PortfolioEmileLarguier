@@ -30,15 +30,19 @@ class Mob {
 }
 
 class Folder {
-    constructor(x, y) {
+    constructor(x, y, name) {
         this.x = x;
         this.y = y;
+        this.name = name;
         this.cooldown = 0;
     }
 
     draw() {
         ctx.fillStyle = "blue";
         ctx.fillRect(this.x - 15, this.y - 15, 30, 30);
+        ctx.fillStyle = "white";
+        ctx.font = "10px Arial";
+        ctx.fillText(this.name, this.x - 20, this.y + 25);
     }
 
     update(mob) {
@@ -84,9 +88,23 @@ class Bullet {
     }
 }
 
-const folder = new Folder(100, 100); // Position temporaire
-const mob = new Mob();
+let folders = [];
 const bullets = [];
+const mob = new Mob();
+
+function spawnFoldersFromProjects(projects) {
+    const radius = 250;
+    const angleStep = (2 * Math.PI) / projects.length;
+
+    projects.forEach((project, i) => {
+        const angle = i * angleStep;
+        const x = voidCenter.x + radius * Math.cos(angle);
+        const y = voidCenter.y + radius * Math.sin(angle);
+        folders.push(new Folder(x, y, project.name));
+    });
+
+    update();
+}
 
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -97,9 +115,11 @@ function update() {
     ctx.arc(voidCenter.x, voidCenter.y, voidRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Folder
-    folder.update(mob);
-    folder.draw();
+    // Folders
+    folders.forEach(folder => {
+        folder.update(mob);
+        folder.draw();
+    });
 
     // Mob
     mob.update();
@@ -118,11 +138,14 @@ function update() {
     }
 
     if (mob.hp <= 0) {
-        // Mob détruit
         console.log("Mob détruit");
     }
 
     requestAnimationFrame(update);
 }
 
-update();
+// Charger les projets depuis projects.json
+fetch("public/projects.json")
+    .then(res => res.json())
+    .then(data => spawnFoldersFromProjects(data))
+    .catch(err => console.error("Erreur chargement des projets :", err));
