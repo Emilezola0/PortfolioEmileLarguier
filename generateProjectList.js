@@ -1,38 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
-// Chemin vers le dossier 'public' où tu veux générer le fichier projects.json
-const publicDir = path.join(__dirname, 'public');
+const projects = [
+    { name: 'Projet 1', path: 'projet1', isEmpty: false },
+    { name: 'Projet 2', path: 'projet2', isEmpty: true }
+];
 
-// Chemin vers le dossier 'projects' où sont tes dossiers de projets
-const projectsDir = path.join(__dirname, 'projects');
+const projectList = {
+    projects: projects
+};
 
-// Lire les dossiers dans 'projects'
-fs.readdir(projectsDir, (err, files) => {
-    if (err) {
-        console.error("Erreur lors de la lecture du dossier 'projects':", err);
-        return;
-    }
-
-    const projects = files.map((file) => {
-        const projectPath = path.join(projectsDir, file);
-        const isEmpty = fs.readdirSync(projectPath).length === 0; // Vérifier si le dossier est vide
-        return {
-            name: file,
-            path: projectPath,
-            isEmpty: isEmpty
-        };
-    });
-
-    // Générer le chemin vers le fichier 'projects.json' dans le dossier 'public'
-    const outputFile = path.join(publicDir, 'projects.json');
-
-    // Écrire les projets dans un fichier JSON dans 'public'
-    fs.writeFile(outputFile, JSON.stringify(projects, null, 2), (err) => {
-        if (err) {
-            console.error("Erreur lors de l'écriture du fichier 'projects.json':", err);
-        } else {
-            console.log("Fichier 'projects.json' généré dans 'public'");
-        }
-    });
-});
+fs.writeFileSync(path.join(__dirname, 'public', 'projects.json'), JSON.stringify(projectList, null, 2));
+console.log('projects.json créé avec succès !');

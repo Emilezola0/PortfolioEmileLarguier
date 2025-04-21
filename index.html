@@ -1,34 +1,46 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zone Archéologique - Portfolio</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Archéologique</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="tools">
-        <button id="bucket">🔓</button>
-        <button id="brush" class="active">🖌️</button>
-        <button id="hand">✋</button>
-    </div>
+    <header>
+        <h1>Portfolio Archéologique</h1>
+        <p>Explorez mes projets et découvrez des trésors cachés !</p>
+    </header>
 
-    <div id="digZoneWrapper">
-        <canvas id="dustLayer0" class="dust-layer"></canvas>
-        <canvas id="dustLayer1" class="dust-layer"></canvas>
-        <canvas id="dustLayer2" class="dust-layer"></canvas>
-        <canvas id="dustLayer3" class="dust-layer"></canvas>
-        <canvas id="dustLayer4" class="dust-layer"></canvas>
-        <canvas id="dustLayer5" class="dust-layer"></canvas>
-        <!-- les dossiers seront insérés dynamiquement ici -->
-    </div>
+    <main>
+        <!-- Zone de Fouille -->
+        <div id="dig-zone">
+            <div id="soil"></div> <!-- Le sol de la fouille -->
+        </div>
 
+        <!-- Espace de Stockage (avec drag and drop) -->
+        <div id="storage-zone">
+            <h3>Espace de stockage</h3>
+            <div id="storage" class="storage">
+                <!-- Les dossiers glissés ici seront affichés -->
+            </div>
+        </div>
 
-    <div id="storage">
-        <h2>Zone de stockage</h2>
-    </div>
+        <!-- Outils -->
+        <div id="tools">
+            <div id="shovel" class="tool" title="Sceau (Révéler les dossiers)">
+                <img src="assets/tools/shovel.png" alt="Sceau">
+            </div>
+            <div id="brush" class="tool" title="Pinceau (Creuser)">
+                <img src="assets/tools/brush.png" alt="Pinceau">
+            </div>
+            <div id="hand" class="tool" title="Main (Sélectionner)">
+                <img src="assets/tools/hand.png" alt="Main">
+            </div>
+        </div>
+    </main>
 
-    <script src="script.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/generateProjectList.js"></script>
 </body>
 </html>
