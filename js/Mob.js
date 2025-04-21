@@ -14,6 +14,8 @@ export class Mob {
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() * 0.005 + 0.0025) * (Math.random() < 0.5 ? 1 : -1);
         this.radius = 16 * this.scale;
+        this.width = this.radius * 2;
+        this.height = this.radius * 2;
         this.opacity = 1;
 
         const side = Math.floor(Math.random() * 4);
