@@ -1,8 +1,3 @@
-import { Bullet } from "./Bullet.js";
-
-const folderImg = new Image();
-folderImg.src = "assets/folder.png";
-
 export class Folder {
     constructor(x, y, name) {
         this.x = x;
@@ -16,8 +11,9 @@ export class Folder {
 
         // Ajouts utiles
         this.dragging = false;
-        this.width = 32;
-        this.height = 32;
+        this.width = 32;  // Largeur de l'image du dossier
+        this.height = 32; // Hauteur de l'image du dossier
+        this.detectionRadius = 40;  // Rayon de détection autour du dossier (ajusté pour être plus grand)
     }
 
     update(mobs, bullets, voidCenter, voidRadius) {
@@ -84,7 +80,7 @@ export class Folder {
             ctx.shadowBlur = 20;
         }
 
-        ctx.drawImage(folderImg, -16, -16, 32, 32);
+        ctx.drawImage(folderImg, -this.width / 2, -this.height / 2, this.width, this.height); // Centrer l'image
         ctx.restore();
 
         if (!this.absorbing) {
@@ -93,10 +89,16 @@ export class Folder {
             ctx.textAlign = "center";
             ctx.fillText(this.name, this.x, this.y + 28);
         }
+
+        // Afficher le rayon de détection pour le débogage
+        // ctx.beginPath();
+        // ctx.arc(this.x, this.y, this.detectionRadius, 0, Math.PI * 2);
+        // ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+        // ctx.stroke();
     }
 
     isHovered(mx, my) {
-        return mx >= this.x - 16 && mx <= this.x + 16 &&
-            my >= this.y - 16 && my <= this.y + 16;
+        return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
+            my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
     }
 }

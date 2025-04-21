@@ -196,13 +196,9 @@ function updateGame() {
         const dy = collector.y - scrap.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
+        // On vérifie si le scrap est à une distance suffisante du collecteur pour être collecté
         if (dist < scrapDetectionRadius && !scrap.reached) {
             score += 1;
-
-            // 🆕 jouer le son quand scrap atteint le collecteur
-            scrapSound.currentTime = 0;
-            scrapSound.play();
-
             scrap.reached = true;
             flyingScraps.splice(i, 1);
 
