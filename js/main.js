@@ -28,9 +28,8 @@ let voidParticles = [];
 let score = 0;
 let flyingScraps = [];
 
-// Collecteur déplaçable
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
-const scrapDetectionRadius = 100; // rayon de détection du collecteur
+const scrapDetectionRadius = 100;
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -82,7 +81,6 @@ function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
 
-    // Particules autour du void
     if (Math.random() < 0.3) {
         const angle = Math.random() * Math.PI * 2;
         const radius = voidZone.radius + 30 + Math.random() * 40;
@@ -154,13 +152,14 @@ function updateGame() {
 
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
-                    
+
                     const scrapCount = mob.scrapNumber || 1;
                     for (let s = 0; s < scrapCount; s++) {
                         const angle = Math.random() * 2 * Math.PI;
-                        const radius = 10 + Math.random() * 20; // distance autour du mob
+                        const radius = 10 + Math.random() * 20;
                         const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
+
                         flyingScraps.push({
                             x,
                             y,
@@ -182,7 +181,6 @@ function updateGame() {
 
     voidParticles = voidParticles.filter(p => p.life > 0);
 
-    // Animation des scraps collectables
     for (let i = flyingScraps.length - 1; i >= 0; i--) {
         const scrap = flyingScraps[i];
         if (scrap.delay > 0) {
@@ -215,7 +213,6 @@ function updateGame() {
         ctx.restore();
     }
 
-    // Collecteur
     collector.draw(ctx);
 
     // Cercle de détection du collecteur
