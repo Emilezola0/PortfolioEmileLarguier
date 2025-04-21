@@ -9,11 +9,15 @@ export class Folder {
         this.y = y;
         this.name = name;
         this.cooldown = 0;
-
         this.absorbing = false;
         this.absorbAngle = 0;
         this.opacity = 1;
-        this.initialDistance = 0; // distance initiale au moment de l'absorption
+        this.initialDistance = 0;
+
+        // Ajouts utiles
+        this.dragging = false;
+        this.width = 32;
+        this.height = 32;
     }
 
     update(mobs, bullets, voidCenter, voidRadius) {
@@ -28,14 +32,13 @@ export class Folder {
 
         const dx = this.x - voidCenter.x;
         const dy = this.y - voidCenter.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
+        const d = Math.hypot(dx, dy);
         if (d < voidRadius + 30) {
             this.absorbing = true;
             this.absorbAngle = Math.random() * Math.PI * 2;
             return;
         }
 
-        // Tir
         if (this.cooldown > 0) {
             this.cooldown--;
             return;
@@ -47,7 +50,7 @@ export class Folder {
         for (const mob of mobs) {
             const dx = mob.x - this.x;
             const dy = mob.y - this.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const dist = Math.hypot(dx, dy);
 
             if (dist < 300 && dist < closestDist) {
                 closest = mob;
@@ -58,7 +61,7 @@ export class Folder {
         if (closest) {
             const dx = closest.x - this.x;
             const dy = closest.y - this.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const dist = Math.hypot(dx, dy);
             bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist));
             this.cooldown = 30;
         }
@@ -68,6 +71,7 @@ export class Folder {
         ctx.save();
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
+
         if (this.absorbing) {
             ctx.rotate(this.absorbAngle);
         }
@@ -90,8 +94,6 @@ export class Folder {
             ctx.fillText(this.name, this.x, this.y + 28);
         }
     }
-
-
 
     isHovered(mx, my) {
         return mx >= this.x - 16 && mx <= this.x + 16 &&

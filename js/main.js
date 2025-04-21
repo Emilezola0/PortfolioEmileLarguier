@@ -37,6 +37,9 @@ scrapImg.src = "assets/scrap.png";
 const scrapImgCollect = new Image();
 scrapImgCollect.src = "assets/scrapCollect.png";
 
+// 🆕 Ajout pour le son :
+const scrapSound = document.getElementById("scrapSound");
+
 let draggedFolder = null;
 
 canvas.addEventListener("mousedown", e => {
@@ -93,7 +96,6 @@ function updateGame() {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius);
         folder.draw(ctx);
 
-        // Cercle autour des folders
         ctx.beginPath();
         ctx.arc(folder.x + folder.width / 2, folder.y + folder.height / 2, 40, 0, Math.PI * 2);
         ctx.strokeStyle = "rgba(255,255,255,0.1)";
@@ -164,7 +166,9 @@ function updateGame() {
                             x,
                             y,
                             reached: false,
-                            delay: s * 6
+                            delay: s * 6,
+                            scale: 0.5,
+                            spawnTimer: 10
                         });
                     }
                 }
@@ -194,11 +198,20 @@ function updateGame() {
 
         if (dist < scrapDetectionRadius && !scrap.reached) {
             score += 1;
+
+            // 🆕 jouer le son quand scrap atteint le collecteur
+            scrapSound.currentTime = 0;
+            scrapSound.play();
+
             scrap.reached = true;
             flyingScraps.splice(i, 1);
 
-            for (let p = 0; p < 4; p++) {
-                particles.push(new Particle(collector.x, collector.y, "yellow"));
+            for (let p = 0; p < 6; p++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 15;
+                const px = collector.x + Math.cos(angle) * radius;
+                const py = collector.y + Math.sin(angle) * radius;
+                particles.push(new Particle(px, py, "yellow"));
             }
             continue;
         }
@@ -209,13 +222,18 @@ function updateGame() {
 
         ctx.save();
         ctx.globalAlpha = 1;
-        ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 32, 32);
+        if (scrap.spawnTimer > 0) {
+            scrap.spawnTimer--;
+            scrap.scale += 0.05;
+            if (scrap.scale > 1) scrap.scale = 1;
+        }
+        const size = 32 * scrap.scale;
+        ctx.drawImage(scrapImgCollect, scrap.x - size / 2, scrap.y - size / 2, size, size);
         ctx.restore();
     }
 
     collector.draw(ctx);
 
-    // Cercle de détection du collecteur
     ctx.beginPath();
     ctx.arc(collector.x, collector.y, scrapDetectionRadius, 0, Math.PI * 2);
     ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";

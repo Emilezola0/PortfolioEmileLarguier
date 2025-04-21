@@ -14,8 +14,11 @@ export class Mob {
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() * 0.005 + 0.0025) * (Math.random() < 0.5 ? 1 : -1);
         this.radius = 16 * this.scale;
+
+        // Ajout de width/height utilisés dans main.js
         this.width = this.radius * 2;
         this.height = this.radius * 2;
+
         this.opacity = 1;
 
         const side = Math.floor(Math.random() * 4);
@@ -47,7 +50,6 @@ export class Mob {
         ctx.restore();
         ctx.globalAlpha = 1;
 
-        // Draw HP bar
         ctx.fillStyle = "red";
         const barWidth = 40 * this.scale;
         ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 10, barWidth * (this.hp / this.maxHp), 4);
