@@ -25,6 +25,7 @@ const mobs = [];
 let particles = [];
 let voidParticles = []; // ajout des particules orbitales
 let score = 0;
+let flyingScraps = [];
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -42,12 +43,15 @@ canvas.addEventListener("mousedown", e => {
 
 canvas.addEventListener("mousemove", e => {
     if (draggedFolder) {
-        draggedFolder.x = e.clientX;
-        draggedFolder.y = e.clientY;
+        // Lerp vers la position pour un effet plus fluide
+        draggedFolder.x += (e.clientX - draggedFolder.x) * 0.2;
+        draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
+        draggedFolder.dragging = true;
     }
 });
 
 canvas.addEventListener("mouseup", () => {
+    if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
 });
 
@@ -136,7 +140,20 @@ function updateGame() {
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
                     score++;
-                    // PAS de grow ici, le void ne doit grandir que s'il absorbe un mob
+
+                    const scrapCount = mob.nutrition; // ou fixe à 1 si pas de nutrition
+
+                    for (let s = 0; s < scrapCount; s++) {
+                        flyingScraps.push({
+                            x: bullet.x,
+                            y: bullet.y,
+                            vx: Math.random() * 2 - 1,
+                            vy: -Math.random() * 2 - 1,
+                            alpha: 1,
+                            delay: s * 5, // étalement de l'apparition des scraps
+                            reached: false
+                        });
+                    }
                 }
                 break;
             }
@@ -152,6 +169,41 @@ function updateGame() {
 
     // Nettoyage des particules orbitales
     voidParticles = voidParticles.filter(p => p.life > 0);
+
+    // Animation des scraps collectés
+    const targetX = canvas.width - 90;
+    const targetY = 32;
+
+    const scrapImgCollect = new Image();
+    scrapImgCollect.src = "assets/scrapCollect.png"; // Scrap image collectée
+
+    for (let i = flyingScraps.length - 1; i >= 0; i--) {
+        const scrap = flyingScraps[i];
+        if (scrap.delay > 0) {
+            scrap.delay--;
+            continue;
+        }
+
+        const dx = targetX - scrap.x;
+        const dy = targetY - scrap.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 10 && !scrap.reached) {
+            score += 1;
+            scrap.reached = true;
+            flyingScraps.splice(i, 1); // Retirer le scrap une fois qu'il a atteint le score
+            continue;
+        }
+
+        // Lerp vers la cible (ease-in)
+        scrap.x += dx * 0.1;
+        scrap.y += dy * 0.1;
+
+        ctx.save();
+        ctx.globalAlpha = scrap.alpha;
+        ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 16, 16); // Afficher l'image du scrap
+        ctx.restore();
+    }
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);

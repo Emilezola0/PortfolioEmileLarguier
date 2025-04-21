@@ -71,6 +71,15 @@ export class Folder {
         if (this.absorbing) {
             ctx.rotate(this.absorbAngle);
         }
+
+        const scale = this.dragging ? 1.2 : 1.0;
+        ctx.scale(scale, scale);
+
+        if (this.dragging) {
+            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+            ctx.shadowBlur = 20;
+        }
+
         ctx.drawImage(folderImg, -16, -16, 32, 32);
         ctx.restore();
 
