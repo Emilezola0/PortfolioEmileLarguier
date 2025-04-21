@@ -62,7 +62,7 @@ function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
 
-    // Générer des void particles en orbite
+    // GÃ©nÃ©rer des void particles en orbite
     if (Math.random() < 0.3) {
         const angle = Math.random() * Math.PI * 2;
         const radius = voidZone.radius + 30 + Math.random() * 40;
@@ -71,7 +71,7 @@ function updateGame() {
         voidParticles.push(new Particle(x, y, "purple", angle, radius));
     }
 
-    // Met à jour et dessine les folders (update d'abord, draw ensuite pour le z-index)
+    // Met Ã  jour et dessine les folders (update d'abord, draw ensuite pour le z-index)
     for (const folder of folders) {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius);
     }
@@ -98,7 +98,7 @@ function updateGame() {
         p.draw(ctx);
     }
 
-    // Supprimer les folders aspirés visuellement
+    // Supprimer les folders aspirÃ©s visuellement
     for (let i = folders.length - 1; i >= 0; i--) {
         const f = folders[i];
         if (f.absorbing && f.opacity <= 0) {
