@@ -154,13 +154,16 @@ function updateGame() {
 
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
-
+                    
                     const scrapCount = mob.scrapNumber || 1;
                     for (let s = 0; s < scrapCount; s++) {
-                        const folder = folders[Math.floor(Math.random() * folders.length)];
+                        const angle = Math.random() * 2 * Math.PI;
+                        const radius = 10 + Math.random() * 20; // distance autour du mob
+                        const x = mob.x + Math.cos(angle) * radius;
+                        const y = mob.y + Math.sin(angle) * radius;
                         flyingScraps.push({
-                            x: folder.x + folder.width / 2 + Math.random() * 20 - 10,
-                            y: folder.y + folder.height / 2 + Math.random() * 20 - 10,
+                            x,
+                            y,
                             reached: false,
                             delay: s * 6
                         });
