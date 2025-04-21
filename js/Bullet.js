@@ -27,7 +27,7 @@ export class Bullet {
     hits(mob) {
         const dx = this.x - mob.x;
         const dy = this.y - mob.y;
-        return Math.sqrt(dx * dx + dy * dy) < this.radius + mob.radius;
+        return Math.hypot(dx, dy) < this.radius + mob.radius; // Optimisation avec Math.hypot
     }
 }
 
@@ -35,25 +35,25 @@ class Particle {
     constructor(x, y, color) {
         this.x = x;
         this.y = y;
-        this.radius = Math.random() * 2 + 1;
+        this.radius = Math.random() * 2 + 1; // Rayon aléatoire entre 1 et 3
         this.color = color;
-        this.life = 30;
-        this.vx = (Math.random() - 0.5) * 2;
-        this.vy = (Math.random() - 0.5) * 2;
+        this.life = 30;  // Durée de vie de la particule
+        this.vx = (Math.random() - 0.5) * 2; // Vitesse aléatoire sur x
+        this.vy = (Math.random() - 0.5) * 2; // Vitesse aléatoire sur y
     }
 
     update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.life--;
+        this.life--;  // Réduction de la durée de vie
     }
 
     draw(ctx) {
-        ctx.globalAlpha = this.life / 30;
+        ctx.globalAlpha = this.life / 30;  // Gestion de la transparence en fonction de la durée de vie
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = 1;  // Restaurer la valeur de alpha après le dessin de la particule
     }
 }
