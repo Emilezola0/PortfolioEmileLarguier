@@ -178,11 +178,18 @@ function updateGame() {
         if (dist < 10 && !scrap.reached) {
             score += 1;
             scrap.reached = true;
+            flyingScraps.splice(i, 1);
+
+            for (let p = 0; p < 5; p++) {
+                particles.push(new Particle(targetX, targetY, "yellow"));
+            }
+
             continue;
         }
 
-        scrap.x += dx * 0.1;
-        scrap.y += dy * 0.1;
+
+        scrap.x += dx * 0.06;
+        scrap.y += dy * 0.06;
 
         ctx.save();
         ctx.globalAlpha = 1;
