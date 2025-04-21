@@ -1,88 +1,80 @@
 let currentTool = null;
-let digging = false;
+let money = 0;
+const digZone = document.getElementById('dig-zone');
+const sellDrop = document.getElementById('sell-drop');
+const moneyDisplay = document.getElementById('money');
 
-// Sélection des outils
-const shovel = document.getElementById('shovel');
-const brush = document.getElementById('brush');
-const hand = document.getElementById('hand');
-
-const soil = document.getElementById('soil');
-const storage = document.getElementById('storage');
-
-// Fonction de changement d'outil
-shovel.addEventListener('click', () => setTool('shovel'));
-brush.addEventListener('click', () => setTool('brush'));
-hand.addEventListener('click', () => setTool('hand'));
+// ---- OUTILS
+document.getElementById('shovel').addEventListener('click', () => setTool('shovel'));
+document.getElementById('brush').addEventListener('click', () => setTool('brush'));
+document.getElementById('hand').addEventListener('click', () => setTool('hand'));
 
 function setTool(tool) {
     currentTool = tool;
-    updateToolAppearance();
+    console.log("Outil sélectionné :", tool);
 }
 
-function updateToolAppearance() {
-    shovel.style.opacity = currentTool === 'shovel' ? 1 : 0.5;
-    brush.style.opacity = currentTool === 'brush' ? 1 : 0.5;
-    hand.style.opacity = currentTool === 'hand' ? 1 : 0.5;
-}
+// ---- PROJETS
+fetch('/public/projects.json')
+    .then(res => res.json())
+    .then(data => {
+        const bar = document.getElementById('project-bar');
+        data.projects.forEach(proj => {
+            const div = document.createElement('div');
+            div.className = 'project';
+            div.textContent = proj.name;
+            div.addEventListener('click', () => alert(`Projet ${proj.name} ouvert`));
+            bar.appendChild(div);
+        });
+    });
 
-// Gestion des événements sur la zone de fouille
-soil.addEventListener('click', (e) => {
-    if (currentTool === 'brush') {
-        // Logic de creuser à l'endroit cliqué
-        digAt(e.offsetX, e.offsetY);
-    } else if (currentTool === 'shovel') {
-        // Révéler tous les dossiers d'un coup
-        revealAll();
+// ---- ZONE DE FOUILLE
+digZone.addEventListener('click', (e) => {
+    if (currentTool !== 'shovel') return;
+    const { offsetX, offsetY } = e;
+    const mineral = generateMineral();
+    if (mineral) {
+        mineral.style.left = `${offsetX}px`;
+        mineral.style.top = `${offsetY}px`;
+        digZone.appendChild(mineral);
     }
 });
 
-function digAt(x, y) {
-    // Animation de creusage à l'endroit précis
-    const hole = document.createElement('div');
-    hole.style.position = 'absolute';
-    hole.style.left = `${x}px`;
-    hole.style.top = `${y}px`;
-    hole.style.width = '50px';
-    hole.style.height = '50px';
-    hole.style.backgroundColor = '#9e7b53';
-    hole.style.borderRadius = '50%';
-    soil.appendChild(hole);
+function generateMineral() {
+    const r = Math.random();
+    let type = null;
+    if (r < 0.5) type = 'stone';
+    else if (r < 0.75) type = 'iron';
+    else if (r < 0.9) type = 'gold';
+    else if (r < 0.98) type = 'diamond';
+    else return null;
 
-    // Logique pour afficher un dossier découvert
-    if (Math.random() > 0.7) { // Détection aléatoire d'un dossier
-        const project = createProject();
-        storage.appendChild(project);
+    const mineral = document.createElement('img');
+    mineral.src = `assets/minerals/${type}.png`;
+    mineral.className = 'mineral';
+    mineral.dataset.type = type;
+    mineral.setAttribute('draggable', true);
+
+    mineral.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('type', type);
+        e.target.remove();
+    });
+
+    return mineral;
+}
+
+// ---- ZONE DE VENTE
+sellDrop.addEventListener('dragover', (e) => e.preventDefault());
+sellDrop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const type = e.dataTransfer.getData('type');
+    let value = 0;
+    switch (type) {
+        case 'stone': value = 1; break;
+        case 'iron': value = 5; break;
+        case 'gold': value = 10; break;
+        case 'diamond': value = 50; break;
     }
-}
-
-function revealAll() {
-    // Dévoiler tous les dossiers à la fois
-    const project = createProject();
-    storage.appendChild(project);
-}
-
-function createProject() {
-    const project = document.createElement('div');
-    project.classList.add('project');
-    project.textContent = 'Dossier Découvert';
-    project.setAttribute('draggable', 'true');
-    project.addEventListener('dragstart', dragStart);
-    return project;
-}
-
-// Fonction de gestion du drag and drop
-function dragStart(e) {
-    e.dataTransfer.setData('text', e.target.textContent);
-}
-
-storage.addEventListener('dragover', (e) => {
-    e.preventDefault();
-});
-
-storage.addEventListener('drop', (e) => {
-    e.preventDefault();
-    const data = e.dataTransfer.getData('text');
-    const droppedElement = document.createElement('div');
-    droppedElement.textContent = data;
-    storage.appendChild(droppedElement);
+    money += value;
+    moneyDisplay.textContent = money;
 });

@@ -1,75 +1,109 @@
-/* Global */
+/* Reset + layout */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0e8d7;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f0e5;
 }
 
 header {
-    text-align: center;
-    padding: 20px;
-    background-color: #d4a373;
-    color: white;
-}
-
-main {
+    background-color: #e2c799;
     display: flex;
     justify-content: space-between;
-    padding: 20px;
+    align-items: center;
+    padding: 10px 20px;
+    height: 60px;
 }
 
-/* Zone de Fouille */
-#dig-zone {
-    width: 60%;
-    height: 500px;
-    background-color: #c77f3c;
-    position: relative;
-}
-
-#soil {
-    width: 100%;
-    height: 100%;
-    background-image: url('assets/soil-texture.png');
-    background-size: cover;
-    border: 1px solid #d4a373;
-    position: absolute;
-}
-
-/* Espace de stockage */
-#storage-zone {
-    width: 30%;
-    padding: 10px;
-    background-color: #f6f2e1;
-    border: 2px dashed #d4a373;
-    min-height: 500px;
-}
-
-.storage {
+#project-bar {
     display: flex;
-    flex-direction: column;
     gap: 10px;
 }
 
-/* Outils */
+    #project-bar .project {
+        background-color: #fff;
+        padding: 5px 10px;
+        border: 2px solid #8b5e3c;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+#money-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    #money-display img {
+        width: 20px;
+        height: 20px;
+    }
+
+/* Main layout */
+main {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    height: calc(100vh - 60px);
+}
+
+/* Tools */
 #tools {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 100px;
     align-items: center;
+    width: 80px;
 }
 
-.tool {
+.tool img {
+    width: 50px;
     cursor: pointer;
+    transition: transform 0.2s;
 }
 
-    .tool img {
-        width: 50px;
-        height: 50px;
+    .tool img:hover {
+        transform: scale(1.1);
     }
 
-    .tool:hover {
-        transform: scale(1.1);
-        transition: transform 0.2s;
-    }
+/* Dig Zone */
+#dig-zone {
+    flex-grow: 1;
+    background-color: #caa472;
+    border: 2px solid #8b5e3c;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Right Panel */
+#right-panel {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#sell-zone, #shop-zone {
+    background-color: #fff;
+    padding: 10px;
+    border: 2px dashed #a0764a;
+    border-radius: 10px;
+    min-height: 100px;
+}
+
+#sell-drop {
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #faf0e6;
+}
+
+.mineral {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    cursor: grab;
+}

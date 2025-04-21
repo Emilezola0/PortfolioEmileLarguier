@@ -1,46 +1,54 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfolio Archéologique</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+    <!-- Barre de projet en haut -->
     <header>
-        <h1>Portfolio Archéologique</h1>
-        <p>Explorez mes projets et découvrez des trésors cachés !</p>
+        <div id="project-bar"></div>
+        <div id="money-display">
+            <span id="money">0</span>
+            <img src="assets/coin.png" alt="coin" />
+        </div>
     </header>
 
+    <!-- Contenu principal -->
     <main>
-        <!-- Zone de Fouille -->
-        <div id="dig-zone">
-            <div id="soil"></div> <!-- Le sol de la fouille -->
-        </div>
-
-        <!-- Espace de Stockage (avec drag and drop) -->
-        <div id="storage-zone">
-            <h3>Espace de stockage</h3>
-            <div id="storage" class="storage">
-                <!-- Les dossiers glissés ici seront affichés -->
-            </div>
-        </div>
-
-        <!-- Outils -->
+        <!-- Outils à gauche -->
         <div id="tools">
-            <div id="shovel" class="tool" title="Sceau (Révéler les dossiers)">
-                <img src="assets/tools/shovel.png" alt="Sceau">
+            <div class="tool" id="shovel" title="Pelle">
+                <img src="assets/tools/shovel.png" alt="Pelle" />
             </div>
-            <div id="brush" class="tool" title="Pinceau (Creuser)">
-                <img src="assets/tools/brush.png" alt="Pinceau">
+            <div class="tool" id="brush" title="Pinceau (non actif)">
+                <img src="assets/tools/brush.png" alt="Pinceau" />
             </div>
-            <div id="hand" class="tool" title="Main (Sélectionner)">
-                <img src="assets/tools/hand.png" alt="Main">
+            <div class="tool" id="hand" title="Main">
+                <img src="assets/tools/hand.png" alt="Main" />
+            </div>
+        </div>
+
+        <!-- Zone de fouille au centre -->
+        <div id="dig-zone">
+            <!-- Les minerais apparaîtront ici -->
+        </div>
+
+        <!-- Zone de droite : vente + achats -->
+        <div id="right-panel">
+            <div id="sell-zone">
+                <h3>Zone de vente</h3>
+                <div id="sell-drop">Glissez ici les minerais</div>
+            </div>
+            <div id="shop-zone">
+                <h3>Boutique</h3>
+                <p>À venir...</p>
             </div>
         </div>
     </main>
 
     <script src="js/main.js"></script>
-    <script src="js/generateProjectList.js"></script>
 </body>
 </html>
