@@ -16,44 +16,29 @@ export class Folder {
         this.initialDistance = 0; // distance initiale au moment de l'absorption
     }
 
-    draw(ctx) {
-        ctx.save();
-        ctx.globalAlpha = this.opacity;
-        ctx.drawImage(folderImg, this.x - 16, this.y - 16, 32, 32);
-        ctx.restore();
-
-        ctx.fillStyle = "white";
-        ctx.font = "10px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(this.name, this.x, this.y + 28);
-    }
-
     update(mobs, bullets, voidCenter, voidRadius) {
         if (this.absorbing) {
             this.absorbAngle += 0.05;
+            const dist = voidRadius - 10;
+            this.x = voidCenter.x + dist * Math.cos(this.absorbAngle);
+            this.y = voidCenter.y + dist * Math.sin(this.absorbAngle);
             this.opacity -= 0.01;
-            if (this.opacity <= 0) {
-                this.opacity = 0;
-            }
-            const orbitRadius = Math.max(10, this.initialDistance -= 1.5); // spirale vers l'intérieur
-            this.x = voidCenter.x + orbitRadius * Math.cos(this.absorbAngle);
-            this.y = voidCenter.y + orbitRadius * Math.sin(this.absorbAngle);
             return;
         }
 
-        // Vérifie la distance au Void
-        const dxVoid = this.x - voidCenter.x;
-        const dyVoid = this.y - voidCenter.y;
-        const distToVoid = Math.sqrt(dxVoid * dxVoid + dyVoid * dyVoid);
-        if (distToVoid < voidRadius + 30) {
+        const dx = this.x - voidCenter.x;
+        const dy = this.y - voidCenter.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < voidRadius + 30) {
             this.absorbing = true;
-            this.initialDistance = distToVoid;
-            this.absorbAngle = Math.atan2(dyVoid, dxVoid);
+            this.absorbAngle = Math.random() * Math.PI * 2;
             return;
         }
 
+        // Tir
         if (this.cooldown > 0) {
             this.cooldown--;
+            return;
         }
 
         let closest = null;
@@ -70,7 +55,7 @@ export class Folder {
             }
         }
 
-        if (closest && this.cooldown <= 0) {
+        if (closest) {
             const dx = closest.x - this.x;
             const dy = closest.y - this.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -78,6 +63,26 @@ export class Folder {
             this.cooldown = 30;
         }
     }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.translate(this.x, this.y);
+        if (this.absorbing) {
+            ctx.rotate(this.absorbAngle);
+        }
+        ctx.drawImage(folderImg, -16, -16, 32, 32);
+        ctx.restore();
+
+        if (!this.absorbing) {
+            ctx.fillStyle = "white";
+            ctx.font = "10px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(this.name, this.x, this.y + 28);
+        }
+    }
+
+
 
     isHovered(mx, my) {
         return mx >= this.x - 16 && mx <= this.x + 16 &&

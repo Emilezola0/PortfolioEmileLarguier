@@ -16,13 +16,14 @@ const voidZone = new Void(canvas.width / 2, canvas.height / 2);
 window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    voidZone.setCenter(canvas.width / 2, canvas.height / 2); // void reste centré
+    voidZone.setCenter(canvas.width / 2, canvas.height / 2);
 });
 
 const folders = [];
 const bullets = [];
 const mobs = [];
 let particles = [];
+let voidParticles = []; // ajout des particules orbitales
 let score = 0;
 
 const scrapImg = new Image();
@@ -38,12 +39,14 @@ canvas.addEventListener("mousedown", e => {
         }
     }
 });
+
 canvas.addEventListener("mousemove", e => {
     if (draggedFolder) {
         draggedFolder.x = e.clientX;
         draggedFolder.y = e.clientY;
     }
 });
+
 canvas.addEventListener("mouseup", () => {
     draggedFolder = null;
 });
@@ -58,12 +61,24 @@ function drawUI() {
 function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
-    folders.forEach(folder => folder.draw(ctx));
 
-    // Folders
-    folders.forEach(folder => {
+    // Générer des void particles en orbite
+    if (Math.random() < 0.3) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = voidZone.radius + 30 + Math.random() * 40;
+        const x = voidZone.center.x + radius * Math.cos(angle);
+        const y = voidZone.center.y + radius * Math.sin(angle);
+        voidParticles.push(new Particle(x, y, "purple", angle, radius));
+    }
+
+    // Met à jour et dessine les folders (update d'abord, draw ensuite pour le z-index)
+    for (const folder of folders) {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius);
-    });
+    }
+
+    for (const folder of folders) {
+        folder.draw(ctx);
+    }
 
     // Mobs
     for (let i = mobs.length - 1; i >= 0; i--) {
@@ -73,22 +88,20 @@ function updateGame() {
 
         if (voidZone.absorb(mob)) {
             mobs.splice(i, 1);
-            voidZone.grow(mob.nutrition);
+            voidZone.grow(mob.nutrition); // le void grandit seulement ici
         }
     }
 
-    // Update voidParticles or so I think it is
+    // Void particles orbit
     for (const p of voidParticles) {
         p.update(voidZone.center);
         p.draw(ctx);
     }
 
-    // Check if folders get sucked in
+    // Supprimer les folders aspirés visuellement
     for (let i = folders.length - 1; i >= 0; i--) {
         const f = folders[i];
-        const dx = f.x - voidZone.center.x;
-        const dy = f.y - voidZone.center.y;
-        if (Math.sqrt(dx * dx + dy * dy) < voidZone.radius + 16) {
+        if (f.absorbing && f.opacity <= 0) {
             folders.splice(i, 1);
         }
     }
@@ -114,7 +127,6 @@ function updateGame() {
             if (bullet.hits(mob)) {
                 mob.hp -= 50;
 
-                // Generate particles
                 for (let k = 0; k < 10; k++) {
                     particles.push(new Particle(bullet.x, bullet.y, "orange"));
                 }
@@ -124,18 +136,22 @@ function updateGame() {
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
                     score++;
+                    // PAS de grow ici, le void ne doit grandir que s'il absorbe un mob
                 }
                 break;
             }
         }
     }
 
-    // Particles
+    // Particles classiques
     particles = particles.filter(p => p.life > 0);
     particles.forEach(p => {
         p.update();
         p.draw(ctx);
     });
+
+    // Nettoyage des particules orbitales
+    voidParticles = voidParticles.filter(p => p.life > 0);
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
