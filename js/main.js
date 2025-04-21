@@ -28,8 +28,7 @@ let voidParticles = [];
 let score = 0;
 let flyingScraps = [];
 
-// 🧲 Nouveau collecteur
-let collector = new ScrapCollector(canvas.width - 90, 32);
+let collector = null;
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -40,7 +39,7 @@ scrapImgCollect.src = "assets/scrapCollect.png";
 let draggedFolder = null;
 
 canvas.addEventListener("mousedown", e => {
-    if (collector.isHovered(e.clientX, e.clientY)) {
+    if (collector && collector.isHovered(e.clientX, e.clientY)) {
         collector.dragging = true;
         return;
     }
@@ -53,7 +52,7 @@ canvas.addEventListener("mousedown", e => {
 });
 
 canvas.addEventListener("mousemove", e => {
-    if (collector.dragging) {
+    if (collector && collector.dragging) {
         collector.update(e.clientX, e.clientY);
         return;
     }
@@ -65,7 +64,7 @@ canvas.addEventListener("mousemove", e => {
 });
 
 canvas.addEventListener("mouseup", () => {
-    collector.dragging = false;
+    if (collector) collector.dragging = false;
     if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
 });
@@ -81,7 +80,6 @@ function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
 
-    // Ajoute des particules orbitales
     if (Math.random() < 0.3) {
         const angle = Math.random() * Math.PI * 2;
         const radius = voidZone.radius + 30 + Math.random() * 40;
@@ -174,7 +172,6 @@ function updateGame() {
 
     voidParticles = voidParticles.filter(p => p.life > 0);
 
-    // ✨ Nouveau comportement des scraps collectés
     for (let i = flyingScraps.length - 1; i >= 0; i--) {
         const scrap = flyingScraps[i];
         if (scrap.delay > 0) {
@@ -204,12 +201,12 @@ function updateGame() {
 
         ctx.save();
         ctx.globalAlpha = 1;
-        ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 16, 16);
+        ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 32, 32);
         ctx.restore();
     }
 
     // 🧲 Dessine le collecteur
-    collector.draw(ctx);
+    if (collector) collector.draw(ctx);
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
@@ -228,5 +225,15 @@ fetch("public/projects.json")
             const y = canvas.height / 2 + radius * Math.sin(angle);
             folders.push(new Folder(x, y, proj.name));
         });
+
+        // ➕ Crée le collecteur à côté d’un folder aléatoire
+        const randomFolder = folders[Math.floor(Math.random() * folders.length)];
+        const offsetAngle = Math.random() * Math.PI * 2;
+        const offsetRadius = 80;
+        const collectorX = randomFolder.x + Math.cos(offsetAngle) * offsetRadius;
+        const collectorY = randomFolder.y + Math.sin(offsetAngle) * offsetRadius;
+
+        collector = new ScrapCollector(collectorX, collectorY);
+
         updateGame();
     });
