@@ -4,7 +4,6 @@ import { Mob } from "./Mob.js";
 import { Bullet } from "./Bullet.js";
 import { spawnManager } from "./spawnManager.js";
 import { Particle } from "./Particle.js";
-import { voidParticle } from "./VoidParticle.js";
 import { ScrapCollector } from "./ScrapCollector.js";
 
 const canvas = document.getElementById("gameCanvas");
