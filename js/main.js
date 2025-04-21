@@ -6,7 +6,6 @@ import { spawnManager } from "./spawnManager.js";
 import { Particle } from "./Particle.js";
 import { voidParticle } from "./VoidParticle.js";
 import { ScrapCollector } from "./ScrapCollector.js";
-import { ScrapCollector } from "./ScrapCollector.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
