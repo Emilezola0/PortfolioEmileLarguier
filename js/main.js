@@ -188,8 +188,9 @@ function updateGame() {
         }
 
 
-        scrap.x += dx * 0.06;
-        scrap.y += dy * 0.06;
+        const speed = 0.03 + (1 - Math.min(dist / 200, 1)) * 0.05;
+        scrap.x += dx * speed;
+        scrap.y += dy * speed;
 
         ctx.save();
         ctx.globalAlpha = 1;
