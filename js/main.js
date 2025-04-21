@@ -4,6 +4,7 @@ import { Mob } from "./Mob.js";
 import { Bullet } from "./Bullet.js";
 import { spawnManager } from "./spawnManager.js";
 import { Particle } from "./Particle.js";
+import { voidParticle } from "./VoidParticle.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -24,8 +25,8 @@ const bullets = [];
 const mobs = [];
 let particles = [];
 let voidParticles = [];
-let flyingScraps = [];
 let score = 0;
+let flyingScraps = [];
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -136,15 +137,14 @@ function updateGame() {
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
 
-                    const scrapCount = mob.scrapNumber ?? 1;
+                    const scrapCount = mob.scrapNumber || 1;
 
                     for (let s = 0; s < scrapCount; s++) {
                         flyingScraps.push({
                             x: bullet.x,
                             y: bullet.y,
                             reached: false,
-                            delay: s * 3,
-                            alpha: 1
+                            delay: s * 6 // délai augmenté pour animation plus fluide
                         });
                     }
                 }
@@ -180,13 +180,12 @@ function updateGame() {
             scrap.reached = true;
             flyingScraps.splice(i, 1);
 
-            for (let p = 0; p < 5; p++) {
+            for (let p = 0; p < 4; p++) {
                 particles.push(new Particle(targetX, targetY, "yellow"));
             }
 
             continue;
         }
-
 
         const speed = 0.03 + (1 - Math.min(dist / 200, 1)) * 0.05;
         scrap.x += dx * speed;
@@ -197,8 +196,6 @@ function updateGame() {
         ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 16, 16);
         ctx.restore();
     }
-
-    flyingScraps = flyingScraps.filter(s => !s.reached);
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
