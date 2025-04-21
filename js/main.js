@@ -87,4 +87,30 @@ function updateGame() {
                 mobs[j].hp -= 50;
                 bullets.splice(i, 1);
                 if (mobs[j].hp <= 0) {
-                    mobs.splice(j,
+                    mobs.splice(j, 1);
+                    score += 1;
+                }
+                break;
+            }
+        }
+    }
+
+    drawUI();
+    spawnManager.update(mobs, voidZone.radius, canvas);
+
+    requestAnimationFrame(updateGame);
+}
+
+fetch("public/projects.json")
+    .then(res => res.json())
+    .then(data => {
+        const radius = 300;
+        const step = (2 * Math.PI) / data.length;
+        data.forEach((proj, i) => {
+            const angle = i * step;
+            const x = canvas.width / 2 + radius * Math.cos(angle);
+            const y = canvas.height / 2 + radius * Math.sin(angle);
+            folders.push(new Folder(x, y, proj.name));
+        });
+        updateGame();
+    });
