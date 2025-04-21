@@ -11,10 +11,22 @@ document.getElementById('hand').addEventListener('click', () => setTool('hand'))
 
 function setTool(tool) {
     currentTool = tool;
-    console.log("Outil sélectionné :", tool);
+
+    // Retirer la classe "selected" et "ripple" de tous les outils
+    document.querySelectorAll('.tool').forEach(t => {
+        t.classList.remove('selected', 'ripple');
+    });
+
+    // Ajouter la classe à l'outil actif
+    const activeTool = document.getElementById(tool);
+    activeTool.classList.add('selected');
+
+    // Ajouter effet ripple temporairement
+    activeTool.classList.add('ripple');
+    setTimeout(() => activeTool.classList.remove('ripple'), 600);
 }
 
-// ---- PROJETS
+// ---- AFFICHER LES PROJETS
 fetch('/public/projects.json')
     .then(res => res.json())
     .then(data => {
@@ -28,18 +40,32 @@ fetch('/public/projects.json')
         });
     });
 
-// ---- ZONE DE FOUILLE
+// ---- CREUSER (PELLE)
 digZone.addEventListener('click', (e) => {
     if (currentTool !== 'shovel') return;
-    const { offsetX, offsetY } = e;
+
+    const { clientX, clientY } = e;
+    const rect = digZone.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    // Afficher un trou visuel
+    const hole = document.createElement('div');
+    hole.className = 'hole';
+    hole.style.left = `${x}px`;
+    hole.style.top = `${y}px`;
+    digZone.appendChild(hole);
+
+    // Apparition aléatoire d’un minerai
     const mineral = generateMineral();
     if (mineral) {
-        mineral.style.left = `${offsetX}px`;
-        mineral.style.top = `${offsetY}px`;
+        mineral.style.left = `${x}px`;
+        mineral.style.top = `${y}px`;
         digZone.appendChild(mineral);
     }
 });
 
+// ---- GÉNÉRATION DES MINÉRAUX
 function generateMineral() {
     const r = Math.random();
     let type = null;
@@ -53,28 +79,67 @@ function generateMineral() {
     mineral.src = `assets/minerals/${type}.png`;
     mineral.className = 'mineral';
     mineral.dataset.type = type;
-    mineral.setAttribute('draggable', true);
-
-    mineral.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('type', type);
-        e.target.remove();
-    });
 
     return mineral;
 }
 
-// ---- ZONE DE VENTE
-sellDrop.addEventListener('dragover', (e) => e.preventDefault());
-sellDrop.addEventListener('drop', (e) => {
-    e.preventDefault();
-    const type = e.dataTransfer.getData('type');
-    let value = 0;
-    switch (type) {
-        case 'stone': value = 1; break;
-        case 'iron': value = 5; break;
-        case 'gold': value = 10; break;
-        case 'diamond': value = 50; break;
+// ---- MAIN : SUIVI DU MINÉRAL À LA SOURIS
+let draggedMineral = null;
+
+digZone.addEventListener('mousedown', (e) => {
+    if (currentTool !== 'hand') return;
+
+    if (e.target.classList.contains('mineral')) {
+        draggedMineral = e.target;
+        draggedMineral.style.pointerEvents = 'none';
+        draggedMineral.style.position = 'fixed';
+        moveWithMouse(e);
     }
-    money += value;
-    moneyDisplay.textContent = money;
 });
+
+document.addEventListener('mousemove', (e) => {
+    if (draggedMineral) moveWithMouse(e);
+});
+
+document.addEventListener('mouseup', (e) => {
+    if (!draggedMineral) return;
+
+    const sellRect = sellDrop.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+
+    if (
+        x > sellRect.left && x < sellRect.right &&
+        y > sellRect.top && y < sellRect.bottom
+    ) {
+        // VENDRE
+        const type = draggedMineral.dataset.type;
+        let value = 0;
+        switch (type) {
+            case 'stone': value = 1; break;
+            case 'iron': value = 5; break;
+            case 'gold': value = 10; break;
+            case 'diamond': value = 50; break;
+        }
+        money += value;
+        moneyDisplay.textContent = money;
+        draggedMineral.remove();
+    } else {
+        // LE REPOSER DANS LA ZONE
+        const digRect = digZone.getBoundingClientRect();
+        const relX = x - digRect.left;
+        const relY = y - digRect.top;
+        draggedMineral.style.left = `${relX}px`;
+        draggedMineral.style.top = `${relY}px`;
+        draggedMineral.style.position = 'absolute';
+        digZone.appendChild(draggedMineral);
+    }
+
+    draggedMineral.style.pointerEvents = 'auto';
+    draggedMineral = null;
+});
+
+function moveWithMouse(e) {
+    draggedMineral.style.left = `${e.clientX - 20}px`;
+    draggedMineral.style.top = `${e.clientY - 20}px`;
+}

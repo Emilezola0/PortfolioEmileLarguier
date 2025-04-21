@@ -107,3 +107,47 @@ main {
     position: absolute;
     cursor: grab;
 }
+
+.hole {
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, #4a2c1d 0%, #00000088 80%, transparent 100%);
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.tool.selected {
+    background-color: #f5deb3;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+.tool {
+    position: relative;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+    .tool::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        width: 100px;
+        height: 100px;
+        transform: scale(0);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.6s, opacity 0.6s;
+        z-index: 1;
+        left: 50%;
+        top: 50%;
+        transform-origin: center;
+    }
+
+    .tool.ripple::after {
+        transform: scale(1);
+        opacity: 1;
+    }
