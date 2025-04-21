@@ -1,10 +1,11 @@
 let currentTool = null;
 let money = 0;
 const digZone = document.getElementById('dig-zone');
+const digCover = document.getElementById('dig-cover');
 const sellDrop = document.getElementById('sell-drop');
 const moneyDisplay = document.getElementById('money');
 
-// ---- OUTILS
+// Outils
 document.getElementById('shovel').addEventListener('click', () => setTool('shovel'));
 document.getElementById('brush').addEventListener('click', () => setTool('brush'));
 document.getElementById('hand').addEventListener('click', () => setTool('hand'));
@@ -12,21 +13,29 @@ document.getElementById('hand').addEventListener('click', () => setTool('hand'))
 function setTool(tool) {
     currentTool = tool;
 
-    // Retirer la classe "selected" et "ripple" de tous les outils
     document.querySelectorAll('.tool').forEach(t => {
-        t.classList.remove('selected', 'ripple');
+        t.classList.remove('selected');
+        const ripple = t.querySelector('.ripple');
+        if (ripple) ripple.remove();
     });
 
-    // Ajouter la classe à l'outil actif
     const activeTool = document.getElementById(tool);
     activeTool.classList.add('selected');
 
-    // Ajouter effet ripple temporairement
-    activeTool.classList.add('ripple');
-    setTimeout(() => activeTool.classList.remove('ripple'), 600);
+    activeTool.addEventListener('click', (e) => {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = activeTool.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        activeTool.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }, { once: true });
 }
 
-// ---- AFFICHER LES PROJETS
+// Chargement des projets
 fetch('/public/projects.json')
     .then(res => res.json())
     .then(data => {
@@ -40,32 +49,23 @@ fetch('/public/projects.json')
         });
     });
 
-// ---- CREUSER (PELLE)
-digZone.addEventListener('click', (e) => {
-    if (currentTool !== 'shovel') return;
+// Génération de minerais à l'initialisation
+function generateBackgroundMinerals() {
+    const background = document.getElementById('dig-background');
+    const width = background.offsetWidth;
+    const height = background.offsetHeight;
 
-    const { clientX, clientY } = e;
-    const rect = digZone.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    for (let i = 0; i < 30; i++) {
+        const mineral = generateMineral();
+        if (!mineral) continue;
 
-    // Afficher un trou visuel
-    const hole = document.createElement('div');
-    hole.className = 'hole';
-    hole.style.left = `${x}px`;
-    hole.style.top = `${y}px`;
-    digZone.appendChild(hole);
-
-    // Apparition aléatoire d’un minerai
-    const mineral = generateMineral();
-    if (mineral) {
-        mineral.style.left = `${x}px`;
-        mineral.style.top = `${y}px`;
-        digZone.appendChild(mineral);
+        mineral.style.left = `${Math.random() * width}px`;
+        mineral.style.top = `${Math.random() * height}px`;
+        mineral.style.position = 'absolute';
+        background.appendChild(mineral);
     }
-});
+}
 
-// ---- GÉNÉRATION DES MINÉRAUX
 function generateMineral() {
     const r = Math.random();
     let type = null;
@@ -83,7 +83,25 @@ function generateMineral() {
     return mineral;
 }
 
-// ---- MAIN : SUIVI DU MINÉRAL À LA SOURIS
+window.addEventListener('DOMContentLoaded', generateBackgroundMinerals);
+
+// Creusage (fouille visuelle)
+digZone.addEventListener('click', (e) => {
+    if (currentTool !== 'shovel') return;
+
+    const { clientX, clientY } = e;
+    const rect = digZone.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const reveal = document.createElement('div');
+    reveal.className = 'reveal-spot';
+    reveal.style.left = `${x}px`;
+    reveal.style.top = `${y}px`;
+    digCover.appendChild(reveal);
+});
+
+// Main pour déplacer minerais
 let draggedMineral = null;
 
 digZone.addEventListener('mousedown', (e) => {
@@ -112,7 +130,6 @@ document.addEventListener('mouseup', (e) => {
         x > sellRect.left && x < sellRect.right &&
         y > sellRect.top && y < sellRect.bottom
     ) {
-        // VENDRE
         const type = draggedMineral.dataset.type;
         let value = 0;
         switch (type) {
@@ -125,7 +142,6 @@ document.addEventListener('mouseup', (e) => {
         moneyDisplay.textContent = money;
         draggedMineral.remove();
     } else {
-        // LE REPOSER DANS LA ZONE
         const digRect = digZone.getBoundingClientRect();
         const relX = x - digRect.left;
         const relY = y - digRect.top;
