@@ -3,54 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio Archéologique</title>
+    <title>Portfolio Jeu</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-    <!-- Barre de projet en haut -->
-    <header>
-        <div id="project-bar"></div>
-        <div id="money-display">
-            <span id="money">0</span>
-            <img src="assets/coin.png" alt="coin" />
-        </div>
-    </header>
-
-    <!-- Contenu principal -->
-    <main>
-        <!-- Outils à gauche -->
-        <div id="tools">
-            <div class="tool" id="shovel" title="Pelle">
-                <img src="assets/tools/shovel.png" alt="Pelle" />
-            </div>
-            <div class="tool" id="brush" title="Pinceau (non actif)">
-                <img src="assets/tools/brush.png" alt="Pinceau" />
-            </div>
-            <div class="tool" id="hand" title="Main">
-                <img src="assets/tools/hand.png" alt="Main" />
-            </div>
-        </div>
-
-        <!-- Zone de fouille au centre -->
-        <div id="dig-zone">
-            <div id="dig-background"></div> <!-- minerais -->
-            <div id="dig-cover"></div>      <!-- couche de terre -->
-        </div>
-
-
-        <!-- Zone de droite : vente + achats -->
-        <div id="right-panel">
-            <div id="sell-zone">
-                <h3>Zone de vente</h3>
-                <div id="sell-drop">Glissez ici les minerais</div>
-            </div>
-            <div id="shop-zone">
-                <h3>Boutique</h3>
-                <p>À venir...</p>
-            </div>
-        </div>
-    </main>
-
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script src="js/main.js"></script>
 </body>
 </html>
