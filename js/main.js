@@ -205,7 +205,7 @@ function updateGame() {
         ctx.restore();
     }
 
-    // 🧲 Dessine le collecteur
+    // Dessine le collecteur
     if (collector) collector.draw(ctx);
 
     drawUI();
@@ -226,7 +226,7 @@ fetch("public/projects.json")
             folders.push(new Folder(x, y, proj.name));
         });
 
-        // ➕ Crée le collecteur à côté d’un folder aléatoire
+        // Crée le collecteur à côté d’un folder aléatoire
         const randomFolder = folders[Math.floor(Math.random() * folders.length)];
         const offsetAngle = Math.random() * Math.PI * 2;
         const offsetRadius = 80;
