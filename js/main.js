@@ -182,16 +182,18 @@ function updateGame() {
         const dx = collector.x - scrap.x;
         const dy = collector.y - scrap.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < collector.radius / 1.5 && !scrap.reached) {
+        
+        // Détection personnalisée
+        const scrapDetectionRadius = 100;
+        if (dist < scrapDetectionRadius && !scrap.reached) {
             score += 1;
             scrap.reached = true;
             flyingScraps.splice(i, 1);
-
+            
             for (let p = 0; p < 4; p++) {
                 particles.push(new Particle(collector.x, collector.y, "yellow"));
             }
-
+            
             continue;
         }
 
@@ -207,6 +209,13 @@ function updateGame() {
 
     // Dessine le collecteur
     if (collector) collector.draw(ctx);
+
+    // Debug rayon détection scrap
+    ctx.beginPath();
+    ctx.arc(collector.x, collector.y, scrapDetectionRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255, 255, 0, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
