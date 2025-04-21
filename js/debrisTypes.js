@@ -4,20 +4,23 @@ export const debrisTypes = [
         hp: 100,
         image: "object1.png",
         nutrition: 5,
-        scale: 1
+        scale: 1,
+        scrapNumber: 2
     },
     {
         name: "bigScrap",
         hp: 300,
         image: "object2.png",
         nutrition: 15,
-        scale: 1.8
+        scale: 1.8,
+        scrapNumber: 5
     },
     {
         name: "tiny",
         hp: 50,
         image: "object3.png",
         nutrition: 2,
-        scale: 0.8
+        scale: 0.8,
+        scrapNumber: 1
     }
 ];

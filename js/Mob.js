@@ -6,7 +6,8 @@ export class Mob {
         this.type = type;
         this.hp = type.hp;
         this.maxHp = type.hp;
-        this.nutrition = type.nutrition;
+        this.nutrition = type.nutrition || 1;
+        this.scrapNumber = type.scrapNumber || 1;
         this.scale = type.scale;
         this.image = new Image();
         this.image.src = `assets/${type.image}`;

@@ -23,12 +23,15 @@ const folders = [];
 const bullets = [];
 const mobs = [];
 let particles = [];
-let voidParticles = []; // ajout des particules orbitales
-let score = 0;
+let voidParticles = [];
 let flyingScraps = [];
+let score = 0;
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
+
+const scrapImgCollect = new Image();
+scrapImgCollect.src = "assets/scrapCollect.png";
 
 let draggedFolder = null;
 
@@ -43,7 +46,6 @@ canvas.addEventListener("mousedown", e => {
 
 canvas.addEventListener("mousemove", e => {
     if (draggedFolder) {
-        // Lerp vers la position pour un effet plus fluide
         draggedFolder.x += (e.clientX - draggedFolder.x) * 0.2;
         draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
         draggedFolder.dragging = true;
@@ -66,7 +68,6 @@ function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
 
-    // Générer des void particles en orbite
     if (Math.random() < 0.3) {
         const angle = Math.random() * Math.PI * 2;
         const radius = voidZone.radius + 30 + Math.random() * 40;
@@ -75,7 +76,6 @@ function updateGame() {
         voidParticles.push(new Particle(x, y, "purple", angle, radius));
     }
 
-    // Met à jour et dessine les folders (update d'abord, draw ensuite pour le z-index)
     for (const folder of folders) {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius);
     }
@@ -84,7 +84,6 @@ function updateGame() {
         folder.draw(ctx);
     }
 
-    // Mobs
     for (let i = mobs.length - 1; i >= 0; i--) {
         const mob = mobs[i];
         mob.update(voidZone.center);
@@ -92,17 +91,15 @@ function updateGame() {
 
         if (voidZone.absorb(mob)) {
             mobs.splice(i, 1);
-            voidZone.grow(mob.nutrition); // le void grandit seulement ici
+            voidZone.grow(mob.nutrition);
         }
     }
 
-    // Void particles orbit
     for (const p of voidParticles) {
         p.update(voidZone.center);
         p.draw(ctx);
     }
 
-    // Supprimer les folders aspirés visuellement
     for (let i = folders.length - 1; i >= 0; i--) {
         const f = folders[i];
         if (f.absorbing && f.opacity <= 0) {
@@ -115,7 +112,6 @@ function updateGame() {
         location.reload();
     }
 
-    // Bullets
     for (let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
         bullet.update();
@@ -139,19 +135,16 @@ function updateGame() {
 
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
-                    score++;
 
-                    const scrapCount = mob.nutrition; // ou fixe à 1 si pas de nutrition
+                    const scrapCount = mob.scrapNumber ?? 1;
 
                     for (let s = 0; s < scrapCount; s++) {
                         flyingScraps.push({
                             x: bullet.x,
                             y: bullet.y,
-                            vx: Math.random() * 2 - 1,
-                            vy: -Math.random() * 2 - 1,
-                            alpha: 1,
-                            delay: s * 5, // étalement de l'apparition des scraps
-                            reached: false
+                            reached: false,
+                            delay: s * 3,
+                            alpha: 1
                         });
                     }
                 }
@@ -160,22 +153,16 @@ function updateGame() {
         }
     }
 
-    // Particles classiques
     particles = particles.filter(p => p.life > 0);
     particles.forEach(p => {
         p.update();
         p.draw(ctx);
     });
 
-    // Nettoyage des particules orbitales
     voidParticles = voidParticles.filter(p => p.life > 0);
 
-    // Animation des scraps collectés
     const targetX = canvas.width - 90;
     const targetY = 32;
-
-    const scrapImgCollect = new Image();
-    scrapImgCollect.src = "assets/scrapCollect.png"; // Scrap image collectée
 
     for (let i = flyingScraps.length - 1; i >= 0; i--) {
         const scrap = flyingScraps[i];
@@ -191,19 +178,19 @@ function updateGame() {
         if (dist < 10 && !scrap.reached) {
             score += 1;
             scrap.reached = true;
-            flyingScraps.splice(i, 1); // Retirer le scrap une fois qu'il a atteint le score
             continue;
         }
 
-        // Lerp vers la cible (ease-in)
         scrap.x += dx * 0.1;
         scrap.y += dy * 0.1;
 
         ctx.save();
-        ctx.globalAlpha = scrap.alpha;
-        ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 16, 16); // Afficher l'image du scrap
+        ctx.globalAlpha = 1;
+        ctx.drawImage(scrapImgCollect, scrap.x, scrap.y, 16, 16);
         ctx.restore();
     }
+
+    flyingScraps = flyingScraps.filter(s => !s.reached);
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
