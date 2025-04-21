@@ -159,8 +159,8 @@ function updateGame() {
                     for (let s = 0; s < scrapCount; s++) {
                         const angle = Math.random() * 2 * Math.PI;
                         const radius = 10 + Math.random() * 20; // distance autour du mob
-                        const x = mob.x + Math.cos(angle) * radius;
-                        const y = mob.y + Math.sin(angle) * radius;
+                        const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
+                        const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
                         flyingScraps.push({
                             x,
                             y,
