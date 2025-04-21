@@ -28,7 +28,9 @@ let voidParticles = [];
 let score = 0;
 let flyingScraps = [];
 
-let collector = null;
+// Collecteur déplaçable
+let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
+const scrapDetectionRadius = 100; // rayon de détection du collecteur
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -39,7 +41,7 @@ scrapImgCollect.src = "assets/scrapCollect.png";
 let draggedFolder = null;
 
 canvas.addEventListener("mousedown", e => {
-    if (collector && collector.isHovered(e.clientX, e.clientY)) {
+    if (collector.isHovered(e.clientX, e.clientY)) {
         collector.dragging = true;
         return;
     }
@@ -52,7 +54,7 @@ canvas.addEventListener("mousedown", e => {
 });
 
 canvas.addEventListener("mousemove", e => {
-    if (collector && collector.dragging) {
+    if (collector.dragging) {
         collector.update(e.clientX, e.clientY);
         return;
     }
@@ -64,7 +66,7 @@ canvas.addEventListener("mousemove", e => {
 });
 
 canvas.addEventListener("mouseup", () => {
-    if (collector) collector.dragging = false;
+    collector.dragging = false;
     if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
 });
@@ -80,6 +82,7 @@ function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     voidZone.draw(ctx);
 
+    // Particules autour du void
     if (Math.random() < 0.3) {
         const angle = Math.random() * Math.PI * 2;
         const radius = voidZone.radius + 30 + Math.random() * 40;
@@ -90,10 +93,14 @@ function updateGame() {
 
     for (const folder of folders) {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius);
-    }
-
-    for (const folder of folders) {
         folder.draw(ctx);
+
+        // Cercle autour des folders
+        ctx.beginPath();
+        ctx.arc(folder.x + folder.width / 2, folder.y + folder.height / 2, 40, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,0.1)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
     }
 
     for (let i = mobs.length - 1; i >= 0; i--) {
@@ -149,11 +156,11 @@ function updateGame() {
                     mobs.splice(j, 1);
 
                     const scrapCount = mob.scrapNumber || 1;
-
                     for (let s = 0; s < scrapCount; s++) {
+                        const folder = folders[Math.floor(Math.random() * folders.length)];
                         flyingScraps.push({
-                            x: bullet.x,
-                            y: bullet.y,
+                            x: folder.x + folder.width / 2 + Math.random() * 20 - 10,
+                            y: folder.y + folder.height / 2 + Math.random() * 20 - 10,
                             reached: false,
                             delay: s * 6
                         });
@@ -172,6 +179,7 @@ function updateGame() {
 
     voidParticles = voidParticles.filter(p => p.life > 0);
 
+    // Animation des scraps collectables
     for (let i = flyingScraps.length - 1; i >= 0; i--) {
         const scrap = flyingScraps[i];
         if (scrap.delay > 0) {
@@ -182,18 +190,15 @@ function updateGame() {
         const dx = collector.x - scrap.x;
         const dy = collector.y - scrap.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        // Détection personnalisée
-        const scrapDetectionRadius = 100;
+
         if (dist < scrapDetectionRadius && !scrap.reached) {
             score += 1;
             scrap.reached = true;
             flyingScraps.splice(i, 1);
-            
+
             for (let p = 0; p < 4; p++) {
                 particles.push(new Particle(collector.x, collector.y, "yellow"));
             }
-            
             continue;
         }
 
@@ -207,13 +212,13 @@ function updateGame() {
         ctx.restore();
     }
 
-    // Dessine le collecteur
-    if (collector) collector.draw(ctx);
+    // Collecteur
+    collector.draw(ctx);
 
-    // Debug rayon détection scrap
+    // Cercle de détection du collecteur
     ctx.beginPath();
     ctx.arc(collector.x, collector.y, scrapDetectionRadius, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(255, 255, 0, 0.2)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -234,15 +239,5 @@ fetch("public/projects.json")
             const y = canvas.height / 2 + radius * Math.sin(angle);
             folders.push(new Folder(x, y, proj.name));
         });
-
-        // Crée le collecteur à côté d’un folder aléatoire
-        const randomFolder = folders[Math.floor(Math.random() * folders.length)];
-        const offsetAngle = Math.random() * Math.PI * 2;
-        const offsetRadius = 80;
-        const collectorX = randomFolder.x + Math.cos(offsetAngle) * offsetRadius;
-        const collectorY = randomFolder.y + Math.sin(offsetAngle) * offsetRadius;
-
-        collector = new ScrapCollector(collectorX, collectorY);
-
         updateGame();
     });
