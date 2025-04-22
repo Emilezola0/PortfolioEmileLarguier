@@ -9,6 +9,7 @@ import { Scrap } from "./Scrap.js";
 import { MobDeathParticle } from "./MobDeathParticle.js";
 
 
+// Canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -21,6 +22,14 @@ window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     voidZone.setCenter(canvas.width / 2, canvas.height / 2);
+});
+
+// Toggle for sound visual
+const soundToggle = document.getElementById("soundToggle");
+let soundEnabled = soundToggle.checked;
+
+soundToggle.addEventListener("change", () => {
+    soundEnabled = soundToggle.checked;
 });
 
 const folders = [];
@@ -210,8 +219,15 @@ function updateGame() {
         if (result === "collected") {
             score += 1;
             flyingScraps.splice(i, 1);
-            scrapSound.currentTime = 0;
-            scrapSound.play();
+
+            if (soundEnabled) {
+                const soundClone = scrapSound.cloneNode();
+                soundClone.volume = 0.7; // optionnel
+                soundClone.play();
+                soundClone.addEventListener("ended", () => {
+                    soundClone.remove(); // facultatif si tu ne les ajoutes pas au DOM
+                });
+            }
 
             for (let p = 0; p < 6; p++) {
                 const angle = Math.random() * Math.PI * 2;

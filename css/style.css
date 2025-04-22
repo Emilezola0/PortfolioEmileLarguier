@@ -8,3 +8,58 @@ body {
 canvas {
     display: block;
 }
+
+#soundToggleContainer {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    font-family: Arial, sans-serif;
+}
+
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    user-select: none;
+}
+
+    .toggle-wrapper input[type="checkbox"] {
+        display: none;
+    }
+
+.custom-toggle {
+    width: 40px;
+    height: 20px;
+    background-color: #555;
+    border-radius: 10px;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+    .custom-toggle::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s;
+    }
+
+input[type="checkbox"]:checked + .custom-toggle {
+    background-color: #00c853;
+}
+
+    input[type="checkbox"]:checked + .custom-toggle::before {
+        transform: translateX(20px);
+    }
+
+.toggle-label {
+    font-weight: bold;
+}
