@@ -41,6 +41,7 @@ export class ScrapCollector {
         if (this.dragging) {
             this.x += (mouseX - this.x) * 0.2;
             this.y += (mouseY - this.y) * 0.2;
+            this.dragging = true;
         }
     }
 }
