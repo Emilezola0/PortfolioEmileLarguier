@@ -128,7 +128,7 @@ function updateGame() {
     }
 
     for (const folder of folders) {
-        folder.update(mobs, bullets, voidZone.center, voidZone.radius);
+        folder.update(mobs, bullets, voidZone.center, voidZone.radius, soundEnabled, projectileSound);
         folder.draw(ctx);
     }
 

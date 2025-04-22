@@ -22,7 +22,7 @@ export class Folder {
         this.folderImg.src = "assets/folder.png"; // Le chemin de ton image
     }
 
-    update(mobs, bullets, voidCenter, voidRadius) {
+    update(mobs, bullets, voidCenter, voidRadius, soundEnabled, projectileSound) {
         if (this.absorbing) {
             this.absorbAngle += 0.05;
             const dist = voidRadius - 10;
