@@ -29,7 +29,6 @@ let score = 0;
 let flyingScraps = [];
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
-const collector.radius = 100;
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
