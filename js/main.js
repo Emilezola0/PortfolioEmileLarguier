@@ -10,14 +10,6 @@ import { MobDeathParticle } from "./MobDeathParticle.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
 
-
-// Sound manager
-SoundManager.soundEnabled = soundToggle.checked;
-
-soundToggle.addEventListener("change", () => {
-    SoundManager.soundEnabled = soundToggle.checked;
-});
-
 // Canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -41,8 +33,12 @@ const background = new Background(canvas);
 const soundToggle = document.getElementById("soundToggle");
 let soundEnabled = soundToggle.checked;
 
+// Sound manager
+SoundManager.soundEnabled = soundToggle.checked;
+
 soundToggle.addEventListener("change", () => {
     soundEnabled = soundToggle.checked;
+    SoundManager.soundEnabled = soundToggle.checked;
 });
 
 const folders = [];
