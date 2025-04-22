@@ -97,6 +97,7 @@ export class Folder {
 
         ctx.restore();
 
+        // Afficher le nom si l'objet n'est pas en train d'absorber
         if (!this.absorbing) {
             ctx.fillStyle = "white";
             ctx.font = "10px Arial";
@@ -104,12 +105,13 @@ export class Folder {
             ctx.fillText(this.name, this.x, this.y + 28);
         }
 
-        // Afficher le rayon de détection pour le débogage
-        // ctx.beginPath();
-        // ctx.arc(this.x, this.y, this.detectionRadius, 0, Math.PI * 2);
-        // ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-        // ctx.stroke();
+        // Afficher la zone de détection (cercle) pour le débogage
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.detectionRadius, 0, Math.PI * 2); // Rayon de détection
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.stroke();
     }
+
 
     isHovered(mx, my) {
         return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
