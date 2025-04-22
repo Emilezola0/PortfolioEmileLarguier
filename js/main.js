@@ -7,7 +7,16 @@ import { Particle } from "./Particle.js";
 import { ScrapCollector } from "./ScrapCollector.js";
 import { Scrap } from "./Scrap.js";
 import { MobDeathParticle } from "./MobDeathParticle.js";
+import { SoundManager } from './SoundManager.js';
+import { Background } from "./Background.js";
 
+
+// Sound manager
+SoundManager.soundEnabled = soundToggle.checked;
+
+soundToggle.addEventListener("change", () => {
+    SoundManager.soundEnabled = soundToggle.checked;
+});
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
@@ -22,7 +31,11 @@ window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     voidZone.setCenter(canvas.width / 2, canvas.height / 2);
+    background.onResize();
 });
+
+// Background
+const background = new Background(canvas);
 
 // Toggle for sound visual
 const soundToggle = document.getElementById("soundToggle");
@@ -53,6 +66,7 @@ scrapImgCollect.src = "assets/scrapCollect.png";
 const scrapSound = document.getElementById("scrapSound");
 const projectileSound = document.getElementById("projectileSound");
 const explodeSound = document.getElementById("explodeSound");
+const soundEffectVolume = 0.6;
 
 let draggedFolder = null;
 
@@ -117,6 +131,8 @@ function drawUI() {
 
 function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    background.update();      // <== update stars
+    background.draw();        // <== draw the background
     voidZone.draw(ctx);
 
     if (Math.random() < 0.3) {
@@ -189,15 +205,7 @@ function updateGame() {
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
 
-                    if (soundEnabled) {
-                        const boom = explodeSound.cloneNode(); // sound for mob when destruct
-                        boom.volume = 0.7;
-                        document.body.appendChild(boom);
-                        boom.play();
-                        boom.addEventListener("ended", () => {
-                            boom.remove();
-                        });
-                    }
+                    SoundManager.play(explodeSound, soundEffectVolume); // play explode sound
 
                     const scrapCount = mob.scrapNumber || 1;
                     for (let s = 0; s < scrapCount; s++) {
@@ -232,16 +240,7 @@ function updateGame() {
             score += 1;
             flyingScraps.splice(i, 1);
 
-            if (soundEnabled) {
-                const soundClone = scrapSound.cloneNode(); // sound system for scrap
-                soundClone.volume = 0.7;
-                document.body.appendChild(soundClone); // <- IMPORTANT
-                soundClone.play();
-
-                soundClone.addEventListener("ended", () => {
-                    document.body.removeChild(soundClone);
-                });
-            }
+            SoundManager.play(scrapSound, soundEffectVolume);
 
             for (let p = 0; p < 6; p++) {
                 const angle = Math.random() * Math.PI * 2;

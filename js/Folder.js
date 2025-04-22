@@ -1,4 +1,5 @@
 import { Bullet } from "./Bullet.js"; // Importer la classe Bullet
+import { SoundManager } from './SoundManager.js';
 
 export class Folder {
     constructor(x, y, name) {
@@ -20,6 +21,10 @@ export class Folder {
         // Charger l'image du dossier
         this.folderImg = new Image();
         this.folderImg.src = "assets/folder.png"; // Le chemin de ton image
+
+        // Construct Sound Effect
+        this.projectileAudio = new Audio("assets/projectileSoundEffect.mp3");
+        this.volume = 0.6;
     }
 
     update(mobs, bullets, voidCenter, voidRadius, soundEnabled, projectileSound) {
@@ -65,17 +70,8 @@ export class Folder {
             const dx = closest.x - this.x;
             const dy = closest.y - this.y;
             const dist = Math.hypot(dx, dy);
-            bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist)); // Crée une nouvelle balle et ajoute-la à l'array "bullets"
-
-            if (soundEnabled) {
-                const pew = projectileSound.cloneNode(); // play sound of the projectile
-                pew.volume = 0.6;
-                document.body.appendChild(pew);
-                pew.play();
-                pew.addEventListener("ended", () => {
-                    pew.remove();
-                });
-            }
+            bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist)); // Create new bullet and add it to the array "bullets"
+            SoundManager.play(this.projectileAudio, this.volume); // Play Sound
             this.cooldown = 30;
         }
     }
