@@ -13,26 +13,20 @@ export class ScrapCollector {
         ctx.save();
 
         if (this.dragging) {
-            ctx.beginPath();
             ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
             ctx.shadowBlur = 20;
-            ctx.restore();
         }
 
-        // Si l'image est complètement chargée, on l'affiche
-        if (this.img.complete) {
-            ctx.drawImage(this.img, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-        } else {
-            // Si l'image n'est pas encore chargée, dessiner un rectangle temporaire
-            ctx.fillStyle = "#ccc";
-            ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-        }
-
-        // Zone de détection (cercle) pour visualiser le rayon
+        // Draw detection circle
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.detectionRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 1;
         ctx.stroke();
+
+        // Draw image of ScrapCollector
+        const size = 50;
+        ctx.drawImage(this.img, this.x - size / 2, this.y - size / 2, size, size);
 
         ctx.restore();
     }
