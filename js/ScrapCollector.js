@@ -11,11 +11,18 @@ export class ScrapCollector {
 
     draw(ctx) {
         ctx.save();
+
+        // Draw detection circle
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); // Detection Radius
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
         ctx.lineWidth = 1;
         ctx.stroke();
+
+        // Draw image of ScrapCollector
+        const size = 50;
+        ctx.drawImage(this.img, this.x - size / 2, this.y - size / 2, size, size);
+
         ctx.restore();
     }
 
