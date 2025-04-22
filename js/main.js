@@ -157,9 +157,11 @@ function updateGame() {
                         const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
 
-                        flyingScraps.push(new Scrap(x, y)); // create the scrap
+                        // On instancie proprement des objets Scrap
+                        flyingScraps.push(new Scrap(x, y));
                     }
                 }
+
                 break;
             }
         }
@@ -180,6 +182,7 @@ function updateGame() {
         if (result === "collected") {
             score += 1;
             flyingScraps.splice(i, 1);
+            scrapSound.play();
 
             for (let p = 0; p < 6; p++) {
                 const angle = Math.random() * Math.PI * 2;

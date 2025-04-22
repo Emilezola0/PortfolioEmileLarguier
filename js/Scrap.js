@@ -4,21 +4,14 @@ export class Scrap {
         this.y = y;
         this.reached = false;
 
-        this.delay = 0;           // pour un délai si nécessaire
-        this.scale = 0.2;         // commence petit, grossit
+        this.scale = 0.2;
         this.maxScale = 1;
-        this.spawnTimer = 20;     // durée de l'animation d'apparition
-
+        this.spawnTimer = 20;
         this.opacity = 0;
     }
 
     update(collector) {
-        if (this.delay > 0) {
-            this.delay--;
-            return;
-        }
-
-        // Animation d’apparition
+        // Apparition animée
         if (this.spawnTimer > 0) {
             this.spawnTimer--;
             this.scale += 0.05;
@@ -27,19 +20,21 @@ export class Scrap {
             if (this.opacity > 1) this.opacity = 1;
         }
 
+        // Calcul vers le collector
         const dx = collector.x - this.x;
         const dy = collector.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist > collector.radius) return;
 
-        // Mouvement vers le collecteur
-        const speed = 0.05 * (1 - dist / collector.radius);
-        this.x += dx * speed;
-        this.y += dy * speed;
+        // Easing vers le centre du collector
+        const t = 1 - dist / collector.radius;
+        const ease = t * t * t; // cubic ease-in
+        this.x += dx * ease * 0.2;
+        this.y += dy * ease * 0.2;
 
-        // Détection de collecte
-        if (dist < collector.radius && !this.reached) {
+        // Collected
+        if (dist < 10 && !this.reached) {
             this.reached = true;
             return "collected";
         }
