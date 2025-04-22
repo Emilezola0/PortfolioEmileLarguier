@@ -222,10 +222,12 @@ function updateGame() {
 
             if (soundEnabled) {
                 const soundClone = scrapSound.cloneNode();
-                soundClone.volume = 0.7; // optionnel
+                soundClone.volume = 0.7;
+                document.body.appendChild(soundClone); // <- IMPORTANT
                 soundClone.play();
+
                 soundClone.addEventListener("ended", () => {
-                    soundClone.remove(); // facultatif si tu ne les ajoutes pas au DOM
+                    document.body.removeChild(soundClone);
                 });
             }
 
