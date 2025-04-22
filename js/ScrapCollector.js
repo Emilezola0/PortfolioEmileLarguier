@@ -10,35 +10,37 @@ export class ScrapCollector {
     }
 
     draw(ctx) {
-        // 1. Effet de halo si on est en train de le drag
+        ctx.save();
+
         if (this.dragging) {
-            ctx.save();
-            ctx.globalAlpha = 0.2;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, 40, 0, Math.PI * 2);
-            ctx.fillStyle = "#ffff00";
-            ctx.fill();
+            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+            ctx.shadowBlur = 20;
             ctx.restore();
         }
 
-        // 2. Dessin de l'image du collector
-        if (this.image && this.image.complete) {
-            ctx.drawImage(this.image, this.x - 24, this.y - 24, 48, 48);
+        // Si l'image est complètement chargée, on l'affiche
+        if (this.folderImg.complete) {
+            ctx.drawImage(this.folderImg, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         } else {
-            // Fallback si jamais l’image n’est pas chargée
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
-            ctx.fillStyle = "yellow";
-            ctx.fill();
-            ctx.restore();
+            // Si l'image n'est pas encore chargée, dessiner un rectangle temporaire
+            ctx.fillStyle = "#ccc";
+            ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         }
+
+        // Zone de détection (cercle) pour visualiser le rayon
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.detectionRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.stroke();
+
+        ctx.restore();
     }
 
-    isHovered(mx, my) {
-        const dx = this.x - mx;
-        const dy = this.y - my;
-        return dx * dx + dy * dy < this.radius * this.radius;
+    isHovered(mouseX, mouseY) {
+        const distX = mouseX - this.x;
+        const distY = mouseY - this.y;
+        return Math.sqrt(distX * distX + distY * distY) <= this.detectionRadius;
     }
 
     update(mouseX, mouseY) {
