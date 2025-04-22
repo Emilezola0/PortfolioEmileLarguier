@@ -2,49 +2,43 @@ export class Scrap {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.reached = false;
-
-        this.scale = 0.2;
-        this.maxScale = 1;
-        this.spawnTimer = 20;
-        this.opacity = 0;
+        this.collected = false;
+        this.speed = 0.3 + Math.random() * 0.3;
+        this.easeProgress = 0.02;
+        this.radius = 12;
+        this.alpha = 0; // apparition progressive
     }
 
     update(collector) {
-        // Apparition animée
-        if (this.spawnTimer > 0) {
-            this.spawnTimer--;
-            this.scale += 0.05;
-            this.opacity += 0.05;
-            if (this.scale > this.maxScale) this.scale = this.maxScale;
-            if (this.opacity > 1) this.opacity = 1;
+        // Apparition progressive
+        if (this.alpha < 1) {
+            this.alpha += 0.05;
         }
 
-        // Calcul vers le collector
         const dx = collector.x - this.x;
         const dy = collector.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist > collector.radius) return;
+        if (dist < 120) {
+            this.easeProgress += 0.04;
+            const ease = Math.min(1, this.easeProgress);
 
-        // Easing vers le centre du collector
-        const t = 1 - dist / collector.radius;
-        const ease = t * t * t; // cubic ease-in
-        this.x += dx * ease * 0.2;
-        this.y += dy * ease * 0.2;
+            this.x += dx * ease * this.speed;
+            this.y += dy * ease * this.speed;
 
-        // Collected
-        if (dist < 10 && !this.reached) {
-            this.reached = true;
-            return "collected";
+            // Seuil final pour le collecter
+            if (dist < 15) {
+                return "collected";
+            }
         }
+
+        return "flying";
     }
 
     draw(ctx, image) {
         ctx.save();
-        ctx.globalAlpha = this.opacity;
-        const size = 32 * this.scale;
-        ctx.drawImage(image, this.x - size / 2, this.y - size / 2, size, size);
+        ctx.globalAlpha = this.alpha;
+        ctx.drawImage(image, this.x - this.radius / 2, this.y - this.radius / 2, this.radius, this.radius);
         ctx.restore();
     }
 }
