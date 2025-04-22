@@ -186,7 +186,7 @@ function updateGame() {
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
 
                         // On instancie proprement des objets Scrap
-                        flyingScraps.push(new Scrap(x, y));
+                        flyingScraps.push(new Scrap(x, y, scrapImg));
                     }
                 }
 

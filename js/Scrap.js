@@ -1,5 +1,5 @@
 export class Scrap {
-    constructor(x, y) {
+    constructor(x, y, image = null) {
         this.x = x;
         this.y = y;
         this.collected = false;
@@ -7,6 +7,8 @@ export class Scrap {
         this.easeProgress = 0.02;
         this.radius = 12;
         this.alpha = 0; // apparition progressive
+        this.size = 24; // taille de l'image à dessiner
+        this.image = image; // image assignée dynamiquement
     }
 
     update(collector) {
@@ -35,12 +37,17 @@ export class Scrap {
         return "flying";
     }
 
-    draw(ctx, image) {
+    draw(ctx, fallbackImage) {
         ctx.save();
-        ctx.globalAlpha = this.appearProgress;
+        ctx.globalAlpha = this.alpha;
         ctx.translate(this.x, this.y);
-        ctx.scale(this.appearProgress, this.appearProgress);
-        ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+        ctx.scale(this.alpha, this.alpha);
+
+        const img = this.image || fallbackImage;
+        if (img && img.complete) {
+            ctx.drawImage(img, -this.size / 2, -this.size / 2, this.size, this.size);
+        }
+
         ctx.restore();
     }
 }
