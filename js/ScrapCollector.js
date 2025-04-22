@@ -2,7 +2,7 @@ export class ScrapCollector {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = 30;
+        this.radius = 50;
         this.dragging = false;
 
         this.img = new Image();
@@ -12,7 +12,10 @@ export class ScrapCollector {
     draw(ctx) {
         ctx.save();
         ctx.beginPath();
-        ctx.drawImage(this.img, this.x - 12, this.y - 12, 24, 24);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); // Detection Radius
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
         ctx.restore();
     }
 

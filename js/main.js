@@ -29,7 +29,7 @@ let score = 0;
 let flyingScraps = [];
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
-const scrapDetectionRadius = 100;
+const collector.radius = 100;
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -191,7 +191,7 @@ function updateGame() {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         // On vérifie si le scrap est à une distance suffisante du collecteur pour être collecté
-        if (dist < scrapDetectionRadius && !scrap.reached) {
+        if (dist < collector.radius && !scrap.reached) {
             score += 1;
             scrap.reached = true;
             flyingScraps.splice(i, 1);
@@ -223,12 +223,6 @@ function updateGame() {
     }
 
     collector.draw(ctx);
-
-    ctx.beginPath();
-    ctx.arc(collector.x, collector.y, scrapDetectionRadius, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
