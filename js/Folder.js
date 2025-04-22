@@ -66,6 +66,16 @@ export class Folder {
             const dy = closest.y - this.y;
             const dist = Math.hypot(dx, dy);
             bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist)); // Crée une nouvelle balle et ajoute-la à l'array "bullets"
+
+            if (soundEnabled) {
+                const pew = projectileSound.cloneNode(); // play sound of the projectile
+                pew.volume = 0.6;
+                document.body.appendChild(pew);
+                pew.play();
+                pew.addEventListener("ended", () => {
+                    pew.remove();
+                });
+            }
             this.cooldown = 30;
         }
     }

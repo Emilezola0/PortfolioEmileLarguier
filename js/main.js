@@ -51,6 +51,8 @@ scrapImgCollect.src = "assets/scrapCollect.png";
 
 // Ajout pour le son :
 const scrapSound = document.getElementById("scrapSound");
+const projectileSound = document.getElementById("projectileSound");
+const explodeSound = document.getElementById("explodeSound");
 
 let draggedFolder = null;
 
@@ -187,6 +189,16 @@ function updateGame() {
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
 
+                    if (soundEnabled) {
+                        const boom = explodeSound.cloneNode(); // sound for mob when destruct
+                        boom.volume = 0.7;
+                        document.body.appendChild(boom);
+                        boom.play();
+                        boom.addEventListener("ended", () => {
+                            boom.remove();
+                        });
+                    }
+
                     const scrapCount = mob.scrapNumber || 1;
                     for (let s = 0; s < scrapCount; s++) {
                         const angle = Math.random() * 2 * Math.PI;
@@ -221,7 +233,7 @@ function updateGame() {
             flyingScraps.splice(i, 1);
 
             if (soundEnabled) {
-                const soundClone = scrapSound.cloneNode();
+                const soundClone = scrapSound.cloneNode(); // sound system for scrap
                 soundClone.volume = 0.7;
                 document.body.appendChild(soundClone); // <- IMPORTANT
                 soundClone.play();
