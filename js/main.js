@@ -75,10 +75,29 @@ canvas.addEventListener("mouseup", () => {
 });
 
 function drawUI() {
+    // Affiche le score
     ctx.drawImage(scrapImg, canvas.width - 100, 20, 24, 24);
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
     ctx.fillText(score, canvas.width - 70, 38);
+
+    // Barre de pause entre vagues
+    if (spawnManager.isPaused()) {
+        const progress = spawnManager.getPauseProgress();
+        const barWidth = 200;
+        const barHeight = 10;
+        const x = canvas.width / 2 - barWidth / 2;
+        const y = 20;
+
+        ctx.fillStyle = "rgba(255,255,255,0.2)";
+        ctx.fillRect(x, y, barWidth, barHeight);
+        ctx.fillStyle = "white";
+        ctx.fillRect(x, y, barWidth * progress, barHeight);
+
+        ctx.fillStyle = "white";
+        ctx.font = "16px sans-serif";
+        ctx.fillText("Prochaine vague dans " + Math.ceil((1 - progress) * 10) + "s", x, y - 5);
+    }
 }
 
 function updateGame() {
@@ -220,30 +239,4 @@ fetch("public/projects.json")
         });
         updateGame();
     });
-
-function drawUI() {
-    // Affiche le score
-    ctx.drawImage(scrapImg, canvas.width - 100, 20, 24, 24);
-    ctx.fillStyle = "white";
-    ctx.font = "16px Arial";
-    ctx.fillText(score, canvas.width - 70, 38);
-
-    // Barre de pause entre vagues
-    if (spawnManager.isPaused()) {
-        const progress = spawnManager.getPauseProgress();
-        const barWidth = 200;
-        const barHeight = 10;
-        const x = canvas.width / 2 - barWidth / 2;
-        const y = 20;
-
-        ctx.fillStyle = "rgba(255,255,255,0.2)";
-        ctx.fillRect(x, y, barWidth, barHeight);
-        ctx.fillStyle = "white";
-        ctx.fillRect(x, y, barWidth * progress, barHeight);
-
-        ctx.fillStyle = "white";
-        ctx.font = "16px sans-serif";
-        ctx.fillText("Prochaine vague dans " + Math.ceil((1 - progress) * 10) + "s", x, y - 5);
-    }
-}
 
