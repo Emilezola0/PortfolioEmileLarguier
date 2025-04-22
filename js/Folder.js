@@ -1,3 +1,5 @@
+import { Bullet } from "./Bullet.js"; // Importer la classe Bullet
+
 export class Folder {
     constructor(x, y, name) {
         this.x = x;
@@ -62,7 +64,7 @@ export class Folder {
             const dx = closest.x - this.x;
             const dy = closest.y - this.y;
             const dist = Math.hypot(dx, dy);
-            bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist));
+            bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist)); // Crée une nouvelle balle et ajoute-la à l'array "bullets"
             this.cooldown = 30;
         }
     }
