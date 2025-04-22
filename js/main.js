@@ -95,12 +95,6 @@ function updateGame() {
     for (const folder of folders) {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius);
         folder.draw(ctx);
-
-        ctx.beginPath();
-        ctx.arc(folder.x + folder.width / 2, folder.y + folder.height / 2, 40, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255,255,255,0.1)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
     }
 
     for (let i = mobs.length - 1; i >= 0; i--) {

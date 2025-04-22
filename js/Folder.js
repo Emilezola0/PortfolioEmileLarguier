@@ -15,7 +15,7 @@ export class Folder {
         this.dragging = false;
         this.width = 32;  // Largeur de l'image du dossier
         this.height = 32; // Hauteur de l'image du dossier
-        this.detectionRadius = 40;  // Rayon de détection autour du dossier (ajusté pour être plus grand)
+        this.detectionRadius = 100;  // Rayon de détection autour du dossier (ajusté pour être plus grand)
 
         // Charger l'image du dossier
         this.folderImg = new Image();
@@ -54,7 +54,8 @@ export class Folder {
             const dy = mob.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            if (dist < 300 && dist < closestDist) {
+            // Vérifier si le mob est à l'intérieur du rayon de détection
+            if (dist < this.detectionRadius && dist < closestDist) {
                 closest = mob;
                 closestDist = dist;
             }
