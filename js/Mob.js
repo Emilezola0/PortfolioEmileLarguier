@@ -1,23 +1,33 @@
 import { debrisTypes } from "./debrisTypes.js";
 
 export class Mob {
-    constructor(canvas, forcedType = null) {
-        const type = forcedType || debrisTypes[Math.floor(Math.random() * debrisTypes.length)];
+    constructor(canvas, wave = 1, forcedType = null) {
+        // Filtrage selon la vague si aucun type imposé
+        const validTypes = forcedType
+            ? [forcedType]
+            : debrisTypes.filter(type => {
+                const min = type.waveMin || 1;
+                const max = type.waveMax === undefined ? -1 : type.waveMax;
+                return wave >= min && (max === -1 || wave <= max);
+            });
+
+        const type = validTypes[Math.floor(Math.random() * validTypes.length)];
         this.type = type;
+
         this.hp = type.hp;
         this.maxHp = type.hp;
         this.nutrition = type.nutrition || 1;
         this.scrapNumber = type.scrapNumber || 1;
         this.scale = type.scale || 1;
+
         this.image = new Image();
         this.image.src = `assets/${type.image}`;
+
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() * 0.005 + 0.0025) * (Math.random() < 0.5 ? 1 : -1);
         this.radius = 16 * this.scale;
-
         this.width = this.radius * 2;
         this.height = this.radius * 2;
-
         this.opacity = 1;
 
         const side = Math.floor(Math.random() * 4);
@@ -28,9 +38,8 @@ export class Mob {
             case 3: this.x = Math.random() * canvas.width; this.y = canvas.height; break;
         }
 
-        this.speed = (type.speed || 0.5) * (0.9 + Math.random() * 0.2); // ±10%
-
-
+        const baseSpeed = type.speed || 0.5;
+        this.speed = baseSpeed * (0.9 + Math.random() * 0.2); // ±10% variation
     }
 
     update(center) {

@@ -3,42 +3,57 @@ import { debrisTypes } from "./debrisTypes.js";
 
 export const spawnManager = {
     timer: 0,
-    interval: 120,
+    interval: 60, // 1 mob/seconde
     wave: 1,
-    waveDuration: 1000, // frames
-    frameCount: 0,
-    mobsPerWave: 5,
-    spawnedThisWave: 0,
+    pause: false,
+    pauseDuration: 10 * 60, // 10s à 60fps
+    pauseTimer: 0,
+
+    mobsToSpawn: 10, // nombre de mobs par vague
+    mobsSpawned: 0,
 
     update(mobs, voidRadius, canvas) {
-        this.timer++;
-        this.frameCount++;
+        if (this.pause) {
+            this.pauseTimer++;
 
-        // Nouvelle vague
-        if (this.frameCount >= this.waveDuration) {
-            this.wave++;
-            this.frameCount = 0;
-            this.spawnedThisWave = 0;
-            this.interval = Math.max(30, this.interval - 5); // On accélère légèrement les spawns
-            this.mobsPerWave += 2; // Plus de mobs par vague
-            console.log(`Nouvelle vague ${this.wave} commence !`);
+            if (this.pauseTimer >= this.pauseDuration) {
+                this.pause = false;
+                this.pauseTimer = 0;
+                this.wave++;
+
+                // Nouvelle vague
+                this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5); // scalabilité
+                this.mobsSpawned = 0;
+            }
+            return;
         }
 
-        // Spawn selon intervalle
-        if (this.timer >= this.interval && this.spawnedThisWave < this.mobsPerWave) {
+        this.timer++;
+        if (this.timer >= this.interval && this.mobsSpawned < this.mobsToSpawn) {
             this.timer = 0;
 
-            const validTypes = debrisTypes.filter(type => {
-                const min = type.waveMin ?? 1;
-                const max = type.waveMax ?? -1;
-                return this.wave >= min && (max === -1 || this.wave <= max);
-            });
-
-            if (validTypes.length > 0) {
-                const type = validTypes[Math.floor(Math.random() * validTypes.length)];
-                mobs.push(new Mob(canvas, type));
-                this.spawnedThisWave++;
+            const spawnChance = Math.min(1, voidRadius / 300);
+            if (Math.random() < spawnChance) {
+                mobs.push(new Mob(canvas, this.wave));
+                this.mobsSpawned++;
             }
         }
+
+        // Fin de la vague
+        if (this.mobsSpawned >= this.mobsToSpawn) {
+            this.pause = true;
+        }
+    },
+
+    isPaused() {
+        return this.pause;
+    },
+
+    getPauseProgress() {
+        return this.pauseTimer / this.pauseDuration;
+    },
+
+    getWave() {
+        return this.wave;
     }
 };
