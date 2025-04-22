@@ -10,6 +10,7 @@ export class ScrapCollector {
     }
 
     draw(ctx) {
+        // 1. Effet de halo si on est en train de le drag
         if (this.dragging) {
             ctx.save();
             ctx.globalAlpha = 0.2;
@@ -20,12 +21,18 @@ export class ScrapCollector {
             ctx.restore();
         }
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
-        ctx.fillStyle = "yellow";
-        ctx.fill();
-        ctx.restore();
+        // 2. Dessin de l'image du collector
+        if (this.image && this.image.complete) {
+            ctx.drawImage(this.image, this.x - 24, this.y - 24, 48, 48);
+        } else {
+            // Fallback si jamais l’image n’est pas chargée
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+            ctx.fillStyle = "yellow";
+            ctx.fill();
+            ctx.restore();
+        }
     }
 
     isHovered(mx, my) {

@@ -182,6 +182,7 @@ function updateGame() {
         if (result === "collected") {
             score += 1;
             flyingScraps.splice(i, 1);
+            scrapSound.currentTime = 0;
             scrapSound.play();
 
             for (let p = 0; p < 6; p++) {
