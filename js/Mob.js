@@ -1,21 +1,20 @@
 import { debrisTypes } from "./debrisTypes.js";
 
 export class Mob {
-    constructor(canvas) {
-        const type = debrisTypes[Math.floor(Math.random() * debrisTypes.length)];
+    constructor(canvas, forcedType = null) {
+        const type = forcedType || debrisTypes[Math.floor(Math.random() * debrisTypes.length)];
         this.type = type;
         this.hp = type.hp;
         this.maxHp = type.hp;
         this.nutrition = type.nutrition || 1;
         this.scrapNumber = type.scrapNumber || 1;
-        this.scale = type.scale;
+        this.scale = type.scale || 1;
         this.image = new Image();
         this.image.src = `assets/${type.image}`;
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() * 0.005 + 0.0025) * (Math.random() < 0.5 ? 1 : -1);
         this.radius = 16 * this.scale;
 
-        // Ajout de width/height utilisés dans main.js
         this.width = this.radius * 2;
         this.height = this.radius * 2;
 
@@ -29,7 +28,9 @@ export class Mob {
             case 3: this.x = Math.random() * canvas.width; this.y = canvas.height; break;
         }
 
-        this.speed = 0.5;
+        this.speed = (type.speed || 0.5) * (0.9 + Math.random() * 0.2); // ±10%
+
+
     }
 
     update(center) {
