@@ -5,6 +5,8 @@ import { Bullet } from "./Bullet.js";
 import { spawnManager } from "./spawnManager.js";
 import { Particle } from "./Particle.js";
 import { ScrapCollector } from "./ScrapCollector.js";
+import { Scrap } from "./Scrap.js";
+
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -155,14 +157,7 @@ function updateGame() {
                         const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
 
-                        flyingScraps.push({
-                            x,
-                            y,
-                            reached: false,
-                            delay: s * 6,
-                            scale: 0.5,
-                            spawnTimer: 10
-                        });
+                        flyingScraps.push(new Scrap(x, y)); // create the scrap
                     }
                 }
                 break;
@@ -180,25 +175,10 @@ function updateGame() {
 
     for (let i = flyingScraps.length - 1; i >= 0; i--) {
         const scrap = flyingScraps[i];
-        if (scrap.delay > 0) {
-            scrap.delay--;
-            continue;
-        }
+        const result = scrap.update(collector);
 
-        const dx = collector.x - scrap.x;
-        const dy = collector.y - scrap.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > collector.radius) continue;
-
-        // scrap start to be attract
-        const speed = 0.05 * (1 - dist / collector.radius); // plus proche = plus rapide
-        scrap.x += dx * speed;
-        scrap.y += dy * speed;
-
-        // Check if scrap is close enough to be collected
-        if (dist < collector.radius && !scrap.reached) {
+        if (result === "collected") {
             score += 1;
-            scrap.reached = true;
             flyingScraps.splice(i, 1);
 
             for (let p = 0; p < 6; p++) {
@@ -208,19 +188,11 @@ function updateGame() {
                 const py = collector.y + Math.sin(angle) * radius;
                 particles.push(new Particle(px, py, "yellow"));
             }
+
             continue;
         }
 
-        ctx.save();
-        ctx.globalAlpha = 1;
-        if (scrap.spawnTimer > 0) {
-            scrap.spawnTimer--;
-            scrap.scale += 0.05;
-            if (scrap.scale > 1) scrap.scale = 1;
-        }
-        const size = 32 * scrap.scale;
-        ctx.drawImage(scrapImgCollect, scrap.x - size / 2, scrap.y - size / 2, size, size);
-        ctx.restore();
+        scrap.draw(ctx, scrapImgCollect);
     }
 
     collector.draw(ctx);
