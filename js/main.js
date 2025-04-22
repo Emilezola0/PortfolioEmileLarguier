@@ -36,7 +36,7 @@ scrapImg.src = "assets/scrap.png";
 const scrapImgCollect = new Image();
 scrapImgCollect.src = "assets/scrapCollect.png";
 
-// 🆕 Ajout pour le son :
+// Ajout pour le son :
 const scrapSound = document.getElementById("scrapSound");
 
 let draggedFolder = null;
@@ -188,8 +188,14 @@ function updateGame() {
         const dx = collector.x - scrap.x;
         const dy = collector.y - scrap.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > collector.radius) continue;
 
-        // On vérifie si le scrap est à une distance suffisante du collecteur pour être collecté
+        // scrap start to be attract
+        const speed = 0.05 * (1 - dist / collector.radius); // plus proche = plus rapide
+        scrap.x += dx * speed;
+        scrap.y += dy * speed;
+
+        // Check if scrap is close enough to be collected
         if (dist < collector.radius && !scrap.reached) {
             score += 1;
             scrap.reached = true;
