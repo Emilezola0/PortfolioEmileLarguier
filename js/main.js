@@ -6,6 +6,7 @@ import { spawnManager } from "./spawnManager.js";
 import { Particle } from "./Particle.js";
 import { ScrapCollector } from "./ScrapCollector.js";
 import { Scrap } from "./Scrap.js";
+import { MobDeathParticle } from "./MobDeathParticle.js";
 
 
 const canvas = document.getElementById("gameCanvas");
@@ -29,6 +30,7 @@ let particles = [];
 let voidParticles = [];
 let score = 0;
 let flyingScraps = [];
+let mobParticles = [];
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
 
@@ -94,9 +96,11 @@ function drawUI() {
         ctx.fillStyle = "white";
         ctx.fillRect(x, y, barWidth * progress, barHeight);
 
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillStyle = "white";
         ctx.font = "16px sans-serif";
-        ctx.fillText("Prochaine vague dans " + Math.ceil((1 - progress) * 10) + "s", x, y - 5);
+        ctx.fillText("Next wave " + spawnManager.wave, canvas.width / 2, 30);
     }
 }
 
@@ -125,6 +129,11 @@ function updateGame() {
         if (voidZone.absorb(mob)) {
             mobs.splice(i, 1);
             voidZone.grow(mob.nutrition);
+            continue;
+        }
+
+        if (mob.isReadyToRemove()) {
+            mobs.splice(i, 1);
         }
     }
 
@@ -158,7 +167,7 @@ function updateGame() {
         for (let j = mobs.length - 1; j >= 0; j--) {
             const mob = mobs[j];
             if (bullet.hits(mob)) {
-                mob.hp -= 50;
+                mob.takeDamage(50);
 
                 for (let k = 0; k < 10; k++) {
                     particles.push(new Particle(bullet.x, bullet.y, "orange"));
@@ -222,6 +231,12 @@ function updateGame() {
 
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
+
+    mobParticles = mobParticles.filter(p => p.life > 0);
+    mobParticles.forEach(p => {
+        p.update();
+        p.draw(ctx);
+    });
 
     requestAnimationFrame(updateGame);
 }

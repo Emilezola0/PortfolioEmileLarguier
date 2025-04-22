@@ -37,8 +37,10 @@ export class Scrap {
 
     draw(ctx, image) {
         ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.drawImage(image, this.x - this.radius / 2, this.y - this.radius / 2, this.radius, this.radius);
+        ctx.globalAlpha = this.appearProgress;
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.appearProgress, this.appearProgress);
+        ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
         ctx.restore();
     }
 }

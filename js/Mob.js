@@ -1,8 +1,8 @@
 import { debrisTypes } from "./debrisTypes.js";
+import { MobDeathParticle } from "./MobDeathParticle.js";
 
 export class Mob {
     constructor(canvas, wave = 1, forcedType = null) {
-        // Filtrage selon la vague si aucun type imposé
         const validTypes = forcedType
             ? [forcedType]
             : debrisTypes.filter(type => {
@@ -39,32 +39,63 @@ export class Mob {
         }
 
         const baseSpeed = type.speed || 0.5;
-        this.speed = baseSpeed * (0.9 + Math.random() * 0.2); // ±10% variation
+        this.speed = baseSpeed * (0.9 + Math.random() * 0.2);
+
+        this.dead = false;
+        this.deathParticles = [];
     }
 
     update(center) {
-        const dx = center.x - this.x;
-        const dy = center.y - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        this.x += (dx / dist) * this.speed;
-        this.y += (dy / dist) * this.speed;
-        this.rotation += this.rotationSpeed;
+        if (!this.dead) {
+            const dx = center.x - this.x;
+            const dy = center.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            this.x += (dx / dist) * this.speed;
+            this.y += (dy / dist) * this.speed;
+            this.rotation += this.rotationSpeed;
+        }
+
+        this.deathParticles.forEach(p => p.update());
+        this.deathParticles = this.deathParticles.filter(p => !p.isDead());
     }
 
     draw(ctx) {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
-        ctx.globalAlpha = this.opacity;
-        ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
-        ctx.restore();
-        ctx.globalAlpha = 1;
+        if (!this.dead) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation);
+            ctx.globalAlpha = this.opacity;
+            ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+            ctx.restore();
+            ctx.globalAlpha = 1;
 
-        ctx.fillStyle = "red";
-        const barWidth = 40 * this.scale;
-        ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 10, barWidth * (this.hp / this.maxHp), 4);
-        ctx.strokeStyle = "#000";
-        ctx.strokeRect(this.x - barWidth / 2, this.y - this.radius - 10, barWidth, 4);
+            ctx.fillStyle = "red";
+            const barWidth = 40 * this.scale;
+            ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 10, barWidth * (this.hp / this.maxHp), 4);
+            ctx.strokeStyle = "#000";
+            ctx.strokeRect(this.x - barWidth / 2, this.y - this.radius - 10, barWidth, 4);
+        }
+
+        this.deathParticles.forEach(p => p.draw(ctx));
+    }
+
+    takeDamage(amount) {
+        this.hp -= amount;
+        if (this.hp <= 0 && !this.dead) {
+            this.hp = 0;
+            this.die();
+        }
+    }
+
+    die() {
+        this.dead = true;
+        for (let i = 0; i < 10; i++) {
+            this.deathParticles.push(new MobDeathParticle(this.x, this.y));
+        }
+    }
+
+    isReadyToRemove() {
+        return this.dead && this.deathParticles.length === 0;
     }
 
     isInVoid(voidZone) {
