@@ -10,19 +10,21 @@ export class ScrapCollector {
     }
 
     draw(ctx) {
+        if (this.dragging) {
+            ctx.save();
+            ctx.globalAlpha = 0.2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 40, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffff00";
+            ctx.fill();
+            ctx.restore();
+        }
+
         ctx.save();
-
-        // Draw detection circle
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Draw image of ScrapCollector
-        const size = 50;
-        ctx.drawImage(this.img, this.x - size / 2, this.y - size / 2, size, size);
-
+        ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+        ctx.fillStyle = "yellow";
+        ctx.fill();
         ctx.restore();
     }
 
