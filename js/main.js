@@ -211,10 +211,6 @@ function updateGame() {
             continue;
         }
 
-        const speed = 0.02 + (1 - Math.min(dist / 200, 1)) * 0.07;
-        scrap.x += dx * speed;
-        scrap.y += dy * speed;
-
         ctx.save();
         ctx.globalAlpha = 1;
         if (scrap.spawnTimer > 0) {
