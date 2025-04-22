@@ -20,8 +20,8 @@ export class ScrapCollector {
         }
 
         // Si l'image est complètement chargée, on l'affiche
-        if (this.folderImg.complete) {
-            ctx.drawImage(this.folderImg, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+        if (this.img.complete) {
+            ctx.drawImage(this.img, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         } else {
             // Si l'image n'est pas encore chargée, dessiner un rectangle temporaire
             ctx.fillStyle = "#ccc";
