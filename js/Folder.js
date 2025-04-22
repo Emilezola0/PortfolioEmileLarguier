@@ -14,6 +14,10 @@ export class Folder {
         this.width = 32;  // Largeur de l'image du dossier
         this.height = 32; // Hauteur de l'image du dossier
         this.detectionRadius = 40;  // Rayon de détection autour du dossier (ajusté pour être plus grand)
+
+        // Charger l'image du dossier
+        this.folderImg = new Image();
+        this.folderImg.src = "assets/folder.png"; // Le chemin de ton image
     }
 
     update(mobs, bullets, voidCenter, voidRadius) {
@@ -80,7 +84,15 @@ export class Folder {
             ctx.shadowBlur = 20;
         }
 
-        ctx.drawImage(folderImg, -this.width / 2, -this.height / 2, this.width, this.height); // Centrer l'image
+        // Utilisation de l'image chargée pour dessiner
+        if (this.folderImg.complete) {
+            ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height); // Centrer l'image
+        } else {
+            // Si l'image n'est pas encore complètement chargée, afficher un rectangle temporaire pour la visualisation
+            ctx.fillStyle = "#ccc";
+            ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        }
+
         ctx.restore();
 
         if (!this.absorbing) {
