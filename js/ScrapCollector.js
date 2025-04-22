@@ -13,8 +13,8 @@ export class ScrapCollector {
         ctx.save();
 
         if (this.dragging) {
-            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
-            ctx.shadowBlur = 20;
+            ctx.shadowColor = "rgba(255, 255, 255, 0.7)";
+            ctx.shadowBlur = 25;
         }
 
         // Draw detection circle
@@ -34,14 +34,13 @@ export class ScrapCollector {
     isHovered(mouseX, mouseY) {
         const distX = mouseX - this.x;
         const distY = mouseY - this.y;
-        return Math.sqrt(distX * distX + distY * distY) <= this.detectionRadius;
+        return Math.sqrt(distX * distX + distY * distY) <= this.radius;
     }
 
     update(mouseX, mouseY) {
         if (this.dragging) {
             this.x += (mouseX - this.x) * 0.2;
             this.y += (mouseY - this.y) * 0.2;
-            this.dragging = true;
         }
     }
 }
