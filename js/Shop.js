@@ -75,9 +75,8 @@ export class Shop {
         ctx.restore();
     }
 
-    handleClick(mouse, folders) {
+    handleClick(mouse, folders, playerStats) {
         if (!this.open) {
-            // Si on clique pour ouvrir
             const dx = mouse.x - this.x;
             const dy = mouse.y - this.y;
             if (Math.hypot(dx, dy) < 20) {
@@ -91,25 +90,28 @@ export class Shop {
             const localX = mouse.x - this.x;
             const localY = mouse.y - this.y;
 
-            // Fermeture
+            // Close button
             if (localX >= 180 && localX <= 195 && localY >= 5 && localY <= 20) {
                 this.open = false;
                 return;
             }
 
-            // Detect on the button clicked
             const upgrades = ["attackSpeed", "attackDamage", "range", "bulletSpeed", "pierce"];
+            const costs = { attackSpeed: 10, attackDamage: 15, range: 20, bulletSpeed: 12, pierce: 25 };
+
             upgrades.forEach((key, i) => {
                 const y = 40 + i * 30;
                 if (localX >= 10 && localX <= 190 && localY >= y - 10 && localY <= y + 15) {
                     const target = this.getClosestFolder(folders);
-                    if (target) {
+                    if (target && playerStats.scrap >= costs[key]) {
+                        playerStats.scrap -= costs[key]; // dépense le scrap
                         upgradeFolder(target, key);
                     }
                 }
             });
         }
     }
+
 
     handleMouseUp() {
         this.dragging = false;

@@ -9,15 +9,67 @@ import { Scrap } from "./Scrap.js";
 import { MobDeathParticle } from "./MobDeathParticle.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
+import { upgrades, upgradeFolder } from './upgrades.js';
+
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// Création d'un écran de fin (overlay)
+const gameOverScreen = document.createElement("div");
+gameOverScreen.style.position = "fixed";
+gameOverScreen.style.top = "0";
+gameOverScreen.style.left = "0";
+gameOverScreen.style.width = "100vw";
+gameOverScreen.style.height = "100vh";
+gameOverScreen.style.background = "rgba(0, 0, 0, 0.8)";
+gameOverScreen.style.display = "flex";
+gameOverScreen.style.flexDirection = "column";
+gameOverScreen.style.justifyContent = "center";
+gameOverScreen.style.alignItems = "center";
+gameOverScreen.style.color = "white";
+gameOverScreen.style.fontFamily = "Arial, sans-serif";
+gameOverScreen.style.fontSize = "24px";
+gameOverScreen.style.zIndex = "10";
+gameOverScreen.style.display = "none";
+
+const message = document.createElement("div");
+message.innerText = "Game Over: all folders were consumed by the void.";
+
+const playAgainBtn = document.createElement("button");
+playAgainBtn.innerText = "Play Again";
+playAgainBtn.style.marginTop = "20px";
+playAgainBtn.style.padding = "10px 20px";
+playAgainBtn.style.fontSize = "18px";
+playAgainBtn.style.border = "none";
+playAgainBtn.style.borderRadius = "8px";
+playAgainBtn.style.background = "#ffffff";
+playAgainBtn.style.color = "#000000";
+playAgainBtn.style.cursor = "pointer";
+playAgainBtn.style.transition = "background 0.3s";
+
+playAgainBtn.addEventListener("mouseenter", () => {
+    playAgainBtn.style.background = "#dddddd";
+});
+playAgainBtn.addEventListener("mouseleave", () => {
+    playAgainBtn.style.background = "#ffffff";
+});
+playAgainBtn.addEventListener("click", () => {
+    location.reload(); // ou tu pourrais relancer le setup sans recharger la page
+});
+
+gameOverScreen.appendChild(message);
+gameOverScreen.appendChild(playAgainBtn);
+document.body.appendChild(gameOverScreen);
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const voidZone = new Void(canvas.width / 2, canvas.height / 2);
+
+// Game Over to false
+let isGameOver = false;
 
 window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
@@ -125,10 +177,40 @@ function drawUI() {
     }
 }
 
+function drawUI() {
+    // Affiche le score
+    ctx.drawImage(scrapImg, canvas.width - 100, 20, 24, 24);
+    ctx.fillStyle = "white";
+    ctx.font = "16px Arial";
+    ctx.fillText(score, canvas.width - 70, 38);
+
+    // Barre de pause entre vagues (uniquement si pas en Game Over)
+    if (spawnManager.isPaused() && !isGameOver) {
+        const progress = spawnManager.getPauseProgress();
+        const barWidth = 200;
+        const barHeight = 10;
+        const x = canvas.width / 2 - barWidth / 2;
+        const y = 20;
+
+        ctx.fillStyle = "rgba(255,255,255,0.2)";
+        ctx.fillRect(x, y, barWidth, barHeight);
+        ctx.fillStyle = "white";
+        ctx.fillRect(x, y, barWidth * progress, barHeight);
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "white";
+        ctx.font = "16px sans-serif";
+        ctx.fillText("Wave number " + spawnManager.wave, canvas.width / 2, 10);
+    }
+}
+
 function updateGame() {
+    if (isGameOver) return; // <== stop loop here if game over
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    background.update();      // <== update stars
-    background.draw();        // <== draw the background
+    background.update();
+    background.draw();
     voidZone.draw(ctx);
 
     if (Math.random() < 0.3) {
@@ -172,9 +254,10 @@ function updateGame() {
         }
     }
 
-    if (folders.length === 0) {
-        alert("Game Over: all folders were consumed by the void.");
-        location.reload();
+    if (folders.length === 0 && !isGameOver) {
+        isGameOver = true;
+        gameOverScreen.style.display = "flex";
+        return;
     }
 
     for (let i = bullets.length - 1; i >= 0; i--) {
@@ -201,7 +284,7 @@ function updateGame() {
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
 
-                    SoundManager.play(explodeSound, soundEffectVolume); // play explode sound
+                    SoundManager.play(explodeSound, soundEffectVolume);
 
                     const scrapCount = mob.scrapNumber || 1;
                     for (let s = 0; s < scrapCount; s++) {
@@ -210,7 +293,6 @@ function updateGame() {
                         const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
 
-                        // On instancie proprement des objets Scrap
                         flyingScraps.push(new Scrap(x, y, scrapImgCollect));
                     }
                 }
@@ -253,7 +335,6 @@ function updateGame() {
     }
 
     collector.draw(ctx);
-
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
 
@@ -263,7 +344,7 @@ function updateGame() {
         p.draw(ctx);
     });
 
-    requestAnimationFrame(updateGame);
+    requestAnimationFrame(updateGame); // <== continue que si pas Game Over
 }
 
 fetch("public/projects.json")
