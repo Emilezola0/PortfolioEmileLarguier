@@ -136,6 +136,7 @@ export class Shop {
     }
 
     drawConnectionLine(ctx) {
+        console.log("Shop try draw Connection Line:");
         if (!Array.isArray(this.folders)) return;
 
         this.targetFolder = this.getClosestFolder(this.folders); // Update Target Folder
@@ -143,6 +144,7 @@ export class Shop {
         if (!this.targetFolder) return;
 
         if (this.connectionProgress < 1) {
+            console.log("Connection Progress:");
             this.connectionProgress += 0.02;
         }
 
