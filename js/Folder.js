@@ -1,4 +1,4 @@
-import { Bullet } from "./Bullet.js"; // Importer la classe Bullet
+import { Bullet } from "./Bullet.js";
 import { SoundManager } from './SoundManager.js';
 
 export class Folder {
@@ -12,22 +12,30 @@ export class Folder {
         this.opacity = 1;
         this.initialDistance = 0;
 
-        // Ajouts utiles
+        // Apparence & interaction
         this.dragging = false;
-        this.width = 32;  // Largeur de l'image du dossier
-        this.height = 32; // Hauteur de l'image du dossier
-        this.detectionRadius = 100;  // Rayon de détection autour du dossier (ajusté pour être plus grand)
+        this.width = 32;
+        this.height = 32;
 
-        // Charger l'image du dossier
+        // === STATS personnalisables ===
+        this.stats = {
+            atkSpeed: 30,        // Moins = plus rapide
+            atkDamage: 1,
+            range: 100,
+            bulletSpeed: 4,
+            pierce: 1
+        };
+
+        // Image
         this.folderImg = new Image();
-        this.folderImg.src = "assets/folder.png"; // Le chemin de ton image
+        this.folderImg.src = "assets/folder.png";
 
-        // Construct Sound Effect
+        // Sound
         this.projectileAudio = new Audio("assets/projectileSoundEffect.mp3");
         this.volume = 0.6;
     }
 
-    update(mobs, bullets, voidCenter, voidRadius, soundEnabled, projectileSound) {
+    update(mobs, bullets, voidCenter, voidRadius, soundEnabled) {
         if (this.absorbing) {
             this.absorbAngle += 0.05;
             const dist = voidRadius - 10;
@@ -59,8 +67,7 @@ export class Folder {
             const dy = mob.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            // Vérifier si le mob est à l'intérieur du rayon de détection
-            if (dist < this.detectionRadius && dist < closestDist) {
+            if (dist < this.stats.range && dist < closestDist) {
                 closest = mob;
                 closestDist = dist;
             }
@@ -70,9 +77,13 @@ export class Folder {
             const dx = closest.x - this.x;
             const dy = closest.y - this.y;
             const dist = Math.hypot(dx, dy);
-            bullets.push(new Bullet(this.x, this.y, dx / dist, dy / dist)); // Create new bullet and add it to the array "bullets"
-            SoundManager.play(this.projectileAudio, this.volume); // Play Sound
-            this.cooldown = 30;
+
+            const vx = (dx / dist) * this.stats.bulletSpeed;
+            const vy = (dy / dist) * this.stats.bulletSpeed;
+
+            bullets.push(new Bullet(this.x, this.y, vx, vy, this.stats.atkDamage, this.stats.pierce));
+            SoundManager.play(this.projectileAudio, this.volume);
+            this.cooldown = this.stats.atkSpeed;
         }
     }
 
@@ -81,9 +92,7 @@ export class Folder {
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
 
-        if (this.absorbing) {
-            ctx.rotate(this.absorbAngle);
-        }
+        if (this.absorbing) ctx.rotate(this.absorbAngle);
 
         const scale = this.dragging ? 1.2 : 1.0;
         ctx.scale(scale, scale);
@@ -93,18 +102,15 @@ export class Folder {
             ctx.shadowBlur = 20;
         }
 
-        // Utilisation de l'image chargée pour dessiner
         if (this.folderImg.complete) {
-            ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height); // Centrer l'image
+            ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height);
         } else {
-            // Si l'image n'est pas encore complètement chargée, afficher un rectangle temporaire pour la visualisation
             ctx.fillStyle = "#ccc";
             ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
         }
 
         ctx.restore();
 
-        // Afficher le nom si l'objet n'est pas en train d'absorber
         if (!this.absorbing) {
             ctx.fillStyle = "white";
             ctx.font = "10px Arial";
@@ -112,13 +118,12 @@ export class Folder {
             ctx.fillText(this.name, this.x, this.y + 28);
         }
 
-        // Afficher la zone de détection (cercle) pour le débogage
+        // Débogage : rayon de détection
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.detectionRadius, 0, Math.PI * 2); // Rayon de détection
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.arc(this.x, this.y, this.stats.range, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
         ctx.stroke();
     }
-
 
     isHovered(mx, my) {
         return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&

@@ -95,7 +95,7 @@ export class Background {
             const s = this.shootingStars[i];
             s.x += s.vx;
             s.y += s.vy;
-            s.life -= 1;
+            s.life -= 5;
             s.alpha = s.life / 100; // gradually decreases  
             if (s.life <= 0) this.shootingStars.splice(i, 1);
         }

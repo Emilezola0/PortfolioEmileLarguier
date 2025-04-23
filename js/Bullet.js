@@ -1,11 +1,15 @@
 export class Bullet {
-    constructor(x, y, dx, dy) {
+    constructor(x, y, dx, dy, damage = 1, pierce = 1, speed = 5) {
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-        this.speed = 5;
+        this.speed = speed;
         this.radius = 4;
+
+        this.damage = damage;   // Dégâts infligés
+        this.pierce = pierce;   // Combien d'ennemis la balle peut traverser
+        this.hitCount = 0;      // Nombre d'ennemis touchés
     }
 
     update() {
@@ -27,7 +31,12 @@ export class Bullet {
     hits(mob) {
         const dx = this.x - mob.x;
         const dy = this.y - mob.y;
-        return Math.hypot(dx, dy) < this.radius + mob.radius; // Optimisation avec Math.hypot
+        return Math.hypot(dx, dy) < this.radius + mob.radius;
+    }
+
+    registerHit() {
+        this.hitCount++;
+        return this.hitCount >= this.pierce;
     }
 }
 
