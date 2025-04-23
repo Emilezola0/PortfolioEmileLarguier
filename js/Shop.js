@@ -152,4 +152,9 @@ export class Shop {
         }
         return closest;
     }
+
+    isHovered(mx, my) {
+        return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
+            my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
+    }
 }
