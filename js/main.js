@@ -10,7 +10,7 @@ import { MobDeathParticle } from "./MobDeathParticle.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
 import { upgrades, upgradeFolder } from './upgrades.js';
-
+import { Shop } from "./Shop.js";
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
@@ -102,7 +102,13 @@ let score = 0;
 let flyingScraps = [];
 let mobParticles = [];
 
+// Mouse
+let mouseX = 0;
+let mouseY = 0;
+let mouseDown = false;
+
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
+let shop = null; // initialize after charging folders
 
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
@@ -129,6 +135,11 @@ canvas.addEventListener("mousedown", e => {
             break;
         }
     }
+    if (shop) shop.handleClick({ x: e.clientX, y: e.clientY }, folders);
+
+    mouseDown = true;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
 });
 
 canvas.addEventListener("mousemove", e => {
@@ -141,12 +152,18 @@ canvas.addEventListener("mousemove", e => {
         draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
         draggedFolder.dragging = true;
     }
+
+    mouseX = e.clientX;
+    mouseY = e.clientY;
 });
 
 canvas.addEventListener("mouseup", () => {
     collector.dragging = false;
     if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
+    if (shop) shop.handleMouseUp();
+
+    mouseDown = false;
 });
 
 function drawUI() {
@@ -306,6 +323,11 @@ function updateGame() {
         scrap.draw(ctx, scrapImgCollect);
     }
 
+    if (shop) {
+        shop.update({ x: mouseX, y: mouseY, isDown: mouseDown });
+        shop.draw(ctx);
+    }
+
     collector.draw(ctx);
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
@@ -329,6 +351,9 @@ fetch("public/projects.json")
             const x = canvas.width / 2 + radius * Math.cos(angle);
             const y = canvas.height / 2 + radius * Math.sin(angle);
             folders.push(new Folder(x, y, proj.name));
+            // Place shop next to the first folder
+            const firstFolder = folders[0];
+            shop = new Shop(firstFolder.x + 50, firstFolder.y);
         });
         updateGame();
     });
