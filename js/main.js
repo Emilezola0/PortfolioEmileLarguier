@@ -176,7 +176,7 @@ canvas.addEventListener("mousemove", e => {
 
 });
 
-canvas.addEventListener("mouseup", () => {
+canvas.addEventListener("mouseup", (e) => {
     collector.dragging = false;
     if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
