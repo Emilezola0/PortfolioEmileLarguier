@@ -5,6 +5,7 @@ export class Shop {
         this.iconSize = 32;
         this.shopImg = new Image();
         this.shopImg.src = "assets/shop.png";
+        this.wasDragged = false;
 
         this.playerStats = null;
         this.folders = null;
@@ -91,3 +92,22 @@ export class Shop {
 window.closeShop = function () {
     document.getElementById("shop-popup").classList.add("hidden");
 };
+
+// Movement
+isHovered(mx, my) {
+    return Math.hypot(this.x - mx, this.y - my) < 20;
+}
+
+updatePosition(dx, dy) {
+    this.x += dx;
+    this.y += dy;
+}
+
+handleMouseUp() {
+    // Click without moving => open the shop
+    if (!this.wasDragged) {
+        this.openShopPopup();
+    }
+    this.wasDragged = false;
+}
+

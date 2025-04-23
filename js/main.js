@@ -104,6 +104,9 @@ let mobParticles = [];
 
 // Mouse
 let mouseDown = false;
+let shopStartX = 0;
+let shopStartY = 0;
+
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
 let shop = null; // initialize after charging folders
@@ -143,11 +146,11 @@ canvas.addEventListener("mousedown", e => {
         });
         return;
     }
-    if (shop.window.open) {
-        // Transfert coords globales en locales
-        const lx = e.clientX - shop.window.x;
-        const ly = e.clientY - shop.window.y;
-        shop.window.handleClickInside(lx, ly);
+    if (shop && shop.isHovered(e.clientX, e.clientY)) {
+        draggedShop = true;
+        shopStartX = e.clientX;
+        shopStartY = e.clientY;
+        shop.wasDragged = false;
         return;
     }
 
@@ -165,20 +168,31 @@ canvas.addEventListener("mousemove", e => {
         draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
         draggedFolder.dragging = true;
     }
-    if (shop && shop.isHovered(e.clientX, e.clientY) && !draggedFolder) {
-        draggedShop = true;
-    }
     if (draggedShop && shop && !draggedFolder) {
+        const dx = e.clientX - shopStartX;
+        const dy = e.clientY - shopStartY;
+
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            shop.wasDragged = true;
+        }
+
         shop.updatePosition(e.movementX, e.movementY);
+        shopStartX = e.clientX;
+        shopStartY = e.clientY;
     }
+
 });
 
 canvas.addEventListener("mouseup", () => {
     collector.dragging = false;
     if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
+
+    // Shop
     if (shop) shop.handleMouseUp();
     draggedShop = false;
+
+    // Mouse
     mouseDown = false;
 });
 
