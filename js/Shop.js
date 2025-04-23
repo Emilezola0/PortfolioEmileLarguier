@@ -88,18 +88,20 @@ export class Shop {
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
 
-        // Check if shop icon was clicked
+        // Si le shop est fermé
         if (!this.open) {
             const distance = Math.hypot(dx, dy);
+
+            // check click on shop icon
             if (distance < 20) {
-                // If mouse wasn't moved too much, consider it a click
-                if (!this.dragging) {
+                // nothing in hand then can hold
+                if (!mouse.holding) {
                     this.open = true;
                 }
             }
 
-            // Always allow dragging if inside bounds
-            if (dx > -16 && dx < 16 && dy > -16 && dy < 16) {
+            // Autoriser le drag uniquement si rien n'est en main
+            if (!mouse.holding && dx > -16 && dx < 16 && dy > -16 && dy < 16) {
                 this.dragging = true;
                 this.offsetX = dx;
                 this.offsetY = dy;
@@ -108,16 +110,17 @@ export class Shop {
             return;
         }
 
-        // If already open, check interns click
+        // SHOP OUVERT : click in the fake window
         const localX = mouse.x - this.x;
         const localY = mouse.y - this.y;
 
-        // Close button
+        // Bouton de fermeture (X)
         if (localX >= 180 && localX <= 195 && localY >= 5 && localY <= 20) {
             this.open = false;
             return;
         }
 
+        // Boutons d'upgrade
         const upgrades = ["attackSpeed", "attackDamage", "range", "bulletSpeed", "pierce"];
         const costs = { attackSpeed: 10, attackDamage: 15, range: 20, bulletSpeed: 12, pierce: 25 };
 
