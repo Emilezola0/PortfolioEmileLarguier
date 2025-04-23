@@ -1,7 +1,7 @@
 import { FakeWindow } from "./FakeWindow.js";
 import { upgradeFolder } from "./upgrades.js";
 
-export class Shop extends FakeWindow {
+export class ShopWindow extends FakeWindow {
     constructor(x, y) {
         super(x, y, 200, 190, "Upgrade Shop");
         this.buttons = [
@@ -11,8 +11,6 @@ export class Shop extends FakeWindow {
             { name: "Bullet Speed", y: 130, key: "bulletSpeed", cost: 12 },
             { name: "Pierce", y: 160, key: "pierce", cost: 25 }
         ];
-        this.shopImg = new Image();
-        this.shopImg.src = "assets/shop.png";
         this.playerStats = null;
         this.folders = null;
     }
@@ -20,26 +18,6 @@ export class Shop extends FakeWindow {
     setContext(playerStats, folders) {
         this.playerStats = playerStats;
         this.folders = folders;
-    }
-
-    draw(ctx) {
-        if (!this.open) {
-            // Icône cliquable quand fermé
-            ctx.save();
-            ctx.translate(this.x, this.y);
-            if (this.shopImg.complete) {
-                ctx.drawImage(this.shopImg, -16, -16, 32, 32);
-            } else {
-                ctx.fillStyle = "gray";
-                ctx.beginPath();
-                ctx.arc(0, 0, 16, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.restore();
-        } else {
-            // Sinon, appelle draw hérité de FakeWindow
-            super.draw(ctx);
-        }
     }
 
     drawContent(ctx) {
@@ -60,17 +38,6 @@ export class Shop extends FakeWindow {
                     this.playerStats.scrap -= btn.cost;
                     upgradeFolder(target, btn.key);
                 }
-            }
-        }
-    }
-
-    handleClick(mouse) {
-        if (!this.open) {
-            const dx = mouse.x - this.x;
-            const dy = mouse.y - this.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < 20 && !mouse.holding) {
-                this.open = true;
             }
         }
     }
