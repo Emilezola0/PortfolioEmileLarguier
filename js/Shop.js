@@ -1,12 +1,12 @@
 // Shop.js
-import { upgradeFolder } from "./upgrades.js"; // On crée ce module à côté
+import { upgradeFolder } from "./upgrades.js"; // We create this module next to it
 
 export class Shop {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.width = 120;
-        this.height = 30; // Hauteur de la barre du haut (comme une fausse fenêtre)
+        this.height = 30; // Hauteur de la barre du haut (like a fake window)
         this.open = false;
         this.dragging = false;
         this.offsetX = 0;
@@ -37,24 +37,24 @@ export class Shop {
                 ctx.fill();
             }
         } else {
-            // Fenêtre du shop
+            // Shop Window
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, 200, 160);
 
-            // Barre de titre
+            // Title Bar
             ctx.fillStyle = "#333";
             ctx.fillRect(0, 0, 200, 30);
             ctx.fillStyle = "white";
             ctx.font = "bold 12px Arial";
             ctx.fillText("Upgrade Shop", 10, 20);
 
-            // Bouton fermer (coin en haut à droite)
+            // Close Button (right corner)
             ctx.fillStyle = "red";
             ctx.fillRect(180, 5, 15, 15);
             ctx.fillStyle = "white";
             ctx.fillText("X", 183, 17);
 
-            // Boutons d'amélioration
+            // Upgrade Button
             const buttons = [
                 { name: "ATK Speed", y: 40, key: "attackSpeed" },
                 { name: "Damage", y: 70, key: "attackDamage" },

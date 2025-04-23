@@ -121,7 +121,7 @@ function drawUI() {
         ctx.textBaseline = "middle";
         ctx.fillStyle = "white";
         ctx.font = "16px sans-serif";
-        ctx.fillText("Next wave " + spawnManager.wave, canvas.width / 2, 10);
+        ctx.fillText("Wave number " + spawnManager.wave, canvas.width / 2, 10);
     }
 }
 
