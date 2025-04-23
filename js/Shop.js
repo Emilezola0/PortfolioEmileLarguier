@@ -75,20 +75,27 @@ export class Shop {
     }
 
     openShopPopup() {
+        // Si folders est null ou vide, on ferme le shop
+        if (!Array.isArray(this.folders) || this.folders.length === 0) {
+            closeShop();
+            return;
+        }
+
         const popup = document.getElementById("shop-popup");
         popup.classList.remove("hidden");
 
         const container = document.getElementById("shop-content");
         container.innerHTML = "";
 
+        this.targetFolder = this.getClosestFolder(this.folders); // Important : mettre à jour le dossier cible
+
         for (const btn of this.buttons) {
             const div = document.createElement("div");
             div.className = "shop-item";
             div.innerHTML = `
-                <span>${btn.name}</span>
-                <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
-            `;
-            // Script for button
+            <span>${btn.name}</span>
+            <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
+        `;
             div.onclick = () => {
                 const target = this.targetFolder;
                 if (target && this.playerStats.scrap >= btn.cost) {
@@ -111,7 +118,6 @@ export class Shop {
             const dist = Math.hypot(dx, dy);
             if (dist < minDist) {
                 closest = folder;
-                this.targetFolder = closest;
                 minDist = dist;
             }
         }
