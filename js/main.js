@@ -103,8 +103,6 @@ let flyingScraps = [];
 let mobParticles = [];
 
 // Mouse
-let mouseX = 0;
-let mouseY = 0;
 let mouseDown = false;
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
@@ -122,7 +120,9 @@ const projectileSound = document.getElementById("projectileSound");
 const explodeSound = document.getElementById("explodeSound");
 const soundEffectVolume = 0.6;
 
+// Drag
 let draggedFolder = null;
+let draggedShop = false;
 
 canvas.addEventListener("mousedown", e => {
     if (collector.isHovered(e.clientX, e.clientY)) {
@@ -135,11 +135,12 @@ canvas.addEventListener("mousedown", e => {
             break;
         }
     }
-    if (shop) shop.handleClick({ x: e.clientX, y: e.clientY }, folders);
+    if (shop && shop.isHovered(e.clientX, e.clientY)) {
+        draggedShop = true;
+        return;
+    }
 
     mouseDown = true;
-    mouseX = e.clientX;
-    mouseY = e.clientY;
 });
 
 canvas.addEventListener("mousemove", e => {
@@ -152,9 +153,11 @@ canvas.addEventListener("mousemove", e => {
         draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
         draggedFolder.dragging = true;
     }
-
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+    if (draggedShop && shop) {
+        shop.x += (e.clientX - shop.x) * 0.2;
+        shop.y += (e.clientY - shop.y) * 0.2;
+        return;
+    }
 });
 
 canvas.addEventListener("mouseup", () => {
@@ -162,7 +165,7 @@ canvas.addEventListener("mouseup", () => {
     if (draggedFolder) draggedFolder.dragging = false;
     draggedFolder = null;
     if (shop) shop.handleMouseUp();
-
+    draggedShop = false;
     mouseDown = false;
 });
 
@@ -324,7 +327,6 @@ function updateGame() {
     }
 
     if (shop) {
-        shop.update({ x: mouseX, y: mouseY, isDown: mouseDown });
         shop.draw(ctx);
     }
 
