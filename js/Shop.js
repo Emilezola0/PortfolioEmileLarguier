@@ -26,7 +26,16 @@ export class Shop {
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        // Dessin de l'icône du shop
+        // Dragging
+        const scale = this.dragging ? 1.2 : 1.0;
+        ctx.scale(scale, scale);
+
+        if (this.dragging) {
+            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+            ctx.shadowBlur = 20;
+        }
+
+        // Draw shop icon
         if (!this.open) {
             if (this.shopImg.complete) {
                 ctx.drawImage(this.shopImg, -16, -16, 32, 32);
@@ -76,40 +85,52 @@ export class Shop {
     }
 
     handleClick(mouse, folders, playerStats) {
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+
+        // Check if shop icon was clicked
         if (!this.open) {
-            const dx = mouse.x - this.x;
-            const dy = mouse.y - this.y;
-            if (Math.hypot(dx, dy) < 20) {
-                this.open = true;
-            } else if (dx > -16 && dx < 16 && dy > -16 && dy < 16) {
+            const distance = Math.hypot(dx, dy);
+            if (distance < 20) {
+                // If mouse wasn't moved too much, consider it a click
+                if (!this.dragging) {
+                    this.open = true;
+                }
+            }
+
+            // Always allow dragging if inside bounds
+            if (dx > -16 && dx < 16 && dy > -16 && dy < 16) {
                 this.dragging = true;
                 this.offsetX = dx;
                 this.offsetY = dy;
             }
-        } else {
-            const localX = mouse.x - this.x;
-            const localY = mouse.y - this.y;
 
-            // Close button
-            if (localX >= 180 && localX <= 195 && localY >= 5 && localY <= 20) {
-                this.open = false;
-                return;
-            }
-
-            const upgrades = ["attackSpeed", "attackDamage", "range", "bulletSpeed", "pierce"];
-            const costs = { attackSpeed: 10, attackDamage: 15, range: 20, bulletSpeed: 12, pierce: 25 };
-
-            upgrades.forEach((key, i) => {
-                const y = 40 + i * 30;
-                if (localX >= 10 && localX <= 190 && localY >= y - 10 && localY <= y + 15) {
-                    const target = this.getClosestFolder(folders);
-                    if (target && playerStats.scrap >= costs[key]) {
-                        playerStats.scrap -= costs[key]; // dépense le scrap
-                        upgradeFolder(target, key);
-                    }
-                }
-            });
+            return;
         }
+
+        // If already open, check interns click
+        const localX = mouse.x - this.x;
+        const localY = mouse.y - this.y;
+
+        // Close button
+        if (localX >= 180 && localX <= 195 && localY >= 5 && localY <= 20) {
+            this.open = false;
+            return;
+        }
+
+        const upgrades = ["attackSpeed", "attackDamage", "range", "bulletSpeed", "pierce"];
+        const costs = { attackSpeed: 10, attackDamage: 15, range: 20, bulletSpeed: 12, pierce: 25 };
+
+        upgrades.forEach((key, i) => {
+            const y = 40 + i * 30;
+            if (localX >= 10 && localX <= 190 && localY >= y - 10 && localY <= y + 15) {
+                const target = this.getClosestFolder(folders);
+                if (target && playerStats.scrap >= costs[key]) {
+                    playerStats.scrap -= costs[key];
+                    upgradeFolder(target, key);
+                }
+            }
+        });
     }
 
 
