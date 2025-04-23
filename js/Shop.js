@@ -9,6 +9,7 @@ export class Shop {
 
         this.playerStats = null;
         this.folders = null;
+        this.targetFolder = null;
         this.connectionProgress = 0;
         this.buttons = [
             { name: "ATK Speed", key: "attackSpeed", cost: 10 },
@@ -27,6 +28,7 @@ export class Shop {
     draw(ctx) {
         ctx.save();
         ctx.translate(this.x, this.y);
+        this.targetFolder = this.getClosestFolder(this.folders);
         if (this.shopImg.complete) {
             ctx.drawImage(this.shopImg, -16, -16, this.iconSize, this.iconSize);
         } else {
@@ -63,7 +65,7 @@ export class Shop {
                 <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
             `;
             div.onclick = () => {
-                const target = this.getClosestFolder(this.folders);
+                const target = this.targetFolder;
                 if (target && this.playerStats.scrap >= btn.cost) {
                     this.playerStats.scrap -= btn.cost;
                     upgradeFolder(target, btn.key);
@@ -75,6 +77,7 @@ export class Shop {
     }
 
     getClosestFolder(folders) {
+        if (!Array.isArray(folders)) return null;
         let closest = null;
         let minDist = Infinity;
         for (const folder of folders) {
@@ -109,25 +112,24 @@ export class Shop {
     }
 
     drawConnectionLine(ctx) {
+        if (!Array.isArray(this.folders)) return;
 
-        // Continue the script if have folder
-        const folder = this.getClosestFolder(this.folders);
-        if (!folder) return;
+        this.targetFolder = this.getClosestFolder(this.folders); // Update Target Folder
 
-        // Increment progressif vers 1
+        if (!this.targetFolder) return;
+
         if (this.connectionProgress < 1) {
-            this.connectionProgress += 0.02; // Vitesse d’animation
+            this.connectionProgress += 0.02;
         }
 
         const progress = Math.min(this.connectionProgress, 1);
 
-        // Interpolation linéaire
-        const xEnd = this.x + (folder.x - this.x) * progress;
-        const yEnd = this.y + (folder.y - this.y) * progress;
+        const xEnd = this.x + (this.targetFolder.x - this.x) * progress;
+        const yEnd = this.y + (this.targetFolder.y - this.y) * progress;
 
         ctx.save();
         ctx.strokeStyle = "white";
-        ctx.setLineDash([4, 2]); // Style rétro
+        ctx.setLineDash([4, 2]);
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
@@ -135,6 +137,7 @@ export class Shop {
         ctx.stroke();
         ctx.restore();
     }
+
 
 }
 
