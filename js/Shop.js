@@ -98,6 +98,7 @@ export class Shop {
         `;
             div.onclick = () => {
                 const target = this.targetFolder;
+                console.log("click button", targetFolder, " // number of scrap: ", playerStats, " // scrap other name: ", this.playerStats.scrap);
                 if (target && this.playerStats.scrap >= btn.cost) {
                     this.playerStats.scrap -= btn.cost;
                     upgradeFolder(target, btn.key);
