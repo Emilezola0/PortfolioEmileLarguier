@@ -62,15 +62,22 @@ export class Background {
 
     spawnShootingStar() {
         if (Math.random() < 0.002) {
-            const startX = Math.random() * this.canvas.width;
-            const startY = Math.random() * this.canvas.height / 2;
+            const angle = Math.random() * (Math.PI / 4) + Math.PI / 8; // entre 22.5° et 67.5°
+            const speed = Math.random() * 3 + 3;
+
+            const startX = Math.random() < 0.5 ? -50 : this.canvas.width + 50;
+            const startY = Math.random() * this.canvas.height * 0.3;
+
+            const vx = Math.cos(angle) * (startX < 0 ? speed : -speed);
+            const vy = Math.sin(angle) * speed;
+
             this.shootingStars.push({
                 x: startX,
                 y: startY,
-                vx: -Math.random() * 3 - 2,
-                vy: Math.random() * 2 + 1,
-                life: 100,
-                length: Math.random() * 60 + 40,
+                vx,
+                vy,
+                life: 120,
+                length: 100,
             });
         }
     }
@@ -131,13 +138,16 @@ export class Background {
 
         // Shooting stars
         for (const s of this.shootingStars) {
-            const gradient = ctx.createLinearGradient(s.x, s.y, s.x + s.length, s.y + s.length);
+            const endX = s.x - s.vx * s.length * 0.1;
+            const endY = s.y - s.vy * s.length * 0.1;
+
+            const gradient = ctx.createLinearGradient(s.x, s.y, endX, endY);
             gradient.addColorStop(0, "rgba(255,255,255,0.8)");
             gradient.addColorStop(1, "rgba(255,255,255,0)");
 
             ctx.beginPath();
             ctx.moveTo(s.x, s.y);
-            ctx.lineTo(s.x + s.length, s.y + s.length);
+            ctx.lineTo(endX, endY);
             ctx.strokeStyle = gradient;
             ctx.lineWidth = 1.5;
             ctx.stroke();
