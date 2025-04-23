@@ -376,10 +376,13 @@ fetch("public/projects.json")
             const x = canvas.width / 2 + radius * Math.cos(angle);
             const y = canvas.height / 2 + radius * Math.sin(angle);
             folders.push(new Folder(x, y, proj.name));
-            // Place shop next to the first folder
-            const firstFolder = folders[0];
-            shop = new Shop(firstFolder.x + 50, firstFolder.y);
         });
+
+        // Assure-toi de bien initialiser le shop après avoir ajoute les dossiers
+        const firstFolder = folders[0];
+        shop = new Shop(firstFolder.x + 50, firstFolder.y);
+
+        // Demarrer le jeu apres l'initialisation
         updateGame();
     });
 
