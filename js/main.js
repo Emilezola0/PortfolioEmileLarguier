@@ -136,9 +136,21 @@ canvas.addEventListener("mousedown", e => {
         }
     }
     if (shop && shop.isHovered(e.clientX, e.clientY)) {
-        shop.handleClick({ x: e.clientX, y: e.clientY, isDown: true, holding: draggedFolder !== null }, folders, { scrap: score });
+        shop.handleClick({
+            x: e.clientX,
+            y: e.clientY,
+            holding: draggedFolder !== null
+        });
         return;
     }
+    if (shop.window.open) {
+        // Transfert coords globales en locales
+        const lx = e.clientX - shop.window.x;
+        const ly = e.clientY - shop.window.y;
+        shop.window.handleClickInside(lx, ly);
+        return;
+    }
+
 
     mouseDown = true;
 });
@@ -153,10 +165,11 @@ canvas.addEventListener("mousemove", e => {
         draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
         draggedFolder.dragging = true;
     }
+    if (shop && shop.isHovered(e.clientX, e.clientY) && !draggedFolder) {
+        draggedShop = true;
+    }
     if (draggedShop && shop && !draggedFolder) {
-        shop.x += (e.clientX - shop.x) * 0.2;
-        shop.y += (e.clientY - shop.y) * 0.2;
-        return;
+        shop.updatePosition(e.movementX, e.movementY);
     }
 });
 

@@ -1,16 +1,21 @@
 import { FakeWindow } from "./FakeWindow.js";
 import { upgradeFolder } from "./upgrades.js";
 
+const scrapIcon = new Image();
+scrapIcon.src = "assets/scrapCollect.png";
+
 export class ShopWindow extends FakeWindow {
     constructor(x, y) {
-        super(x, y, 200, 190, "Upgrade Shop");
+        super(x, y, 220, 220, "Upgrade Shop");
+
         this.buttons = [
             { name: "ATK Speed", y: 40, key: "attackSpeed", cost: 10 },
-            { name: "Damage", y: 70, key: "attackDamage", cost: 15 },
-            { name: "Range", y: 100, key: "range", cost: 20 },
-            { name: "Bullet Speed", y: 130, key: "bulletSpeed", cost: 12 },
-            { name: "Pierce", y: 160, key: "pierce", cost: 25 }
+            { name: "Damage", y: 80, key: "attackDamage", cost: 15 },
+            { name: "Range", y: 120, key: "range", cost: 20 },
+            { name: "Bullet Speed", y: 160, key: "bulletSpeed", cost: 12 },
+            { name: "Pierce", y: 200, key: "pierce", cost: 25 }
         ];
+
         this.playerStats = null;
         this.folders = null;
     }
@@ -22,17 +27,29 @@ export class ShopWindow extends FakeWindow {
 
     drawContent(ctx) {
         ctx.font = "12px Arial";
+
         for (const btn of this.buttons) {
-            ctx.fillStyle = "#555";
-            ctx.fillRect(10, btn.y - 10, 180, 25);
+            // BG bouton
+            ctx.fillStyle = "#444";
+            ctx.fillRect(10, btn.y - 20, 200, 30);
+
+            // Texte à gauche
             ctx.fillStyle = "white";
-            ctx.fillText(`Upgrade ${btn.name} (${btn.cost})`, 20, btn.y + 7);
+            ctx.fillText(btn.name, 20, btn.y);
+
+            // Prix à droite avec icône
+            ctx.fillStyle = "white";
+            ctx.fillText(`${btn.cost}`, 160, btn.y);
+
+            if (scrapIcon.complete) {
+                ctx.drawImage(scrapIcon, 180, btn.y - 12, 16, 16);
+            }
         }
     }
 
     handleClickInside(localX, localY) {
         for (const btn of this.buttons) {
-            if (localX >= 10 && localX <= 190 && localY >= btn.y - 10 && localY <= btn.y + 15) {
+            if (localX >= 10 && localX <= 210 && localY >= btn.y - 20 && localY <= btn.y + 10) {
                 const target = this.getClosestFolder(this.folders);
                 if (target && this.playerStats.scrap >= btn.cost) {
                     this.playerStats.scrap -= btn.cost;

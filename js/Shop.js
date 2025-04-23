@@ -1,18 +1,14 @@
+import { ShopWindow } from "./ShopWindow.js";
 import { FakeWindow } from "./FakeWindow.js";
-import { upgradeFolder } from "./upgrades.js";
 
 export class Shop extends FakeWindow {
     constructor(x, y) {
-        super(x, y, 200, 190, "Upgrade Shop");
-        this.buttons = [
-            { name: "ATK Speed", y: 40, key: "attackSpeed", cost: 10 },
-            { name: "Damage", y: 70, key: "attackDamage", cost: 15 },
-            { name: "Range", y: 100, key: "range", cost: 20 },
-            { name: "Bullet Speed", y: 130, key: "bulletSpeed", cost: 12 },
-            { name: "Pierce", y: 160, key: "pierce", cost: 25 }
-        ];
+        super(x, y, 32, 32, ""); // Pas besoin de titre ici
+        this.iconSize = 32;
         this.shopImg = new Image();
         this.shopImg.src = "assets/shop.png";
+        this.window = new ShopWindow(x + 50, y); // Décalé à droite
+
         this.playerStats = null;
         this.folders = null;
     }
@@ -20,73 +16,53 @@ export class Shop extends FakeWindow {
     setContext(playerStats, folders) {
         this.playerStats = playerStats;
         this.folders = folders;
+        this.window.setContext(playerStats, folders);
     }
 
     draw(ctx) {
-        if (!this.open) {
-            // Icône cliquable quand fermé
-            ctx.save();
-            ctx.translate(this.x, this.y);
-            if (this.shopImg.complete) {
-                ctx.drawImage(this.shopImg, -16, -16, 32, 32);
-            } else {
-                ctx.fillStyle = "gray";
-                ctx.beginPath();
-                ctx.arc(0, 0, 16, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.restore();
+        // Si la fenêtre est ouverte, on la dessine
+        if (this.window.open) {
+            this.window.draw(ctx);
+        }
+
+        // Dessine l'icône déplaçable du shop
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        if (this.shopImg.complete) {
+            ctx.drawImage(this.shopImg, -16, -16, this.iconSize, this.iconSize);
         } else {
-            // Sinon, appelle draw hérité de FakeWindow
-            super.draw(ctx);
+            ctx.fillStyle = "gray";
+            ctx.beginPath();
+            ctx.arc(0, 0, 16, 0, Math.PI * 2);
+            ctx.fill();
         }
-    }
-
-    drawContent(ctx) {
-        ctx.font = "12px Arial";
-        for (const btn of this.buttons) {
-            ctx.fillStyle = "#555";
-            ctx.fillRect(10, btn.y - 10, 180, 25);
-            ctx.fillStyle = "white";
-            ctx.fillText(`Upgrade ${btn.name} (${btn.cost})`, 20, btn.y + 7);
-        }
-    }
-
-    handleClickInside(localX, localY) {
-        for (const btn of this.buttons) {
-            if (localX >= 10 && localX <= 190 && localY >= btn.y - 10 && localY <= btn.y + 15) {
-                const target = this.getClosestFolder(this.folders);
-                if (target && this.playerStats.scrap >= btn.cost) {
-                    this.playerStats.scrap -= btn.cost;
-                    upgradeFolder(target, btn.key);
-                }
-            }
-        }
+        ctx.restore();
     }
 
     handleClick(mouse) {
-        if (!this.open) {
-            const dx = mouse.x - this.x;
-            const dy = mouse.y - this.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < 20 && !mouse.holding) {
-                this.open = true;
-            }
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 20 && !mouse.holding) {
+            this.window.open = true;
         }
     }
 
-    getClosestFolder(folders) {
-        let closest = null;
-        let minDist = Infinity;
-        for (const folder of folders) {
-            const dx = this.x - folder.x;
-            const dy = this.y - folder.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < minDist) {
-                closest = folder;
-                minDist = dist;
-            }
-        }
-        return closest;
+    isHovered(x, y) {
+        const dx = x - this.x;
+        const dy = y - this.y;
+        return Math.hypot(dx, dy) < 20;
+    }
+
+    handleMouseUp() {
+        this.window?.handleMouseUp?.(); // Passe au cas où tu veux faire des choses dans ShopWindow
+    }
+
+    updatePosition(dx, dy) {
+        this.x += dx;
+        this.y += dy;
+        this.window.x += dx;
+        this.window.y += dy;
     }
 }
