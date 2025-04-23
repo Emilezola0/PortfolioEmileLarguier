@@ -348,6 +348,7 @@ function updateGame() {
     }
 
     if (shop) {
+        shop.setContext(score, folders); // player stats == score == number of scrap in possession and folders
         shop.update(particles);
         shop.draw(ctx);
         shop.drawConnectionLine(ctx);
