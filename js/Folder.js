@@ -92,16 +92,28 @@ export class Folder {
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
 
+        // Appliquer une rotation si en absorption
         if (this.absorbing) ctx.rotate(this.absorbAngle);
 
-        const scale = this.dragging ? 1.2 : 1.0;
+        // Scale depending of state
+        let scale = 1.0;
+        if (this.dragging) {
+            scale = 1.2;
+        } else if (this.hovered) {
+            scale = 1.1;
+        }
         ctx.scale(scale, scale);
 
+        // Shadow if drag or hover
         if (this.dragging) {
             ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
             ctx.shadowBlur = 20;
+        } else if (this.hovered) {
+            ctx.shadowColor = "rgba(255, 255, 255, 0.25)";
+            ctx.shadowBlur = 10;
         }
 
+        // Dessiner l’image du dossier ou un fallback
         if (this.folderImg.complete) {
             ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height);
         } else {
@@ -111,6 +123,7 @@ export class Folder {
 
         ctx.restore();
 
+        // Dessiner le texte sous le dossier
         if (!this.absorbing) {
             ctx.fillStyle = "white";
             ctx.font = "10px Arial";
@@ -118,12 +131,13 @@ export class Folder {
             ctx.fillText(this.name, this.x, this.y + 28);
         }
 
-        // Débogage : rayon de détection
+        // Debogage : rayon de detection
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.stats.range, 0, Math.PI * 2);
         ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
         ctx.stroke();
     }
+
 
     isHovered(mx, my) {
         return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&

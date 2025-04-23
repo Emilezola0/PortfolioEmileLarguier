@@ -7,6 +7,10 @@ export class Shop {
         this.shopImg.src = "assets/shop.png";
         this.wasDragged = false;
 
+        // Effects
+        this.pulse = 0;
+        this.pulseDirection = 1;
+
         this.playerStats = null;
         this.folders = null;
         this.targetFolder = null;
@@ -28,7 +32,25 @@ export class Shop {
     draw(ctx) {
         ctx.save();
         ctx.translate(this.x, this.y);
-        this.targetFolder = this.getClosestFolder(this.folders);
+
+        // === Halo pulsed ===
+        if (this.targetFolder) {
+            this.pulse += this.pulseDirection * 0.5;
+            if (this.pulse > 10 || this.pulse < 0) {
+                this.pulseDirection *= -1;
+            }
+
+            const gradient = ctx.createRadialGradient(0, 0, 10, 0, 0, 20 + this.pulse);
+            gradient.addColorStop(0, "rgba(0,255,255,0.2)");
+            gradient.addColorStop(1, "rgba(0,255,255,0)");
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(0, 0, 20 + this.pulse, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // === Shop icon ===
         if (this.shopImg.complete) {
             ctx.drawImage(this.shopImg, -16, -16, this.iconSize, this.iconSize);
         } else {
@@ -37,8 +59,10 @@ export class Shop {
             ctx.arc(0, 0, 16, 0, Math.PI * 2);
             ctx.fill();
         }
+
         ctx.restore();
     }
+
 
     handleClick(mouse) {
         const dx = mouse.x - this.x;
@@ -137,6 +161,19 @@ export class Shop {
         ctx.stroke();
         ctx.restore();
     }
+
+    update(particles) {
+        // Ajoute des particules de connexion si en lien avec un dossier
+        if (this.targetFolder && Math.random() < 0.15) {
+            const angle = Math.random() * 2 * Math.PI;
+            const radius = 20 + Math.random() * 10;
+            const px = this.x + Math.cos(angle) * radius;
+            const py = this.y + Math.sin(angle) * radius;
+
+            particles.push(new Particle(px, py, "cyan", angle, radius, 0.02));
+        }
+    }
+
 
 
 }

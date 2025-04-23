@@ -348,6 +348,7 @@ function updateGame() {
     }
 
     if (shop) {
+        shop.update(particles);
         shop.draw(ctx);
         shop.drawConnectionLine(ctx);
     }
