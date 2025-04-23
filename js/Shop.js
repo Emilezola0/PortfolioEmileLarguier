@@ -88,6 +88,7 @@ export class Shop {
                 <span>${btn.name}</span>
                 <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
             `;
+            // Script for button
             div.onclick = () => {
                 const target = this.targetFolder;
                 if (target && this.playerStats.scrap >= btn.cost) {
@@ -110,6 +111,7 @@ export class Shop {
             const dist = Math.hypot(dx, dy);
             if (dist < minDist) {
                 closest = folder;
+                this.targetFolder = closest;
                 minDist = dist;
             }
         }
