@@ -6,7 +6,7 @@ export const spawnManager = {
     interval: 60, // 1 mob/seconde
     wave: 1,
     pause: false,
-    pauseDuration: 10 * 60, // 10s à 60fps
+    pauseDuration: 20 * 60, // 10s to 60fps
     pauseTimer: 0,
 
     mobsToSpawn: 10, // nombre de mobs par vague
@@ -22,7 +22,7 @@ export const spawnManager = {
                 this.wave++;
 
                 // Nouvelle vague
-                this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5); // scalabilité
+                this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5); // scalability
                 this.mobsSpawned = 0;
             }
             return;

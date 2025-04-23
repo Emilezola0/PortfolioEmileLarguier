@@ -19,7 +19,7 @@ export class Folder {
 
         // === STATS personnalisables ===
         this.stats = {
-            atkSpeed: 30,        // Moins = plus rapide
+            atkSpeed: 60,        // Moins = plus rapide
             atkDamage: 1,
             range: 100,
             bulletSpeed: 4,

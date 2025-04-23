@@ -97,7 +97,7 @@ export class Shop {
                 return;
             }
 
-            // Détection du bouton cliqué
+            // Detect on the button clicked
             const upgrades = ["attackSpeed", "attackDamage", "range", "bulletSpeed", "pierce"];
             upgrades.forEach((key, i) => {
                 const y = 40 + i * 30;
