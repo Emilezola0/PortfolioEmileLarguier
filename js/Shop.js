@@ -1,31 +1,28 @@
-import { ShopWindow } from "./ShopWindow.js";
-import { FakeWindow } from "./FakeWindow.js";
-
-export class Shop extends FakeWindow {
+export class Shop {
     constructor(x, y) {
-        super(x, y, 32, 32, ""); // Pas besoin de titre ici
+        this.x = x;
+        this.y = y;
         this.iconSize = 32;
         this.shopImg = new Image();
         this.shopImg.src = "assets/shop.png";
-        this.window = new ShopWindow(x + 50, y); // Décalé à droite
 
         this.playerStats = null;
         this.folders = null;
+        this.buttons = [
+            { name: "ATK Speed", key: "attackSpeed", cost: 10 },
+            { name: "Damage", key: "attackDamage", cost: 15 },
+            { name: "Range", key: "range", cost: 20 },
+            { name: "Bullet Speed", key: "bulletSpeed", cost: 12 },
+            { name: "Pierce", key: "pierce", cost: 25 }
+        ];
     }
 
     setContext(playerStats, folders) {
         this.playerStats = playerStats;
         this.folders = folders;
-        this.window.setContext(playerStats, folders);
     }
 
     draw(ctx) {
-        // Si la fenêtre est ouverte, on la dessine
-        if (this.window.open) {
-            this.window.draw(ctx);
-        }
-
-        // Dessine l'icône déplaçable du shop
         ctx.save();
         ctx.translate(this.x, this.y);
         if (this.shopImg.complete) {
@@ -45,24 +42,52 @@ export class Shop extends FakeWindow {
         const dist = Math.hypot(dx, dy);
 
         if (dist < 20 && !mouse.holding) {
-            this.window.open = true;
+            this.openShopPopup();
         }
     }
 
-    isHovered(x, y) {
-        const dx = x - this.x;
-        const dy = y - this.y;
-        return Math.hypot(dx, dy) < 20;
+    openShopPopup() {
+        const popup = document.getElementById("shop-popup");
+        popup.classList.remove("hidden");
+
+        const container = document.getElementById("shop-content");
+        container.innerHTML = "";
+
+        for (const btn of this.buttons) {
+            const div = document.createElement("div");
+            div.className = "shop-item";
+            div.innerHTML = `
+                <span>${btn.name}</span>
+                <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
+            `;
+            div.onclick = () => {
+                const target = this.getClosestFolder(this.folders);
+                if (target && this.playerStats.scrap >= btn.cost) {
+                    this.playerStats.scrap -= btn.cost;
+                    upgradeFolder(target, btn.key);
+                    closeShop();
+                }
+            };
+            container.appendChild(div);
+        }
     }
 
-    handleMouseUp() {
-        this.window?.handleMouseUp?.(); // Passe au cas où tu veux faire des choses dans ShopWindow
-    }
-
-    updatePosition(dx, dy) {
-        this.x += dx;
-        this.y += dy;
-        this.window.x += dx;
-        this.window.y += dy;
+    getClosestFolder(folders) {
+        let closest = null;
+        let minDist = Infinity;
+        for (const folder of folders) {
+            const dx = this.x - folder.x;
+            const dy = this.y - folder.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < minDist) {
+                closest = folder;
+                minDist = dist;
+            }
+        }
+        return closest;
     }
 }
+
+window.closeShop = function () {
+    document.getElementById("shop-popup").classList.add("hidden");
+};

@@ -14,6 +14,16 @@
             <span class="toggle-label">Activate Sound</span>
         </label>
     </div>
+    <!-- Shop Pop-up -->
+    <div id="shop-popup" class="shop-popup hidden">
+        <div class="shop-header">
+            <span>UPGRADE SHOP</span>
+            <button class="close-btn" onclick="closeShop()">×</button>
+        </div>
+        <div class="shop-content" id="shop-content">
+            <!-- Items added dynamically -->
+        </div>
+    </div>
     <audio id="scrapSound" src="assets/collect.mp3" preload="auto"></audio>
     <audio id="projectileSound" src="assets/projectileSoundEffect.mp3" preload="auto"></audio>
     <audio id="explodeSound" src="assets/objectExplodeSoundEffect.mp3" preload="auto"></audio>
