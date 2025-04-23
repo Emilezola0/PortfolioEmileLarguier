@@ -16,7 +16,7 @@ export class Shop {
     }
 
     update(mouse) {
-        if (!this.open && this.dragging && mouse.isDown) {
+        if (!this.open && this.dragging && mouse.isDown && !mouse.holding) {
             this.x = mouse.x - this.offsetX;
             this.y = mouse.y - this.offsetY;
         }
