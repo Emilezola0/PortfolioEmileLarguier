@@ -132,11 +132,11 @@ canvas.addEventListener("mousedown", e => {
     for (const folder of folders) {
         if (folder.isHovered(e.clientX, e.clientY)) {
             draggedFolder = folder;
-            break;
+            return;
         }
     }
     if (shop && shop.isHovered(e.clientX, e.clientY)) {
-        draggedShop = true;
+        shop.handleClick({ x: e.clientX, y: e.clientY, isDown: true, holding: draggedFolder !== null }, folders, { scrap: score });
         return;
     }
 
@@ -153,7 +153,7 @@ canvas.addEventListener("mousemove", e => {
         draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
         draggedFolder.dragging = true;
     }
-    if (draggedShop && shop) {
+    if (draggedShop && shop && !draggedFolder) {
         shop.x += (e.clientX - shop.x) * 0.2;
         shop.y += (e.clientY - shop.y) * 0.2;
         return;
