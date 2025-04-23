@@ -32,7 +32,7 @@ export class Folder {
 
         // Sound
         this.projectileAudio = new Audio("assets/projectileSoundEffect.mp3");
-        this.volume = 0.6;
+        this.volume = 0.9;
     }
 
     update(mobs, bullets, voidCenter, voidRadius, soundEnabled) {
