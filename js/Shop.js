@@ -9,6 +9,7 @@ export class Shop {
 
         this.playerStats = null;
         this.folders = null;
+        this.connectionProgress = 0;
         this.buttons = [
             { name: "ATK Speed", key: "attackSpeed", cost: 10 },
             { name: "Damage", key: "attackDamage", cost: 15 },
@@ -96,6 +97,7 @@ export class Shop {
     updatePosition(dx, dy) {
         this.x += dx;
         this.y += dy;
+        this.connectionProgress = 0;
     }
 
     handleMouseUp() {
@@ -105,6 +107,33 @@ export class Shop {
         }
         this.wasDragged = false;
     }
+
+    drawConnectionLine(ctx) {
+        const folder = this.getClosestFolder(this.folders);
+        if (!folder) return;
+
+        // Incrément progressif vers 1
+        if (this.connectionProgress < 1) {
+            this.connectionProgress += 0.02; // Vitesse d’animation
+        }
+
+        const progress = Math.min(this.connectionProgress, 1);
+
+        // Interpolation linéaire
+        const xEnd = this.x + (folder.x - this.x) * progress;
+        const yEnd = this.y + (folder.y - this.y) * progress;
+
+        ctx.save();
+        ctx.strokeStyle = "white";
+        ctx.setLineDash([4, 2]); // Style rétro
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(xEnd, yEnd);
+        ctx.stroke();
+        ctx.restore();
+    }
+
 }
 
 window.closeShop = function () {

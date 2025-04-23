@@ -132,20 +132,14 @@ canvas.addEventListener("mousedown", e => {
         collector.dragging = true;
         return;
     }
+
     for (const folder of folders) {
         if (folder.isHovered(e.clientX, e.clientY)) {
             draggedFolder = folder;
             return;
         }
     }
-    if (shop && shop.isHovered(e.clientX, e.clientY)) {
-        shop.handleClick({
-            x: e.clientX,
-            y: e.clientY,
-            holding: draggedFolder !== null
-        });
-        return;
-    }
+
     if (shop && shop.isHovered(e.clientX, e.clientY)) {
         draggedShop = true;
         shopStartX = e.clientX;
@@ -153,7 +147,6 @@ canvas.addEventListener("mousedown", e => {
         shop.wasDragged = false;
         return;
     }
-
 
     mouseDown = true;
 });
@@ -354,6 +347,7 @@ function updateGame() {
     }
 
     if (shop) {
+        shop.drawConnectionLine(ctx);
         shop.draw(ctx);
     }
 
