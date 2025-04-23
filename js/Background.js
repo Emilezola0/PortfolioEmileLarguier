@@ -63,7 +63,7 @@ export class Background {
     spawnShootingStar() {
         if (Math.random() < 0.002) {
             const angle = Math.random() * (Math.PI / 4) + Math.PI / 8; // entre 22.5° et 67.5°
-            const speed = Math.random() * 3 + 3;
+            const speed = Math.random() * 1 + 2;
 
             const startX = Math.random() < 0.5 ? -50 : this.canvas.width + 50;
             const startY = Math.random() * this.canvas.height * 0.3;
@@ -74,10 +74,11 @@ export class Background {
             this.shootingStars.push({
                 x: startX,
                 y: startY,
-                vx,
-                vy,
-                life: 120,
-                length: 100,
+                vx: -vx,
+                vy: vy,
+                life: 100,
+                length: Math.random() * 80 + 40,
+                alpha: 1
             });
         }
     }
@@ -95,6 +96,7 @@ export class Background {
             s.x += s.vx;
             s.y += s.vy;
             s.life -= 1;
+            s.alpha = s.life / 100; // gradually decreases  
             if (s.life <= 0) this.shootingStars.splice(i, 1);
         }
 
@@ -142,7 +144,7 @@ export class Background {
             const endY = s.y - s.vy * s.length * 0.1;
 
             const gradient = ctx.createLinearGradient(s.x, s.y, endX, endY);
-            gradient.addColorStop(0, "rgba(255,255,255,0.8)");
+            gradient.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
             gradient.addColorStop(1, "rgba(255,255,255,0)");
 
             ctx.beginPath();
@@ -156,6 +158,6 @@ export class Background {
 
     onResize() {
         this.initStars();
-        this.cosmicDust = this.generateDust(); // On régénère la poussière cosmique aussi
+        this.cosmicDust = this.generateDust(); // Regenerate cosmic dust
     }
 }
