@@ -109,17 +109,12 @@ export class Shop {
     }
 
     drawConnectionLine(ctx) {
-        // Check if have folder
-        if (!this.folders) return;
-
-        const folder = this.getClosestFolder(this.folders);
-        if (!folder) return;
 
         // Continue the script if have folder
         const folder = this.getClosestFolder(this.folders);
         if (!folder) return;
 
-        // Incrément progressif vers 1
+        // Increment progressif vers 1
         if (this.connectionProgress < 1) {
             this.connectionProgress += 0.02; // Vitesse d’animation
         }
