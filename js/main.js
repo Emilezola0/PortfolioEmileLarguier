@@ -182,10 +182,11 @@ canvas.addEventListener("mouseup", () => {
     draggedFolder = null;
 
     // Shop
-    if (shop) shop.handleMouseUp();
+    if (shop && shop.isHovered(e.clientX, e.clientY)) {
+        shop.handleMouseUp();
+    }
     draggedShop = false;
 
-    // Mouse
     mouseDown = false;
 });
 
@@ -347,8 +348,8 @@ function updateGame() {
     }
 
     if (shop) {
-        shop.drawConnectionLine(ctx);
         shop.draw(ctx);
+        shop.drawConnectionLine(ctx);
     }
 
     collector.draw(ctx);

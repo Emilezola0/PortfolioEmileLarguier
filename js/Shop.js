@@ -109,6 +109,13 @@ export class Shop {
     }
 
     drawConnectionLine(ctx) {
+        // Check if have folder
+        if (!this.folders) return;
+
+        const folder = this.getClosestFolder(this.folders);
+        if (!folder) return;
+
+        // Continue the script if have folder
         const folder = this.getClosestFolder(this.folders);
         if (!folder) return;
 
