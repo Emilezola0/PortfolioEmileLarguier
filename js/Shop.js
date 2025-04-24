@@ -13,7 +13,7 @@ export class Shop {
         this.pulse = 0;
         this.pulseDirection = 1;
 
-        this.numberOfScraps = null;
+        this.numberOfScraps = 0;
         this.folders = null;
         this.targetFolder = null;
         this.connectionProgress = 0;
@@ -27,7 +27,7 @@ export class Shop {
     }
 
     setContext(totalNumberOfScrap, folders) {
-        this.spendScrap = totalNumberOfScrap;
+        this.numberOfScraps = totalNumberOfScrap;
         this.folders = folders;
     }
 
@@ -100,10 +100,10 @@ export class Shop {
         `;
             div.onclick = () => {
                 const target = this.targetFolder;
-                console.log("click button", this.targetFolder.scrap, " // number of scrap: ", this.numberOfScraps);
+                console.log("number of scrap: ", this.numberOfScraps);
                 console.log("btn cost: ", btn.cost, "btn key:", btn.key);
-                if (target && this.numberOfScraps.scrap >= btn.cost) {
-                    this.numberOfScraps.scrap -= btn.cost;
+                if (target && this.numberOfScraps >= btn.cost) {
+                    this.numberOfScraps -= btn.cost;
                     spendScrap(btn.cost);
                     upgradeFolder(target, btn.key);
                     closeShop();
