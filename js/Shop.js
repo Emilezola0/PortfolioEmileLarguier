@@ -1,4 +1,5 @@
 import { upgradeFolder } from "./upgrades.js";
+import { main } from "./main.js";
 export class Shop {
     constructor(x, y) {
         this.x = x;
@@ -25,8 +26,8 @@ export class Shop {
         ];
     }
 
-    setContext(spendScrapFunc, folders) {
-        this.spendScrap = spendScrapFunc;
+    setContext(totalNumberOfScrap, folders) {
+        this.spendScrap = totalNumberOfScrap;
         this.folders = folders;
     }
 
@@ -104,6 +105,7 @@ export class Shop {
                 console.log("btn cost: ", btn.cost, "btn key:", btn.key);
                 if (target && this.numberOfScraps.scrap >= btn.cost) {
                     this.numberOfScraps.scrap -= btn.cost;
+                    main.spendScrap(btn.cost);
                     upgradeFolder(target, btn.key);
                     closeShop();
                 }

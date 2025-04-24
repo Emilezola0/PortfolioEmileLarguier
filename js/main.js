@@ -370,12 +370,11 @@ function updateGame() {
 function spendScrap(amount) {
     if (totalNumberOfScraps >= amount) {
         totalNumberOfScraps -= amount;
-        return true;
+        shop.setContext(totalNumberOfScraps, folders);
+        return;
     }
-    return false;
+    return;
 }
-
-shop.setContext(spendScrap, folders);
 
 fetch("public/projects.json")
     .then(res => res.json())
