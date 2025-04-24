@@ -198,7 +198,6 @@ canvas.addEventListener("mouseup", (e) => {
     if (draggedFolder && draggedFolder.isHovered(e.clientX, e.clientY)) {
         draggedFolder.handleMouseUp();
     }
-    draggedFolder.dragging = false;
     draggedFolder = null;
 
     // Shop
