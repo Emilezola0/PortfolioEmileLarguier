@@ -26,9 +26,14 @@
     </div>
     <!-- Folder Pop-up -->
     <div id="folder-popup" class="popup hidden">
-        <div class="popup-header">Dossier</div>
-        <div id="folder-content"></div>
-        <button onclick="closeFolderPopup()">Fermer</button>
+        <div class="popup-header">
+            <span id="folder-title">...</span>
+            <button class="popup-close-btn" onclick="closeFolderPopup()">×</button>
+        </div>
+        <div class="popup-content" id="folder-content">
+            <!-- image + texte -->
+        </div>
+        <div class="popup-nav" id="popup-nav"></div>
     </div>
     <!-- Audio -->
     <audio id="scrapSound" src="assets/collect.mp3" preload="auto"></audio>

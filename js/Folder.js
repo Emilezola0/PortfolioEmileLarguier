@@ -14,6 +14,7 @@ export class Folder {
 
         // Apparence & interaction
         this.dragging = false;
+        this.mouseDownPos = null;
         this.width = 32;
         this.height = 32;
 
@@ -150,6 +151,7 @@ export class Folder {
     }
 
     handleClick(mouse) {
+        this.mouseDownPos = { x: mouse.x, y: mouse.y };
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const dist = Math.hypot(dx, dy);
@@ -159,25 +161,57 @@ export class Folder {
         }
     }
 
-    handleMouseUp() {
-        // Click without moving => open the shop
-        if (!this.dragging) {
-            this.openFolderPopup();
+    handleMouseUp(mouse) {
+        if (this.mouseDownPos) {
+            const dx = mouse.x - this.mouseDownPos.x;
+            const dy = mouse.y - this.mouseDownPos.y;
+            const moved = Math.hypot(dx, dy) > 5;
+
+            if (!moved) {
+                this.openFolderPopup();
+            }
         }
         this.dragging = false;
+        this.mouseDownPos = null;
     }
 
     openFolderPopup() {
         const popup = document.getElementById("folder-popup");
         const container = document.getElementById("folder-content");
+        const title = document.getElementById("folder-title");
 
         import(`./projects/project_${this.name}.js`)
             .then(module => {
-                container.innerHTML = module.getProjectContent();
+                const data = module.getProjectContent();
+                let currentIndex = 0;
+
+                const updateSlide = () => {
+                    const slide = data.slides[currentIndex];
+                    container.innerHTML = `
+                    <img src="${slide.img}" class="popup-image" />
+                    <p>${slide.desc}</p>
+                `;
+
+                    nav.innerHTML = `
+                    ${currentIndex > 0 ? '<button id="prev-slide"><-</button>' : ''}
+                    ${currentIndex < data.slides.length - 1 ? '<button id="next-slide">-></button>' : ''}
+                `;
+
+                    if (currentIndex > 0)
+                        document.getElementById("prev-slide").onclick = () => { currentIndex--; updateSlide(); };
+                    if (currentIndex < data.slides.length - 1)
+                        document.getElementById("next-slide").onclick = () => { currentIndex++; updateSlide(); };
+                };
+
+                title.textContent = data.title;
+                const nav = document.getElementById("popup-nav");
+                updateSlide();
                 popup.classList.remove("hidden");
             })
             .catch(err => {
+                title.textContent = "Erreur";
                 container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
+                document.getElementById("popup-nav").innerHTML = "";
                 popup.classList.remove("hidden");
             });
     }
