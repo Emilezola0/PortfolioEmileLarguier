@@ -158,9 +158,11 @@ export class Folder {
         if (this.mouseDownPos) {
             const dx = mouse.x - this.mouseDownPos.x;
             const dy = mouse.y - this.mouseDownPos.y;
-            const moved = Math.hypot(dx, dy) > 5;
+            const moved = Math.hypot(dx, dy) > 20;
+            console.log(Math.hypot(dx, dy));
 
             if (!moved) {
+                console.log("OPEN FOLDER");
                 this.openFolderPopup();
             }
         }
