@@ -2,16 +2,16 @@ export const upgrades = [
     {
         id: "atkSpeed",
         label: "Attack Speed",
-        key: "attackSpeed",
+        key: "atkSpeed",
         cost: 50,
-        apply: folder => folder.stats.attackSpeed *= 0.9, // 10% plus rapide
+        apply: folder => folder.stats.atkSpeed *= 0.9, // 10% plus rapide
     },
     {
-        id: "damage",
+        id: "atkDamage",
         label: "Damage",
-        key: "damage",
+        key: "atkDamage",
         cost: 100,
-        apply: folder => folder.stats.damage += 1,
+        apply: folder => folder.stats.atkDamage += 1,
     },
     {
         id: "range",
@@ -36,8 +36,14 @@ export const upgrades = [
     },
 ];
 
-// Cette fonction applique une upgrade au folder
-export function upgradeFolder(folder, upgrade) {
-    upgrade.apply(folder); // Apply bonus
+// Fonction d'application d'une upgrade à un folder donné
+export function upgradeFolder(folder, upgradeKey) {
+    const upgrade = upgrades.find(u => u.key === upgradeKey);
+    if (!upgrade) {
+        console.warn("Upgrade not found:", upgradeKey);
+        return false;
+    }
+
+    upgrade.apply(folder);
     return true;
 }

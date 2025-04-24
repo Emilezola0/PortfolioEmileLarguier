@@ -18,8 +18,8 @@ export class Shop {
         this.targetFolder = null;
         this.connectionProgress = 0;
         this.buttons = [
-            { name: "ATK Speed", key: "attackSpeed", cost: 10 },
-            { name: "Damage", key: "attackDamage", cost: 15 },
+            { name: "ATK Speed", key: "atkSpeed", cost: 10 },
+            { name: "Damage", key: "atkDamage", cost: 15 },
             { name: "Range", key: "range", cost: 20 },
             { name: "Bullet Speed", key: "bulletSpeed", cost: 12 },
             { name: "Pierce", key: "pierce", cost: 25 }
