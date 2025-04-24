@@ -154,6 +154,7 @@ export class Shop {
 
     // Movement
     isHovered(mx, my) {
+        refreshShopPopup()
         return Math.hypot(this.x - mx, this.y - my) < 20;
     }
 
@@ -329,23 +330,11 @@ export class Shop {
             }
 
             container.appendChild(div);
-        }
-    }
 
-    refreshFoldersStats() {
-
-        const popup = document.getElementById("shop-popup");
-        if (popup.classList.contains("hidden")) return;
-
-        const container = document.getElementById("shop-content");
-        container.innerHTML = "";
-
-        this.targetFolder = this.getClosestFolder(this.folders);
-
-        if (this.targetFolder) {
-            const statsDiv = document.createElement("div");
-            statsDiv.className = "folder-stats";
-            statsDiv.innerHTML = `
+            if (this.targetFolder) {
+                const statsDiv = document.createElement("div");
+                statsDiv.className = "folder-stats";
+                statsDiv.innerHTML = `
             <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
             <strong>Stats:</strong><br>
             ATK Speed: ${this.targetFolder.stats.atkSpeed}<br>
@@ -353,9 +342,9 @@ export class Shop {
             Range: ${this.targetFolder.stats.range}<br>
             Bullet Speed: ${this.targetFolder.stats.bulletSpeed}<br>
             Pierce: ${this.targetFolder.stats.pierce}
-        `;
-
-            container.appendChild(statsDiv);
+            `;
+                container.appendChild(statsDiv);
+            }
         }
     }
 }
