@@ -100,7 +100,6 @@ export class Shop {
         `;
             div.onclick = () => {
                 const target = this.targetFolder;
-                console.log("with a .cost:", this.numberOfScraps.cost);
                 console.log("click button", this.targetFolder.scrap, " // number of scrap: ", this.numberOfScraps);
                 console.log("btn cost: ", btn.cost, "btn key:", btn.key);
                 if (target && this.numberOfScraps.scrap >= btn.cost) {
