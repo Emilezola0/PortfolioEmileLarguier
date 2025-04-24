@@ -157,6 +157,13 @@ canvas.addEventListener("mousedown", e => {
 });
 
 canvas.addEventListener("mousemove", e => {
+
+    // Update mouse pos for each folders
+    for (const folder of folders) {
+        // check if mouse hover folder
+        folder.hovered = folder.isHovered(e.clientX, e.clientY);
+    }
+
     if (collector.dragging) {
         collector.update(e.clientX, e.clientY);
         return;
@@ -188,7 +195,6 @@ canvas.addEventListener("mousemove", e => {
         shopStartX = e.clientX;
         shopStartY = e.clientY;
     }
-
 });
 
 canvas.addEventListener("mouseup", (e) => {
