@@ -109,8 +109,11 @@ export class Folder {
             ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
             ctx.shadowBlur = 20;
         } else if (this.hovered) {
-            ctx.shadowColor = "rgba(255, 255, 255, 0.25)";
-            ctx.shadowBlur = 10;
+            // Halo lumineux avec un flou plus intense
+            ctx.shadowColor = "rgba(255, 255, 255, 0.75)"; // Blanc lumineux
+            ctx.shadowBlur = 30; // Plus de flou pour créer l'effet de halo
+            ctx.shadowOffsetX = 0; // Pas de décalage horizontal
+            ctx.shadowOffsetY = 0; // Pas de décalage vertical
         }
 
         // Dessiner l’image du dossier ou un fallback
@@ -140,8 +143,10 @@ export class Folder {
 
 
     isHovered(mx, my) {
-        return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
+        const isHovered = mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
             my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
+        this.hovered = isHovered; // update state 'hovered'
+        return isHovered;
     }
 
     handleClick(mouse) {
