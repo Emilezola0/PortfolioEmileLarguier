@@ -145,8 +145,6 @@ export class Folder {
     }
 
     handleClick(mouse) {
-        if (this.dragging) return; // Ne pas ouvrir si on est en train de le bouger
-
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const dist = Math.hypot(dx, dy);
@@ -154,6 +152,14 @@ export class Folder {
         if (dist < 20 && !mouse.holding) {
             this.openFolderPopup();
         }
+    }
+
+    handleMouseUp() {
+        // Click without moving => open the shop
+        if (!this.dragging) {
+            this.openFolderPopup();
+        }
+        this.dragging = false;
     }
 
     openFolderPopup() {
@@ -169,6 +175,11 @@ export class Folder {
                 container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
                 popup.classList.remove("hidden");
             });
+    }
+
+    updatePosition(dx, dy) {
+        this.x += dx;
+        this.y += dy;
     }
 }
 

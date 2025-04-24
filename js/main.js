@@ -136,8 +136,9 @@ canvas.addEventListener("mousedown", e => {
     for (const folder of folders) {
         if (folder.isHovered(e.clientX, e.clientY)) {
             draggedFolder = folder;
-            dragStartPos = { x: e.clientX, y: e.clientY };
-            mouseClickTime = Date.now(); // detect short click
+            folderStartX = e.clientX;
+            folderStartY = e.clientY;
+            draggedFolder.dragging = false;
             return;
         }
     }
@@ -159,10 +160,20 @@ canvas.addEventListener("mousemove", e => {
         return;
     }
     if (draggedFolder) {
-        draggedFolder.x += (e.clientX - draggedFolder.x) * 0.2;
-        draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
-        draggedFolder.dragging = true;
+        // OLD ONE == draggedFolder.x += (e.clientX - draggedFolder.x) * 0.2;
+        // OLD ONE == draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
+        const dx = e.clientX - folderStartX;
+        const dy = e.clientY - folderStartY;
+
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            draggedFolder.dragging = true;
+        }
+
+        draggedFolder.updatePosition(e.movementX, e.movementY);
+        folderStartX = e.clientX;
+        folderStartY = e.clientY;
     }
+
     if (draggedShop && shop && !draggedFolder) {
         const dx = e.clientX - shopStartX;
         const dy = e.clientY - shopStartY;
@@ -182,20 +193,11 @@ canvas.addEventListener("mouseup", (e) => {
     // Collector
     collector.dragging = false;
     // Folder
-    if (draggedFolder) {
-        const dx = e.clientX - dragStartPos.x;
-        const dy = e.clientY - dragStartPos.y;
-        const distance = Math.hypot(dx, dy);
-
-        const clickDuration = Date.now() - mouseClickTime;
-
-        // not moving and fast click -> open folder pop up
-        if (distance < 5 && clickDuration < 300) {
-            openFolderPopup(draggedFolder);
-        }
-
-        draggedFolder = null;
+    if (draggedFolder && draggedFolder.isHovered(e.clientX, e.clientY)) {
+        draggedFolder.handleMouseUp();
     }
+    draggedFolder.dragging = false;
+    draggedFolder = null;
 
     // Shop
     if (shop && shop.isHovered(e.clientX, e.clientY)) {
