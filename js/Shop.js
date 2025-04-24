@@ -14,6 +14,7 @@ export class Shop {
         this.pulseDirection = 1;
 
         this.lastTargetFolder = null;
+        this.shopIsOpen = false;
 
         this.numberOfScraps = 0;
         this.folders = null;
@@ -81,9 +82,12 @@ export class Shop {
     openShopPopup() {
         // Si folders est null ou vide, on ferme le shop
         if (!Array.isArray(this.folders) || this.folders.length === 0) {
+            this.shopIsOpen = false;
             closeShop();
             return;
         }
+
+        this.shopIsOpen = true;
 
         const popup = document.getElementById("shop-popup");
         popup.classList.remove("hidden");
@@ -297,8 +301,10 @@ export class Shop {
     }
 
     refreshShopPopup() {
-        closeShop();
-        this.openShopPopup();
+        if (this.shopIsOpen) {
+            closeShop();
+            this.openShopPopup();
+        }
     }
 }
 
