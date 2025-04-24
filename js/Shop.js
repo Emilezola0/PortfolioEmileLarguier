@@ -98,15 +98,13 @@ export class Shop {
             <span>${btn.name}</span>
             <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
         `;
-            if (this.numberOfScraps >= btn.cost) {
-                div.onclick = () => {
-                    const target = this.targetFolder;
-                    if (target) {
-                        this.numberOfScraps -= btn.cost;
-                        spendScrap(btn.cost);
-                        upgradeFolder(target, btn.key);
-                    }
-                };
+            div.onclick = () => {
+                const target = this.targetFolder;
+                if (this.numberOfScraps >= btn.cost) {
+                    this.numberOfScraps -= btn.cost;
+                    spendScrap(btn.cost);
+                    upgradeFolder(target, btn.key);
+                }
             }
 
             if (this.numberOfScraps < btn.cost) {
