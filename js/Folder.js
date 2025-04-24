@@ -27,6 +27,16 @@ export class Folder {
             pierce: 1
         };
 
+        // === Upgrade Levels ===
+        this.upgradeLevels = {
+            atkSpeed: 0,
+            atkDamage: 0,
+            range: 0,
+            bulletSpeed: 0,
+            pierce: 0,
+        };
+
+
         // Image
         this.folderImg = new Image();
         this.folderImg.src = "assets/folder.png";
@@ -82,7 +92,15 @@ export class Folder {
             const vx = (dx / dist) * this.stats.bulletSpeed;
             const vy = (dy / dist) * this.stats.bulletSpeed;
 
-            bullets.push(new Bullet(this.x, this.y, vx, vy, this.stats.atkDamage, this.stats.pierce));
+            bullets.push(new Bullet(
+                this.x,
+                this.y,
+                vx,
+                vy,
+                this.stats.atkDamage,     // damage
+                this.stats.pierce,        // pierce
+                this.stats.bulletSpeed    // speed projectile
+            ));
             SoundManager.play(this.projectileAudio, this.volume);
             this.cooldown = this.stats.atkSpeed;
         }

@@ -295,28 +295,25 @@ function updateGame() {
 
     for (let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
-        bullet.update();
-        bullet.draw(ctx);
-
-        if (bullet.isOutOfBounds(canvas)) {
-            bullets.splice(i, 1);
-            continue;
-        }
 
         for (let j = mobs.length - 1; j >= 0; j--) {
             const mob = mobs[j];
+
             if (bullet.hits(mob)) {
-                mob.takeDamage(50);
+                mob.takeDamage(bullet.damage); // damage
 
                 for (let k = 0; k < 10; k++) {
                     particles.push(new Particle(bullet.x, bullet.y, "orange"));
                 }
 
-                bullets.splice(i, 1);
+                const shouldDestroy = bullet.registerHit(); // update hitcount and check pierce
+
+                if (shouldDestroy) {
+                    bullets.splice(i, 1); // destroy if pierce is finished
+                }
 
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
-
                     SoundManager.play(explodeSound, soundEffectVolume);
 
                     const scrapCount = mob.scrapNumber || 1;
@@ -330,8 +327,7 @@ function updateGame() {
                     }
                 }
 
-                break;
-            }
+                break; // important cuz we don't touch only one mob per tick
         }
     }
 

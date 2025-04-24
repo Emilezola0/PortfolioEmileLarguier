@@ -1,15 +1,16 @@
 export class Bullet {
-    constructor(x, y, dx, dy, damage = 1, pierce = 1, speed = 5) {
+    constructor(x, y, dx, dy, damage = 1, pierce = 1, speed = 5, source = null) {
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
         this.speed = speed;
         this.radius = 4;
+        this.source = source;
 
-        this.damage = damage;   // Dégâts infligés
-        this.pierce = pierce;   // Combien d'ennemis la balle peut traverser
-        this.hitCount = 0;      // Nombre d'ennemis touchés
+        this.damage = damage;   // damage
+        this.pierce = pierce;   // pierce
+        this.hitCount = 0;      // how much mob was hit
     }
 
     update() {
@@ -44,25 +45,25 @@ class Particle {
     constructor(x, y, color) {
         this.x = x;
         this.y = y;
-        this.radius = Math.random() * 2 + 1; // Rayon aléatoire entre 1 et 3
+        this.radius = Math.random() * 2 + 1; // Random laser between
         this.color = color;
-        this.life = 30;  // Durée de vie de la particule
-        this.vx = (Math.random() - 0.5) * 2; // Vitesse aléatoire sur x
-        this.vy = (Math.random() - 0.5) * 2; // Vitesse aléatoire sur y
+        this.life = 30;  // lifetime particle
+        this.vx = (Math.random() - 0.5) * 2; // Random speed on x
+        this.vy = (Math.random() - 0.5) * 2; // Random speed on y
     }
 
     update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.life--;  // Réduction de la durée de vie
+        this.life--;  // lifetime reduction
     }
 
     draw(ctx) {
-        ctx.globalAlpha = this.life / 30;  // Gestion de la transparence en fonction de la durée de vie
+        ctx.globalAlpha = this.life / 30;  // Transparency depending of lifetime
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.globalAlpha = 1;  // Restaurer la valeur de alpha après le dessin de la particule
+        ctx.globalAlpha = 1;  // Restore alpha after lifetime particle
     }
 }

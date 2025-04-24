@@ -1,5 +1,9 @@
-import { upgradeFolder } from "./upgrades.js";
+import { upgradeFolder, getUpgradeCost } from "./upgrades.js";
 import { spendScrap } from "./main.js";
+
+const powerUpAudio = new Audio("assets/audio/powerUp.mp3");
+powerUpAudio.volume = 0.6; // ajuste si besoin
+
 export class Shop {
     constructor(x, y) {
         this.x = x;
@@ -98,25 +102,41 @@ export class Shop {
         this.targetFolder = this.getClosestFolder(this.folders); // Important : update folder target
 
         for (const btn of this.buttons) {
+            const level = this.targetFolder.upgrades?.[btn.key] || 0;
+            const cost = getUpgradeCost(this.targetFolder, btn.key);
+
             const div = document.createElement("div");
             div.className = "shop-item";
             div.innerHTML = `
-            <span>${btn.name}</span>
-            <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
-        `;
-            if (this.numberOfScraps >= btn.cost) {
+        <span>${btn.name} (Lvl ${level})</span>
+        <span>${Math.floor(cost)} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
+    `;
+
+            // === Style spécial par palier ===
+            if (level >= 5) {
+                const tier = Math.floor(level / 5); // 5-9 => 1, 10-14 => 2, etc.
+                div.classList.add(`upgrade-tier-${tier}`);
+            }
+
+            if (this.numberOfScraps >= cost) {
                 div.onclick = () => {
                     const target = this.targetFolder;
                     if (target) {
-                        this.numberOfScraps -= btn.cost;
-                        spendScrap(btn.cost);
+                        this.numberOfScraps -= cost;
+                        spendScrap(cost);
+                        const oldLevel = target.upgrades?.[btn.key] || 0;
                         upgradeFolder(target, btn.key);
+                        const newLevel = (target.upgrades?.[btn.key] || 0);
+
+                        // Si on vient d’atteindre un nouveau palier
+                        if (Math.floor(newLevel / 5) > Math.floor(oldLevel / 5)) {
+                            powerUpAudio.currentTime = 0;
+                            powerUpAudio.play();
+                        }
                         this.refreshShopPopup();
                     }
                 };
-            }
-
-            if (this.numberOfScraps < btn.cost) {
+            } else {
                 div.style.borderColor = "#ff4444";
                 div.style.color = "#ff9999";
                 div.style.cursor = "not-allowed";

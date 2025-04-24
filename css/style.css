@@ -277,5 +277,69 @@ input[type="checkbox"]:checked + .custom-toggle {
             color: #111;
         }
 
+.upgrade-tier-1 {
+    animation: glow1 1.5s infinite alternate;
+    border: 2px solid #88f;
+    background: rgba(100, 100, 255, 0.1);
+}
+
+.upgrade-tier-2 {
+    animation: glow2 1.2s infinite alternate;
+    border: 2px solid #4f4;
+    background: rgba(100, 255, 100, 0.1);
+}
+
+.upgrade-tier-3 {
+    animation: glow3 1s infinite alternate;
+    border: 2px solid #ff8;
+    background: rgba(255, 255, 100, 0.1);
+}
+
+.upgrade-tier-4 {
+    animation: glow4 0.8s infinite alternate;
+    border: 2px solid #ff69b4;
+    background: rgba(255, 105, 180, 0.1);
+}
+
+@keyframes glow1 {
+    from {
+        box-shadow: 0 0 5px #88f;
+    }
+
+    to {
+        box-shadow: 0 0 15px #88f;
+    }
+}
+
+@keyframes glow2 {
+    from {
+        box-shadow: 0 0 5px #4f4;
+    }
+
+    to {
+        box-shadow: 0 0 15px #4f4;
+    }
+}
+
+@keyframes glow3 {
+    from {
+        box-shadow: 0 0 5px #ff8;
+    }
+
+    to {
+        box-shadow: 0 0 15px #ff8;
+    }
+}
+
+@keyframes glow4 {
+    from {
+        box-shadow: 0 0 5px #ff69b4;
+    }
+
+    to {
+        box-shadow: 0 0 15px #ff69b4;
+    }
+}
+
 
 
