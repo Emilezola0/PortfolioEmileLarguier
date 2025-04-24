@@ -251,9 +251,6 @@ export class Folder {
         document.body.appendChild(popup);
 
         // === FONCTIONNALITE DE RESIZE ===
-        let resizing = false;
-        let startX, startY, startWidth, startHeight;
-
         resizeHandle.addEventListener("mousedown", (e) => {
             e.preventDefault();
             resizing = true;
