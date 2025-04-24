@@ -180,6 +180,7 @@ export class Shop {
 
         // Reset if new Target Folder detected
         if (!this.lastTargetFolder || this.lastTargetFolder !== this.targetFolder) {
+            this.lastTargetFolder = this.targetFolder;
             this.connectionProgress = 0;
         }
 
