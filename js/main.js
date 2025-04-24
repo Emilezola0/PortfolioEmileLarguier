@@ -185,7 +185,6 @@ canvas.addEventListener("mousemove", e => {
         }
 
         shop.updatePosition(e.movementX, e.movementY);
-        shop.refreshShopPopup(); // Refresh when you move the shop
         shopStartX = e.clientX;
         shopStartY = e.clientY;
     }
