@@ -162,7 +162,6 @@ export class Shop {
 
         const xEnd = this.x + (this.targetFolder.x - this.x) * progress;
         const yEnd = this.y + (this.targetFolder.y - this.y) * progress;
-        const yEnd = this.y + (this.targetFolder.y - this.y) * progress;
 
         ctx.save();
         ctx.strokeStyle = "white";
