@@ -170,6 +170,7 @@ export class Folder {
             .then(module => {
                 container.innerHTML = module.getProjectContent();
                 popup.classList.remove("hidden");
+                popup.style.display = "block"; // ligne test
             })
             .catch(err => {
                 container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
