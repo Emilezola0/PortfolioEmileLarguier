@@ -221,6 +221,32 @@ export class Folder {
         resizeHandle.style.backgroundPosition = "center";
         popup.appendChild(resizeHandle);
 
+        let resizing = false;
+        let startX, startY, startWidth, startHeight;
+
+        resizeHandle.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            resizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(popup).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(popup).height, 10);
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", stopResize);
+        });
+
+        function resize(e) {
+            if (!resizing) return;
+            popup.style.width = startWidth + (e.clientX - startX) + "px";
+            popup.style.height = startHeight + (e.clientY - startY) + "px";
+        }
+
+        function stopResize() {
+            resizing = false;
+            document.removeEventListener("mousemove", resize);
+            document.removeEventListener("mouseup", stopResize);
+        }
+
         // === Ajout au DOM ===
         document.body.appendChild(popup);
 
@@ -323,29 +349,3 @@ window.makeFolderPopupDraggable = function () {
 };
 
 window.makeFolderPopupDraggable();
-
-let resizing = false;
-let startX, startY, startWidth, startHeight;
-
-resizeHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    resizing = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startWidth = parseInt(document.defaultView.getComputedStyle(popup).width, 10);
-    startHeight = parseInt(document.defaultView.getComputedStyle(popup).height, 10);
-    document.addEventListener("mousemove", resize);
-    document.addEventListener("mouseup", stopResize);
-});
-
-function resize(e) {
-    if (!resizing) return;
-    popup.style.width = startWidth + (e.clientX - startX) + "px";
-    popup.style.height = startHeight + (e.clientY - startY) + "px";
-}
-
-function stopResize() {
-    resizing = false;
-    document.removeEventListener("mousemove", resize);
-    document.removeEventListener("mouseup", stopResize);
-}
