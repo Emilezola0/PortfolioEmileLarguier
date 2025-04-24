@@ -111,6 +111,7 @@ export class Shop {
                         this.numberOfScraps -= btn.cost;
                         spendScrap(btn.cost);
                         upgradeFolder(target, btn.key);
+                        this.refreshShopPopup();
                     }
                 };
             }
@@ -301,9 +302,12 @@ export class Shop {
     }
 
     refreshShopPopup() {
-        if (this.shopIsOpen) {
+        if (this.shopIsOpen == true) {
             closeShop(this);
             this.openShopPopup();
+            return;
+        } else {
+            return;
         }
     }
 }
