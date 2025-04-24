@@ -170,86 +170,93 @@ export class Folder {
         this.mouseDownPos = null;
     }
 
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.translate(this.x, this.y);
+
+        // Appliquer une rotation si en absorption
+        if (this.absorbing) ctx.rotate(this.absorbAngle);
+
+        // Scale depending of state
+        let scale = 1.0;
+        if (this.dragging) {
+            scale = 1.2;
+        } else if (this.hovered) {
+            scale = 1.1;
+        }
+        ctx.scale(scale, scale);
+
+        // Shadow if drag or hover
+        if (this.dragging) {
+            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+            ctx.shadowBlur = 20;
+        } else if (this.hovered) {
+            // Halo lumineux avec un flou plus intense
+            ctx.shadowColor = "rgba(255, 255, 255, 0.75)"; // Blanc lumineux
+            ctx.shadowBlur = 30; // Plus de flou pour cr er l'effet de halo
+            ctx.shadowOffsetX = 0; // Pas de d calage horizontal
+            ctx.shadowOffsetY = 0; // Pas de d calage vertical
+        }
+
+        // Dessiner l image du dossier ou un fallback
+        if (this.folderImg.complete) {
+            ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height);
+        } else {
+            ctx.fillStyle = "#ccc";
+            ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        }
+
+        ctx.restore();
+
+        // Dessiner le texte sous le dossier
+        if (!this.absorbing) {
+            ctx.fillStyle = "white";
+            ctx.font = "10px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(this.name, this.x, this.y + 28);
+        }
+
+        // Debogage : rayon de detection
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.stats.range, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.stroke();
+    }
+
+
+    isHovered(mx, my) {
+        const isHovered = mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
+            my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
+        this.hovered = isHovered; // update state 'hovered'
+        return isHovered;
+    }
+
+    handleClick(mouse) {
+        this.mouseDownPos = { x: mouse.x, y: mouse.y };
+    }
+
+    handleMouseUp(mouse) {
+        if (this.mouseDownPos) {
+            const dx = mouse.x - this.mouseDownPos.x;
+            const dy = mouse.y - this.mouseDownPos.y;
+            const moved = Math.hypot(dx, dy) > 20;
+            console.log(Math.hypot(dx, dy));
+
+            if (!moved) {
+                console.log("OPEN FOLDER");
+                this.openFolderPopup();
+            }
+        }
+        this.dragging = false;
+        this.mouseDownPos = null;
+    }
+
     openFolderPopup() {
-        let popup = document.getElementById("folder-popup");
+        const popup = document.getElementById("folder-popup");
+        const container = document.getElementById("folder-content");
+        const title = document.getElementById("folder-title");
 
-        // Si déjà ouvert, on le réaffiche
-        if (popup) {
-            popup.classList.remove("hidden");
-            return;
-        }
-
-        // === Création du popup ===
-        popup = document.createElement("div");
-        popup.id = "folder-popup";
-        popup.style.position = "absolute";
-        popup.style.top = "100px";
-        popup.style.left = "100px";
-        popup.style.width = "300px";
-        popup.style.height = "200px";
-        popup.style.background = "#fff";
-        popup.style.border = "1px solid #aaa";
-        popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-        popup.style.resize = "none"; // désactiver le resize natif
-        popup.style.overflow = "auto";
-        popup.style.zIndex = "9999";
-        popup.style.padding = "10px";
-
-        // === Éléments internes ===
-        const title = document.createElement("h2");
-        title.id = "folder-title";
-        popup.appendChild(title);
-
-        const container = document.createElement("div");
-        container.id = "folder-content";
-        popup.appendChild(container);
-
-        const nav = document.createElement("div");
-        nav.id = "popup-nav";
-        popup.appendChild(nav);
-
-        // === Handle de resize ===
-        const resizeHandle = document.createElement("div");
-        resizeHandle.style.position = "absolute";
-        resizeHandle.style.width = "16px";
-        resizeHandle.style.height = "16px";
-        resizeHandle.style.right = "0";
-        resizeHandle.style.bottom = "0";
-        resizeHandle.style.cursor = "se-resize";
-        resizeHandle.style.background = "url('data:image/svg+xml;utf8,<svg width=\"16\" height=\"16\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"0\" y1=\"16\" x2=\"16\" y2=\"0\" stroke=\"gray\" stroke-width=\"2\" /></svg>')";
-        resizeHandle.style.backgroundRepeat = "no-repeat";
-        resizeHandle.style.backgroundPosition = "center";
-        popup.appendChild(resizeHandle);
-
-        let resizing = false;
-        let startX, startY, startWidth, startHeight;
-
-        resizeHandle.addEventListener("mousedown", (e) => {
-            e.preventDefault();
-            resizing = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            startWidth = parseInt(window.getComputedStyle(popup).width, 10);
-            startHeight = parseInt(window.getComputedStyle(popup).height, 10);
-            document.addEventListener("mousemove", resize);
-            document.addEventListener("mouseup", stopResize);
-        });
-
-        function resize(e) {
-            if (!resizing) return;
-            popup.style.width = startWidth + (e.clientX - startX) + "px";
-            popup.style.height = startHeight + (e.clientY - startY) + "px";
-        }
-
-        function stopResize() {
-            resizing = false;
-            document.removeEventListener("mousemove", resize);
-            document.removeEventListener("mouseup", stopResize);
-        }
-
-        document.body.appendChild(popup);
-
-        // === Chargement dynamique du contenu ===
         import(`./projects/project_${this.name}.js`)
             .then(module => {
                 const data = module.getProjectContent();
@@ -274,12 +281,15 @@ export class Folder {
                 };
 
                 title.textContent = data.title;
+                const nav = document.getElementById("popup-nav");
                 updateSlide();
+                popup.classList.remove("hidden");
             })
             .catch(err => {
                 title.textContent = "Erreur";
                 container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
-                nav.innerHTML = "";
+                document.getElementById("popup-nav").innerHTML = "";
+                popup.classList.remove("hidden");
             });
     }
 
