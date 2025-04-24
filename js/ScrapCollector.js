@@ -28,6 +28,12 @@ export class ScrapCollector {
         const size = 50;
         ctx.drawImage(this.img, this.x - size / 2, this.y - size / 2, size, size);
 
+        // Dessiner le texte sous le dossier
+        ctx.fillStyle = "white";
+        ctx.font = "10px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Collector", this.x, this.y + 28);
+
         ctx.restore();
     }
 
