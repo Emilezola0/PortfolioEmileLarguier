@@ -74,7 +74,7 @@ export class Shop {
         const dy = mouse.y - this.y;
         const dist = Math.hypot(dx, dy);
 
-        if (dist < 5 && !mouse.holding) {
+        if (dist < 20 && !mouse.holding) {
             this.openShopPopup();
         }
     }
@@ -158,7 +158,7 @@ export class Shop {
 
     // Movement
     isHovered(mx, my) {
-        return Math.hypot(this.x - mx, this.y - my) < 5;
+        return Math.hypot(this.x - mx, this.y - my) < 20;
     }
 
     updatePosition(dx, dy) {
