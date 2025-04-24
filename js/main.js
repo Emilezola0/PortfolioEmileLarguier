@@ -367,13 +367,13 @@ function updateGame() {
     requestAnimationFrame(updateGame); // <== continue que si pas Game Over
 }
 
-function spendScrap(amount) {
+export function spendScrap(amount) {
     if (totalNumberOfScraps >= amount) {
         totalNumberOfScraps -= amount;
         shop.setContext(totalNumberOfScraps, folders);
-        return;
+        return true;
     }
-    return;
+    return false;
 }
 
 fetch("public/projects.json")
