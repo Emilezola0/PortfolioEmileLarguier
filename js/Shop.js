@@ -309,6 +309,7 @@ export class Shop {
 }
 
 window.closeShop = function () {
+    this.shopIsOpen = false;
     document.getElementById("shop-popup").classList.add("hidden");
 };
 
