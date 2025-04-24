@@ -149,7 +149,7 @@ export class Folder {
         const dy = mouse.y - this.y;
         const dist = Math.hypot(dx, dy);
 
-        if (dist < 20 && !mouse.holding) {
+        if (dist < 5 && !mouse.holding) {
             this.openFolderPopup();
         }
     }
