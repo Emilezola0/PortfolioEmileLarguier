@@ -152,13 +152,6 @@ export class Folder {
 
     handleClick(mouse) {
         this.mouseDownPos = { x: mouse.x, y: mouse.y };
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < 10 && !mouse.holding) {
-            this.openFolderPopup();
-        }
     }
 
     handleMouseUp(mouse) {
