@@ -173,13 +173,13 @@ export class Folder {
     openFolderPopup() {
         let popup = document.getElementById("folder-popup");
 
-        // If pop-up exist, don't create it
+        // Si déjà ouvert, on le réaffiche
         if (popup) {
             popup.classList.remove("hidden");
             return;
         }
 
-        // Sinon on la cree
+        // === Création du popup ===
         popup = document.createElement("div");
         popup.id = "folder-popup";
         popup.style.position = "absolute";
@@ -190,12 +190,12 @@ export class Folder {
         popup.style.background = "#fff";
         popup.style.border = "1px solid #aaa";
         popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-        popup.style.resize = "none"; // on desactive le resize natif
+        popup.style.resize = "none"; // désactiver le resize natif
         popup.style.overflow = "auto";
         popup.style.zIndex = "9999";
         popup.style.padding = "10px";
 
-        // === CONTENU popup ===
+        // === Éléments internes ===
         const title = document.createElement("h2");
         title.id = "folder-title";
         popup.appendChild(title);
@@ -208,7 +208,7 @@ export class Folder {
         nav.id = "popup-nav";
         popup.appendChild(nav);
 
-        // === HANDLE DE RESIZE ===
+        // === Handle de resize ===
         const resizeHandle = document.createElement("div");
         resizeHandle.style.position = "absolute";
         resizeHandle.style.width = "16px";
@@ -224,33 +224,6 @@ export class Folder {
         let resizing = false;
         let startX, startY, startWidth, startHeight;
 
-        resizeHandle.addEventListener("mousedown", (e) => {
-            e.preventDefault();
-            resizing = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            startWidth = parseInt(document.defaultView.getComputedStyle(popup).width, 10);
-            startHeight = parseInt(document.defaultView.getComputedStyle(popup).height, 10);
-            document.addEventListener("mousemove", resize);
-            document.addEventListener("mouseup", stopResize);
-        });
-
-        function resize(e) {
-            if (!resizing) return;
-            popup.style.width = startWidth + (e.clientX - startX) + "px";
-            popup.style.height = startHeight + (e.clientY - startY) + "px";
-        }
-
-        function stopResize() {
-            resizing = false;
-            document.removeEventListener("mousemove", resize);
-            document.removeEventListener("mouseup", stopResize);
-        }
-
-        // === Ajout au DOM ===
-        document.body.appendChild(popup);
-
-        // === FONCTIONNALITE DE RESIZE ===
         resizeHandle.addEventListener("mousedown", (e) => {
             e.preventDefault();
             resizing = true;
@@ -274,7 +247,9 @@ export class Folder {
             document.removeEventListener("mouseup", stopResize);
         }
 
-        // === CHARGEMENT DU CONTENU ===
+        document.body.appendChild(popup);
+
+        // === Chargement dynamique du contenu ===
         import(`./projects/project_${this.name}.js`)
             .then(module => {
                 const data = module.getProjectContent();
@@ -307,6 +282,7 @@ export class Folder {
                 nav.innerHTML = "";
             });
     }
+
 
     updatePosition(dx, dy) {
         this.x += dx;
