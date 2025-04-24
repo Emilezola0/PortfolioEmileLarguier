@@ -341,5 +341,63 @@ input[type="checkbox"]:checked + .custom-toggle {
     }
 }
 
+/* Wave DISPLAY */
+#waveDisplay {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 12px;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00ffcc;
+    color: #00ffcc;
+    z-index: 1000;
+    text-shadow: 0 0 4px #00ffcc;
+    animation: crtFlicker 1.5s infinite steps(1);
+}
+
+.wave-tier-2 {
+    border-color: #ff8;
+    color: #ff8;
+    text-shadow: 0 0 6px #ff8;
+    background: rgba(255, 255, 100, 0.1);
+    animation: glow3 1.2s infinite alternate, crtFlicker 1s infinite steps(1);
+}
+
+.wave-tier-3 {
+    border-color: #ff69b4;
+    color: #ff69b4;
+    text-shadow: 0 0 8px #ff69b4;
+    background: rgba(255, 105, 180, 0.1);
+    animation: glow4 0.8s infinite alternate, crtFlicker 0.8s infinite steps(1);
+}
+
+/* Anomalie mobs */
+.lightAnomaly {
+    filter: contrast(1.2) saturate(2) hue-rotate(20deg);
+    animation: crtFlicker 1s infinite steps(1);
+}
+
+.heavyAnomaly {
+    filter: contrast(2.5) saturate(4) hue-rotate(180deg) blur(0.4px);
+    animation: crtFlicker 0.6s infinite steps(1), shake 0.4s infinite alternate;
+}
+
+@keyframes shake {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-1px, 1px);
+    }
+
+    100% {
+        transform: translate(1px, -1px);
+    }
+}
+
+
 
 

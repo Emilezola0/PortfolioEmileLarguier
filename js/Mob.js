@@ -14,8 +14,12 @@ export class Mob {
         const type = validTypes[Math.floor(Math.random() * validTypes.length)];
         this.type = type;
 
-        this.hp = type.hp;
-        this.maxHp = type.hp;
+        // --- SCALING exponentiel toutes les 5 vagues ---
+        const scalingHp = 1.15 ** Math.floor(wave / 5);     // +15% HP toutes les 5 vagues
+        const scalingSpeed = 1.10 ** Math.floor(wave / 5);  // +10% speed toutes les 5 vagues
+
+        this.hp = type.hp * scalingHp;
+        this.maxHp = this.hp;
         this.nutrition = type.nutrition || 1;
         this.scrapNumber = type.scrapNumber || 1;
         this.scale = type.scale || 1;
@@ -39,10 +43,20 @@ export class Mob {
         }
 
         const baseSpeed = type.speed || 0.5;
-        this.speed = baseSpeed * (0.9 + Math.random() * 0.2);
+        this.speed = baseSpeed * scalingSpeed * (0.9 + Math.random() * 0.2);
 
         this.dead = false;
         this.deathParticles = [];
+
+        // Type of anomalie depending of the wave
+        if (wave >= 20) {
+            this.anomalyClass = "heavyAnomaly";
+        } else if (wave >= 10) {
+            this.anomalyClass = "lightAnomaly";
+        } else {
+            this.anomalyClass = null;
+        }
+
     }
 
     update(center) {
@@ -65,10 +79,25 @@ export class Mob {
             ctx.translate(this.x, this.y);
             ctx.rotate(this.rotation);
             ctx.globalAlpha = this.opacity;
-            ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+
+            // temporary image with CSS if necessary
+            if (this.anomalyClass) {
+                const img = document.createElement("img");
+                img.src = this.image.src;
+                img.className = this.anomalyClass;
+                img.style.position = "absolute";
+                img.style.left = "-9999px"; // offscreen
+                document.body.appendChild(img);
+                ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+                img.remove();
+            } else {
+                ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+            }
+
             ctx.restore();
             ctx.globalAlpha = 1;
 
+            // HP Bar
             ctx.fillStyle = "red";
             const barWidth = 40 * this.scale;
             ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 10, barWidth * (this.hp / this.maxHp), 4);

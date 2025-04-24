@@ -328,71 +328,71 @@ function updateGame() {
                 }
 
                 break; // important cuz we don't touch only one mob per tick
+            }
         }
-    }
 
-    particles = particles.filter(p => p.life > 0);
-    particles.forEach(p => {
-        p.update();
-        p.draw(ctx);
-    });
+        particles = particles.filter(p => p.life > 0);
+        particles.forEach(p => {
+            p.update();
+            p.draw(ctx);
+        });
 
-    voidParticles = voidParticles.filter(p => p.life > 0);
+        voidParticles = voidParticles.filter(p => p.life > 0);
 
-    for (let i = flyingScraps.length - 1; i >= 0; i--) {
-        const scrap = flyingScraps[i];
-        const result = scrap.update(collector);
+        for (let i = flyingScraps.length - 1; i >= 0; i--) {
+            const scrap = flyingScraps[i];
+            const result = scrap.update(collector);
 
-        if (result === "collected") {
-            totalNumberOfScraps += 1;
-            flyingScraps.splice(i, 1);
+            if (result === "collected") {
+                totalNumberOfScraps += 1;
+                flyingScraps.splice(i, 1);
 
-            SoundManager.play(scrapSound, soundEffectVolume);
+                SoundManager.play(scrapSound, soundEffectVolume);
 
-            for (let p = 0; p < 6; p++) {
-                const angle = Math.random() * Math.PI * 2;
-                const radius = Math.random() * 15;
-                const px = collector.x + Math.cos(angle) * radius;
-                const py = collector.y + Math.sin(angle) * radius;
-                particles.push(new Particle(px, py, "yellow"));
+                for (let p = 0; p < 6; p++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = Math.random() * 15;
+                    const px = collector.x + Math.cos(angle) * radius;
+                    const py = collector.y + Math.sin(angle) * radius;
+                    particles.push(new Particle(px, py, "yellow"));
+                }
+
+                continue;
             }
 
-            continue;
+            scrap.draw(ctx, scrapImgCollect);
         }
 
-        scrap.draw(ctx, scrapImgCollect);
+        if (shop) {
+            if (shop.numberOfScraps !== totalNumberOfScraps) {
+                // Update if number are not the same
+                shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
+                shop.refreshShopPopup(); // update pop up if open
+            } else {
+                // Don't if it's not the same
+                shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
+            }
+            //For now no particle === shop.update(particles);
+            shop.draw(ctx);
+            shop.drawConnectionLine(ctx);
+
+            const popup = document.getElementById("shop-popup"); // Look if pop-up is open
+            if (popup && !popup.classList.contains("hidden")) {
+                shop.drawConnectionWithScrapCollector(ctx, collector);
+            }
+        }
+
+        collector.draw(ctx, totalNumberOfScraps);
+        drawUI();
+        spawnManager.update(mobs, voidZone.radius, canvas);
+
+        mobParticles = mobParticles.filter(p => p.life > 0);
+        mobParticles.forEach(p => {
+            p.update();
+            p.draw(ctx);
+        });
+        requestAnimationFrame(updateGame); // <== continue que si pas Game Over
     }
-
-    if (shop) {
-        if (shop.numberOfScraps !== totalNumberOfScraps) {
-            // Update if number are not the same
-            shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
-            shop.refreshShopPopup(); // update pop up if open
-        } else {
-            // Don't if it's not the same
-            shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
-        }
-        //For now no particle === shop.update(particles);
-        shop.draw(ctx);
-        shop.drawConnectionLine(ctx);
-
-        const popup = document.getElementById("shop-popup"); // Look if pop-up is open
-        if (popup && !popup.classList.contains("hidden")) {
-            shop.drawConnectionWithScrapCollector(ctx, collector);
-        }
-    }
-
-    collector.draw(ctx, totalNumberOfScraps);
-    drawUI();
-    spawnManager.update(mobs, voidZone.radius, canvas);
-
-    mobParticles = mobParticles.filter(p => p.life > 0);
-    mobParticles.forEach(p => {
-        p.update();
-        p.draw(ctx);
-    });
-
-    requestAnimationFrame(updateGame); // <== continue que si pas Game Over
 }
 
 export function spendScrap(amount) {
