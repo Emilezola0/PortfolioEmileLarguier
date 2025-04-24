@@ -219,31 +219,6 @@ canvas.addEventListener("mouseup", (e) => {
     mouseDown = false;
 });
 
-// NOT IMPLEMENTED
-function updateWaveDisplay() {
-    const wave = spawnManager.getWave();
-    waveDisplay.textContent = `Vague ${wave}`;
-
-    // Reset des classes avant d'appliquer les nouvelles
-    waveDisplay.classList.remove('wave-tier-2', 'wave-tier-3');
-
-    // Ajout des classes selon le niveau de vague
-    if (wave >= 10 && wave < 20) {
-        waveDisplay.classList.add('wave-tier-2');
-    } else if (wave >= 20) {
-        waveDisplay.classList.add('wave-tier-3');
-    }
-}
-
-function gameLoop() {
-    // other update : logique, dessin, etc.
-    spawnManager.update(mobs, voidRadius, canvas);
-
-    updateWaveDisplay(); // update here wave display
-
-    requestAnimationFrame(gameLoop);
-}
-
 function drawUI() {
     // Barre de pause entre vagues (uniquement si pas en Game Over)
     if (spawnManager.isPaused() && !isGameOver) {
@@ -451,4 +426,3 @@ fetch("public/projects.json")
         // Demarrer le jeu apres l'initialisation
         updateGame();
     });
-
