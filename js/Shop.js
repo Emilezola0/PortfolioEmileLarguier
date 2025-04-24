@@ -309,8 +309,13 @@ export class Shop {
 }
 
 window.closeShop = function () {
-    this.shopIsOpen = false;
+    // Cache le popup
     document.getElementById("shop-popup").classList.add("hidden");
+
+    // Ferme le shop en mettant shopIsOpen à false
+    if (shopInstance) { // shopInstance fait référence à ton objet Shop
+        shopInstance.shopIsOpen = false;
+    }
 };
 
 window.makeShopPopupDraggable = function () {
