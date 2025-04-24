@@ -367,8 +367,14 @@ function updateGame() {
     }
 
     if (shop) {
-        shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
-        shop.refreshShopPopup(); // update pop up if open
+        if (shop.numberOfScraps !== totalNumberOfScraps) {
+            // Update if number are not the same
+            shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
+            shop.refreshShopPopup(); // update pop up if open
+        } else {
+            // Don't if it's not the same
+            shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
+        }
         //For now no particle === shop.update(particles);
         shop.draw(ctx);
         shop.drawConnectionLine(ctx);

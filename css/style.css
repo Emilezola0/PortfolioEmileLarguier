@@ -189,7 +189,7 @@ input[type="checkbox"]:checked + .custom-toggle {
 }
 
 .hidden {
-    display: 0.2;
+    display: none;
 }
 
 .popup-header {
