@@ -169,7 +169,6 @@ export class Shop {
             this.openShopPopup();
         }
         this.wasDragged = false;
-        this.refreshShopPopup();
     }
 
     drawConnectionLine(ctx) {
