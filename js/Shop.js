@@ -296,55 +296,8 @@ export class Shop {
     }
 
     refreshShopPopup() {
-        const popup = document.getElementById("shop-popup");
-        if (popup.classList.contains("hidden")) return;
-
-        const container = document.getElementById("shop-content");
-        container.innerHTML = "";
-
-        this.targetFolder = this.getClosestFolder(this.folders);
-
-        for (const btn of this.buttons) {
-            const div = document.createElement("div");
-            div.className = "shop-item";
-            div.innerHTML = `
-            <span>${btn.name}</span>
-            <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
-        `;
-
-            if (this.numberOfScraps >= btn.cost) {
-                div.onclick = () => {
-                    const target = this.targetFolder;
-                    if (target) {
-                        this.numberOfScraps -= btn.cost;
-                        spendScrap(btn.cost);
-                        upgradeFolder(target, btn.key);
-                        this.refreshShopPopup(); // important : refresh after buying
-                    }
-                };
-            } else {
-                div.style.borderColor = "#ff4444";
-                div.style.color = "#ff9999";
-                div.style.cursor = "not-allowed";
-            }
-
-            container.appendChild(div);
-
-            if (this.targetFolder) {
-                const statsDiv = document.createElement("div");
-                statsDiv.className = "folder-stats";
-                statsDiv.innerHTML = `
-            <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
-            <strong>Stats:</strong><br>
-            ATK Speed: ${this.targetFolder.stats.atkSpeed}<br>
-            Damage: ${this.targetFolder.stats.atkDamage}<br>
-            Range: ${this.targetFolder.stats.range}<br>
-            Bullet Speed: ${this.targetFolder.stats.bulletSpeed}<br>
-            Pierce: ${this.targetFolder.stats.pierce}
-            `;
-                container.appendChild(statsDiv);
-            }
-        }
+        closeShop();
+        this.openShopPopup();
     }
 }
 
