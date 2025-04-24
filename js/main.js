@@ -140,6 +140,7 @@ canvas.addEventListener("mousedown", e => {
             draggedFolder = folder;
             folderStartX = e.clientX;
             folderStartY = e.clientY;
+            folder.handleClick({ x: e.clientX, y: e.clientY });
             draggedFolder.dragging = false;
             return;
         }
@@ -202,7 +203,7 @@ canvas.addEventListener("mouseup", (e) => {
     collector.dragging = false;
     // Folder
     if (draggedFolder && draggedFolder.isHovered(e.clientX, e.clientY)) {
-        draggedFolder.handleMouseUp();
+        draggedFolder.handleMouseUp({ x: e.clientX, y: e.clientY });
     }
     draggedFolder = null;
 
