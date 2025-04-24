@@ -182,6 +182,7 @@ export class Shop {
         if (!this.lastTargetFolder || this.lastTargetFolder !== this.targetFolder) {
             this.connectionProgress = 0;
             this.lastTargetFolder = this.targetFolder;
+            this.refreshShopPopup();
         }
 
         if (this.connectionProgress < 1) {
