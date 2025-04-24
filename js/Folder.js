@@ -175,6 +175,37 @@ export class Folder {
         const container = document.getElementById("folder-content");
         const title = document.getElementById("folder-title");
 
+        // Corner for scaling
+        const popup = document.createElement("div");
+        popup.id = "folder-popup";
+        popup.style.position = "absolute";
+        popup.style.top = "100px";
+        popup.style.left = "100px";
+        popup.style.width = "300px";
+        popup.style.height = "200px";
+        popup.style.background = "#fff";
+        popup.style.border = "1px solid #aaa";
+        popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
+        popup.style.resize = "none"; // desactivate le resize natif pour custom
+        popup.style.overflow = "auto";
+        popup.style.zIndex = "9999";
+        popup.style.padding = "10px";
+
+        // Add resize handle (bas droite)
+        const resizeHandle = document.createElement("div");
+        resizeHandle.style.position = "absolute";
+        resizeHandle.style.width = "16px";
+        resizeHandle.style.height = "16px";
+        resizeHandle.style.right = "0";
+        resizeHandle.style.bottom = "0";
+        resizeHandle.style.cursor = "se-resize";
+        // motif
+        resizeHandle.style.background = "url('data:image/svg+xml;utf8,<svg width=\"16\" height=\"16\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"0\" y1=\"16\" x2=\"16\" y2=\"0\" stroke=\"gray\" stroke-width=\"2\" /></svg>')";
+        resizeHandle.style.backgroundRepeat = "no-repeat";
+        resizeHandle.style.backgroundPosition = "center";
+        popup.appendChild(resizeHandle);
+
+
         import(`./projects/project_${this.name}.js`)
             .then(module => {
                 const data = module.getProjectContent();
@@ -249,3 +280,29 @@ window.makeFolderPopupDraggable = function () {
 };
 
 window.makeFolderPopupDraggable();
+
+let resizing = false;
+let startX, startY, startWidth, startHeight;
+
+resizeHandle.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    resizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startWidth = parseInt(document.defaultView.getComputedStyle(popup).width, 10);
+    startHeight = parseInt(document.defaultView.getComputedStyle(popup).height, 10);
+    document.addEventListener("mousemove", resize);
+    document.addEventListener("mouseup", stopResize);
+});
+
+function resize(e) {
+    if (!resizing) return;
+    popup.style.width = startWidth + (e.clientX - startX) + "px";
+    popup.style.height = startHeight + (e.clientY - startY) + "px";
+}
+
+function stopResize() {
+    resizing = false;
+    document.removeEventListener("mousemove", resize);
+    document.removeEventListener("mouseup", stopResize);
+}
