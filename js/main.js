@@ -391,7 +391,7 @@ function updateGame() {
         }
     }
 
-    collector.draw(ctx);
+    collector.draw(ctx, totalNumberOfScraps);
     drawUI();
     spawnManager.update(mobs, voidZone.radius, canvas);
 

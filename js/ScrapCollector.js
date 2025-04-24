@@ -9,7 +9,7 @@ export class ScrapCollector {
         this.img.src = "assets/scrap.png";
     }
 
-    draw(ctx) {
+    draw(ctx, numberOfScraps) {
         ctx.save();
 
         if (this.dragging) {
@@ -32,7 +32,7 @@ export class ScrapCollector {
         ctx.fillStyle = "white";
         ctx.font = "10px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("Collector", this.x, this.y + 28);
+        ctx.fillText(numberOfScraps + " Scraps", this.x, this.y + 28);
 
         ctx.restore();
     }
