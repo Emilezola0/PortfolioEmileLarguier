@@ -154,7 +154,6 @@ export class Shop {
 
     // Movement
     isHovered(mx, my) {
-        refreshShopPopup()
         return Math.hypot(this.x - mx, this.y - my) < 20;
     }
 
@@ -181,12 +180,12 @@ export class Shop {
 
         // Reset if new Target Folder detected
         if (!this.lastTargetFolder || this.lastTargetFolder !== this.targetFolder) {
-            this.lastTargetFolder = this.targetFolder;
             this.connectionProgress = 0;
+            this.lastTargetFolder = this.targetFolder;
         }
 
         if (this.connectionProgress < 1) {
-            this.connectionProgress += 0.01;
+            this.connectionProgress += 0.015;
         }
 
         const progress = Math.min(this.connectionProgress, 1);
