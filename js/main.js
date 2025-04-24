@@ -352,6 +352,11 @@ function updateGame() {
         //For now no particle === shop.update(particles);
         shop.draw(ctx);
         shop.drawConnectionLine(ctx);
+
+        const popup = document.getElementById("shop-popup"); // Look if pop-up is open
+        if (popup && !popup.classList.contains("hidden")) {
+            shop.drawConnectionWithScrapCollector(ctx, collector);
+        }
     }
 
     collector.draw(ctx);

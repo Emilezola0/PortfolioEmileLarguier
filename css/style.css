@@ -148,6 +148,16 @@ input[type="checkbox"]:checked + .custom-toggle {
         animation: crtFlicker 1.2s infinite steps(1);
     }
 
+.folder-stats {
+    background: #111;
+    padding: 6px;
+    color: #aaa;
+    border-top: 1px dashed #333;
+    font-size: 9px;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
 @keyframes crtFlicker {
     0%, 100% {
         opacity: 1;

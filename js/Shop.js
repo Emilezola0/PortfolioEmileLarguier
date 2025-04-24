@@ -98,18 +98,40 @@ export class Shop {
             <span>${btn.name}</span>
             <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
         `;
-            div.onclick = () => {
-                const target = this.targetFolder;
-                console.log("number of scrap: ", this.numberOfScraps);
-                console.log("btn cost: ", btn.cost, "btn key:", btn.key);
-                if (target && this.numberOfScraps >= btn.cost) {
-                    this.numberOfScraps -= btn.cost;
-                    spendScrap(btn.cost);
-                    upgradeFolder(target, btn.key);
-                    closeShop();
-                }
-            };
+            if (this.numberOfScraps >= btn.cost) {
+                div.onclick = () => {
+                    const target = this.targetFolder;
+                    if (target) {
+                        this.numberOfScraps -= btn.cost;
+                        spendScrap(btn.cost);
+                        upgradeFolder(target, btn.key);
+                        closeShop();
+                    }
+                };
+            }
+
+            if (this.numberOfScraps < btn.cost) {
+                div.style.borderColor = "#ff4444";
+                div.style.color = "#ff9999";
+                div.style.cursor = "not-allowed";
+            }
+
             container.appendChild(div);
+        }
+
+        if (this.targetFolder) {
+            const statsDiv = document.createElement("div");
+            statsDiv.className = "folder-stats";
+            statsDiv.innerHTML = `
+        <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
+        <strong>Stats:</strong><br>
+        ATK Speed: ${this.targetFolder.atkSpeed}<br>
+        Damage: ${this.targetFolder.atkDamage}<br>
+        Range: ${this.targetFolder.range}<br>
+        Bullet Speed: ${this.targetFolder.bulletSpeed}<br>
+        Pierce: ${this.targetFolder.pierce}
+    `;
+            container.appendChild(statsDiv);
         }
     }
 
@@ -173,7 +195,81 @@ export class Shop {
         ctx.lineTo(xEnd, yEnd);
         ctx.stroke();
         ctx.restore();
-    }
+
+        // === Effet de flux "ping-pong" ===
+        const now = Date.now() / 1000;
+        const packetCount = 4;  // Nombre de "paquets"
+        const packetSpacing = 0.25; // Décalage de départ entre chaque
+
+        for (let i = 0; i < packetCount; i++) {
+            // Deux directions : vers Folder et vers Shop
+            const directions = [1, -1]; // 1 = Shop -> Folder, -1 = Folder -> Shop
+
+            for (const dir of directions) {
+                const offset = i * packetSpacing;
+                const phase = (now * 0.5 + offset) % 1; // speed is 0.5
+                const t = dir === 1 ? phase : 1 - phase;
+
+                const x = this.x + (this.targetFolder.x - this.x) * t;
+                const y = this.y + (this.targetFolder.y - this.y) * t;
+
+                ctx.save();
+                ctx.fillStyle = "rgba(0, 255, 255, 0.8)";
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        drawConnectionWithScrapCollector(ctx, scrapCollector) {
+            if (!scrapCollector) return;
+
+            if (this.connectionProgress < 1) {
+                this.connectionProgress += 0.02;
+            }
+
+            const progress = Math.min(this.connectionProgress, 1);
+
+            const xEnd = this.x + (scrapCollector.x - this.x) * progress;
+            const yEnd = this.y + (scrapCollector.y - this.y) * progress;
+
+            // === Ligne de connexion ===
+            ctx.save();
+            ctx.strokeStyle = "rgba(255, 255, 0, 0.8)";
+            ctx.setLineDash([4, 3]);
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(xEnd, yEnd);
+            ctx.stroke();
+            ctx.restore();
+
+            // === Effet de flux ping-pong ===
+            const now = Date.now() / 1000;
+            const packetCount = 3;
+            const packetSpacing = 0.3;
+
+            for (let i = 0; i < packetCount; i++) {
+                const directions = [1, -1];
+
+                for (const dir of directions) {
+                    const offset = i * packetSpacing;
+                    const phase = (now * 0.5 + offset) % 1;
+                    const t = dir === 1 ? phase : 1 - phase;
+
+                    const x = this.x + (scrapCollector.x - this.x) * t;
+                    const y = this.y + (scrapCollector.y - this.y) * t;
+
+                    ctx.save();
+                    ctx.fillStyle = "rgba(255, 255, 0, 0.9)";
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
 
     update(particles) {
         // Ajoute des particules de connexion si en lien avec un dossier
@@ -194,4 +290,34 @@ export class Shop {
 window.closeShop = function () {
     document.getElementById("shop-popup").classList.add("hidden");
 };
+
+window.makeShopPopupDraggable = function () {
+    const popup = document.getElementById("shop-popup");
+    const header = document.querySelector(".shop-header");
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    header.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - popup.offsetLeft;
+        offsetY = e.clientY - popup.offsetTop;
+        document.body.style.userSelect = "none";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            popup.style.left = `${e.clientX - offsetX}px`;
+            popup.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        document.body.style.userSelect = "";
+    });
+};
+
+window.makeShopPopupDraggable(); // Appele une seule fois au chargement
+
 
