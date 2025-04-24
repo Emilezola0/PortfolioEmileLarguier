@@ -22,7 +22,7 @@ export class Folder {
         this.stats = {
             atkSpeed: 60,        // Moins = plus rapide
             atkDamage: 1,
-            range: 100,
+            range: 50,
             bulletSpeed: 4,
             pierce: 1
         };

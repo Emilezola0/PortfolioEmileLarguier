@@ -1,7 +1,7 @@
 export const debrisTypes = [
     {
         name: "basic",
-        hp: 100,
+        hp: 2,
         image: "object1.png",
         nutrition: 5,
         scale: 1,
@@ -12,7 +12,7 @@ export const debrisTypes = [
     },
     {
         name: "bigScrap",
-        hp: 300,
+        hp: 3,
         image: "object2.png",
         nutrition: 15,
         scale: 1.8,
@@ -23,7 +23,7 @@ export const debrisTypes = [
     },
     {
         name: "tiny",
-        hp: 50,
+        hp: 1,
         image: "object3.png",
         nutrition: 2,
         scale: 0.8,
