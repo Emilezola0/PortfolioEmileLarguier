@@ -112,7 +112,7 @@ export class Shop {
         <span>${Math.floor(cost)} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
     `;
 
-            // === Style spécial par palier ===
+            // === Style special par palier ===
             if (level >= 5) {
                 const tier = Math.floor(level / 5); // 5-9 => 1, 10-14 => 2, etc.
                 div.classList.add(`upgrade-tier-${tier}`);
@@ -128,7 +128,7 @@ export class Shop {
                         upgradeFolder(target, btn.key);
                         const newLevel = (target.upgrades?.[btn.key] || 0);
 
-                        // Si on vient d’atteindre un nouveau palier
+                        // If we reach new step
                         if (Math.floor(newLevel / 5) > Math.floor(oldLevel / 5)) {
                             powerUpAudio.currentTime = 0;
                             powerUpAudio.play();
@@ -233,7 +233,7 @@ export class Shop {
             // === Effet de flux "ping-pong" ===
             const now = Date.now() / 1000;
             const packetCount = 4;  // Nombre de "paquets"
-            const packetSpacing = 0.25; // Décalage de départ entre chaque
+            const packetSpacing = 0.25; // Decalage de depart entre chaque
 
             for (let i = 0; i < packetCount; i++) {
                 // Deux directions : vers Folder et vers Shop
@@ -367,5 +367,4 @@ window.makeShopPopupDraggable = function () {
 };
 
 window.makeShopPopupDraggable(); // Call once during the chargement
-
 
