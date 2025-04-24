@@ -106,6 +106,8 @@ let mobParticles = [];
 let mouseDown = false;
 let shopStartX = 0;
 let shopStartY = 0;
+let folderStartX = 0;
+let folderStartY = 0;
 
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
