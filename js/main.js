@@ -85,6 +85,9 @@ const background = new Background(canvas);
 const soundToggle = document.getElementById("soundToggle");
 let soundEnabled = soundToggle.checked;
 
+// Wave Display
+const waveDisplay = document.getElementById('waveDisplay');
+
 // Sound manager
 SoundManager.soundEnabled = soundToggle.checked;
 
@@ -216,6 +219,31 @@ canvas.addEventListener("mouseup", (e) => {
     mouseDown = false;
 });
 
+// NOT IMPLEMENTED
+function updateWaveDisplay() {
+    const wave = spawnManager.getWave();
+    waveDisplay.textContent = `Vague ${wave}`;
+
+    // Reset des classes avant d'appliquer les nouvelles
+    waveDisplay.classList.remove('wave-tier-2', 'wave-tier-3');
+
+    // Ajout des classes selon le niveau de vague
+    if (wave >= 10 && wave < 20) {
+        waveDisplay.classList.add('wave-tier-2');
+    } else if (wave >= 20) {
+        waveDisplay.classList.add('wave-tier-3');
+    }
+}
+
+function gameLoop() {
+    // other update : logique, dessin, etc.
+    spawnManager.update(mobs, voidRadius, canvas);
+
+    updateWaveDisplay(); // update here wave display
+
+    requestAnimationFrame(gameLoop);
+}
+
 function drawUI() {
     // Barre de pause entre vagues (uniquement si pas en Game Over)
     if (spawnManager.isPaused() && !isGameOver) {
@@ -234,7 +262,7 @@ function drawUI() {
         ctx.textBaseline = "middle";
         ctx.fillStyle = "white";
         ctx.font = "16px sans-serif";
-        ctx.fillText("Wave number " + spawnManager.wave, canvas.width / 2, 10);
+        ctx.fillText("Wave number " + spawnManager.getWave(), canvas.width / 2, 10);
     }
 }
 
