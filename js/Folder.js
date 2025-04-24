@@ -171,12 +171,16 @@ export class Folder {
     }
 
     openFolderPopup() {
-        const popup = document.getElementById("folder-popup");
-        const container = document.getElementById("folder-content");
-        const title = document.getElementById("folder-title");
+        let popup = document.getElementById("folder-popup");
 
-        // Corner for scaling
-        const popup = document.createElement("div");
+        // If pop-up exist, don't create it
+        if (popup) {
+            popup.classList.remove("hidden");
+            return;
+        }
+
+        // Sinon on la cree
+        popup = document.createElement("div");
         popup.id = "folder-popup";
         popup.style.position = "absolute";
         popup.style.top = "100px";
@@ -186,12 +190,25 @@ export class Folder {
         popup.style.background = "#fff";
         popup.style.border = "1px solid #aaa";
         popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-        popup.style.resize = "none"; // desactivate le resize natif pour custom
+        popup.style.resize = "none"; // on desactive le resize natif
         popup.style.overflow = "auto";
         popup.style.zIndex = "9999";
         popup.style.padding = "10px";
 
-        // Add resize handle (bas droite)
+        // === CONTENU popup ===
+        const title = document.createElement("h2");
+        title.id = "folder-title";
+        popup.appendChild(title);
+
+        const container = document.createElement("div");
+        container.id = "folder-content";
+        popup.appendChild(container);
+
+        const nav = document.createElement("div");
+        nav.id = "popup-nav";
+        popup.appendChild(nav);
+
+        // === HANDLE DE RESIZE ===
         const resizeHandle = document.createElement("div");
         resizeHandle.style.position = "absolute";
         resizeHandle.style.width = "16px";
@@ -199,13 +216,42 @@ export class Folder {
         resizeHandle.style.right = "0";
         resizeHandle.style.bottom = "0";
         resizeHandle.style.cursor = "se-resize";
-        // motif
         resizeHandle.style.background = "url('data:image/svg+xml;utf8,<svg width=\"16\" height=\"16\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"0\" y1=\"16\" x2=\"16\" y2=\"0\" stroke=\"gray\" stroke-width=\"2\" /></svg>')";
         resizeHandle.style.backgroundRepeat = "no-repeat";
         resizeHandle.style.backgroundPosition = "center";
         popup.appendChild(resizeHandle);
 
+        // === Ajout au DOM ===
+        document.body.appendChild(popup);
 
+        // === FONCTIONNALITE DE RESIZE ===
+        let resizing = false;
+        let startX, startY, startWidth, startHeight;
+
+        resizeHandle.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            resizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(window.getComputedStyle(popup).width, 10);
+            startHeight = parseInt(window.getComputedStyle(popup).height, 10);
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", stopResize);
+        });
+
+        function resize(e) {
+            if (!resizing) return;
+            popup.style.width = startWidth + (e.clientX - startX) + "px";
+            popup.style.height = startHeight + (e.clientY - startY) + "px";
+        }
+
+        function stopResize() {
+            resizing = false;
+            document.removeEventListener("mousemove", resize);
+            document.removeEventListener("mouseup", stopResize);
+        }
+
+        // === CHARGEMENT DU CONTENU ===
         import(`./projects/project_${this.name}.js`)
             .then(module => {
                 const data = module.getProjectContent();
@@ -230,15 +276,12 @@ export class Folder {
                 };
 
                 title.textContent = data.title;
-                const nav = document.getElementById("popup-nav");
                 updateSlide();
-                popup.classList.remove("hidden");
             })
             .catch(err => {
                 title.textContent = "Erreur";
                 container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
-                document.getElementById("popup-nav").innerHTML = "";
-                popup.classList.remove("hidden");
+                nav.innerHTML = "";
             });
     }
 
