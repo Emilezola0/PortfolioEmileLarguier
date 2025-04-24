@@ -13,6 +13,8 @@ export class Shop {
         this.pulse = 0;
         this.pulseDirection = 1;
 
+        this.lastTargetFolder = null;
+
         this.numberOfScraps = 0;
         this.folders = null;
         this.targetFolder = null;
@@ -176,8 +178,13 @@ export class Shop {
 
         if (!this.targetFolder) return;
 
+        // Reset if new Target Folder detected
+        if (!this.lastTargetFolder || this.lastTargetFolder !== this.targetFolder) {
+            this.connectionProgress = 0;
+        }
+
         if (this.connectionProgress < 1) {
-            this.connectionProgress += 0.02;
+            this.connectionProgress += 0.01;
         }
 
         const progress = Math.min(this.connectionProgress, 1);
@@ -325,6 +332,15 @@ export class Shop {
     }
 
     refreshFoldersStats() {
+
+        const popup = document.getElementById("shop-popup");
+        if (popup.classList.contains("hidden")) return;
+
+        const container = document.getElementById("shop-content");
+        container.innerHTML = "";
+
+        this.targetFolder = this.getClosestFolder(this.folders);
+
         if (this.targetFolder) {
             const statsDiv = document.createElement("div");
             statsDiv.className = "folder-stats";
@@ -337,6 +353,7 @@ export class Shop {
             Bullet Speed: ${this.targetFolder.stats.bulletSpeed}<br>
             Pierce: ${this.targetFolder.stats.pierce}
         `;
+
             container.appendChild(statsDiv);
         }
     }
