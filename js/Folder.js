@@ -143,4 +143,60 @@ export class Folder {
         return mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
             my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
     }
+
+    handleClick(mouse) {
+        if (this.dragging) return; // Ne pas ouvrir si on est en train de le bouger
+
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 20 && !mouse.holding) {
+            this.openFolderPopup();
+        }
+    }
+
+    openFolderPopup() {
+        const popup = document.getElementById("folder-popup");
+        const container = document.getElementById("folder-content");
+
+        import(`./projects/project_${this.name}.js`)
+            .then(module => {
+                container.innerHTML = module.getProjectContent();
+                popup.classList.remove("hidden");
+            })
+            .catch(err => {
+                container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
+                popup.classList.remove("hidden");
+            });
+    }
 }
+
+window.makeFolderPopupDraggable = function () {
+    const popup = document.getElementById("folder-popup");
+    const header = document.querySelector(".popup-header");
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    header.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - popup.offsetLeft;
+        offsetY = e.clientY - popup.offsetTop;
+        document.body.style.userSelect = "none";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            popup.style.left = `${e.clientX - offsetX}px`;
+            popup.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        document.body.style.userSelect = "";
+    });
+};
+
+window.makeFolderPopupDraggable();

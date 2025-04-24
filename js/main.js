@@ -136,6 +136,8 @@ canvas.addEventListener("mousedown", e => {
     for (const folder of folders) {
         if (folder.isHovered(e.clientX, e.clientY)) {
             draggedFolder = folder;
+            dragStartPos = { x: e.clientX, y: e.clientY };
+            mouseClickTime = Date.now(); // detect short click
             return;
         }
     }
@@ -177,9 +179,23 @@ canvas.addEventListener("mousemove", e => {
 });
 
 canvas.addEventListener("mouseup", (e) => {
+    // Collector
     collector.dragging = false;
-    if (draggedFolder) draggedFolder.dragging = false;
-    draggedFolder = null;
+    // Folder
+    if (draggedFolder) {
+        const dx = e.clientX - dragStartPos.x;
+        const dy = e.clientY - dragStartPos.y;
+        const distance = Math.hypot(dx, dy);
+
+        const clickDuration = Date.now() - mouseClickTime;
+
+        // not moving and fast click -> open folder pop up
+        if (distance < 5 && clickDuration < 300) {
+            openFolderPopup(draggedFolder);
+        }
+
+        draggedFolder = null;
+    }
 
     // Shop
     if (shop && shop.isHovered(e.clientX, e.clientY)) {
