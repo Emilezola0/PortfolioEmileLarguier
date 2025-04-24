@@ -83,7 +83,7 @@ export class Shop {
         // Si folders est null ou vide, on ferme le shop
         if (!Array.isArray(this.folders) || this.folders.length === 0) {
             this.shopIsOpen = false;
-            closeShop();
+            closeShop(this);
             return;
         }
 
@@ -302,21 +302,17 @@ export class Shop {
 
     refreshShopPopup() {
         if (this.shopIsOpen) {
-            closeShop();
+            closeShop(this);
             this.openShopPopup();
         }
     }
 }
 
-window.closeShop = function () {
+window.closeShop = function (shopInstance) {
     // Cache le popup
     document.getElementById("shop-popup").classList.add("hidden");
-
-    // Ferme le shop en mettant shopIsOpen à false
-    if (shopInstance) { // shopInstance fait référence à ton objet Shop
-        shopInstance.shopIsOpen = false;
-    }
-};
+    shopInstance.shopIsOpen = false;
+}
 
 window.makeShopPopupDraggable = function () {
     const popup = document.getElementById("shop-popup");
