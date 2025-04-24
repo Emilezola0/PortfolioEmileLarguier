@@ -216,12 +216,6 @@ canvas.addEventListener("mouseup", (e) => {
 });
 
 function drawUI() {
-    // Affiche le score
-    ctx.drawImage(scrapImg, canvas.width - 100, 20, 24, 24);
-    ctx.fillStyle = "white";
-    ctx.font = "16px Arial";
-    ctx.fillText(totalNumberOfScraps, canvas.width - 70, 38);
-
     // Barre de pause entre vagues (uniquement si pas en Game Over)
     if (spawnManager.isPaused() && !isGameOver) {
         const progress = spawnManager.getPauseProgress();
