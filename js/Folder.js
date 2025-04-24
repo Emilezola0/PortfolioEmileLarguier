@@ -183,7 +183,7 @@ export class Folder {
     }
 }
 
-window.closeFolder = function () {
+window.closeFolderPopup = function () {
     document.getElementById("folder-popup").classList.add("hidden");
 };
 
