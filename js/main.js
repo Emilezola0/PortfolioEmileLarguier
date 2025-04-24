@@ -349,6 +349,7 @@ function updateGame() {
 
     if (shop) {
         shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
+        shop.refreshShopPopup(); // update pop up if open
         //For now no particle === shop.update(particles);
         shop.draw(ctx);
         shop.drawConnectionLine(ctx);

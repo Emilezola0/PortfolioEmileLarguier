@@ -89,7 +89,7 @@ export class Shop {
         const container = document.getElementById("shop-content");
         container.innerHTML = "";
 
-        this.targetFolder = this.getClosestFolder(this.folders); // Important : mettre à jour le dossier cible
+        this.targetFolder = this.getClosestFolder(this.folders); // Important : update folder target
 
         for (const btn of this.buttons) {
             const div = document.createElement("div");
@@ -105,7 +105,6 @@ export class Shop {
                         this.numberOfScraps -= btn.cost;
                         spendScrap(btn.cost);
                         upgradeFolder(target, btn.key);
-                        closeShop();
                     }
                 };
             }
@@ -125,11 +124,11 @@ export class Shop {
             statsDiv.innerHTML = `
         <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
         <strong>Stats:</strong><br>
-        ATK Speed: ${this.targetFolder.atkSpeed}<br>
-        Damage: ${this.targetFolder.atkDamage}<br>
-        Range: ${this.targetFolder.range}<br>
-        Bullet Speed: ${this.targetFolder.bulletSpeed}<br>
-        Pierce: ${this.targetFolder.pierce}
+        ATK Speed: ${this.targetFolder.stats.atkSpeed}<br>
+        Damage: ${this.targetFolder.stats.atkDamage}<br>
+        Range: ${this.targetFolder.stats.range}<br>
+        Bullet Speed: ${this.targetFolder.stats.bulletSpeed}<br>
+        Pierce: ${this.targetFolder.stats.pierce}
     `;
             container.appendChild(statsDiv);
         }
@@ -196,29 +195,31 @@ export class Shop {
         ctx.stroke();
         ctx.restore();
 
-        // === Effet de flux "ping-pong" ===
-        const now = Date.now() / 1000;
-        const packetCount = 4;  // Nombre de "paquets"
-        const packetSpacing = 0.25; // Décalage de départ entre chaque
+        if (this.connectionProgress >= 1) {
+            // === Effet de flux "ping-pong" ===
+            const now = Date.now() / 1000;
+            const packetCount = 4;  // Nombre de "paquets"
+            const packetSpacing = 0.25; // Décalage de départ entre chaque
 
-        for (let i = 0; i < packetCount; i++) {
-            // Deux directions : vers Folder et vers Shop
-            const directions = [1, -1]; // 1 = Shop -> Folder, -1 = Folder -> Shop
+            for (let i = 0; i < packetCount; i++) {
+                // Deux directions : vers Folder et vers Shop
+                const directions = [1, -1]; // 1 = Shop -> Folder, -1 = Folder -> Shop
 
-            for (const dir of directions) {
-                const offset = i * packetSpacing;
-                const phase = (now * 0.5 + offset) % 1; // speed is 0.5
-                const t = dir === 1 ? phase : 1 - phase;
+                for (const dir of directions) {
+                    const offset = i * packetSpacing;
+                    const phase = (now * 0.5 + offset) % 1; // speed is 0.5
+                    const t = dir === 1 ? phase : 1 - phase;
 
-                const x = this.x + (this.targetFolder.x - this.x) * t;
-                const y = this.y + (this.targetFolder.y - this.y) * t;
+                    const x = this.x + (this.targetFolder.x - this.x) * t;
+                    const y = this.y + (this.targetFolder.y - this.y) * t;
 
-                ctx.save();
-                ctx.fillStyle = "rgba(0, 255, 255, 0.8)";
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
+                    ctx.save();
+                    ctx.fillStyle = "rgba(0, 255, 255, 0.8)";
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
         }
     }
@@ -247,27 +248,29 @@ export class Shop {
         ctx.restore();
 
         // === Effet de flux ping-pong ===
-        const now = Date.now() / 1000;
-        const packetCount = 3;
-        const packetSpacing = 0.3;
+        if (this.connectionProgress >= 1) {
+            const now = Date.now() / 1000;
+            const packetCount = 3;
+            const packetSpacing = 0.3;
 
-        for (let i = 0; i < packetCount; i++) {
-            const directions = [1, -1];
+            for (let i = 0; i < packetCount; i++) {
+                const directions = [1, -1];
 
-            for (const dir of directions) {
-                const offset = i * packetSpacing;
-                const phase = (now * 0.5 + offset) % 1;
-                const t = dir === 1 ? phase : 1 - phase;
+                for (const dir of directions) {
+                    const offset = i * packetSpacing;
+                    const phase = (now * 0.5 + offset) % 1;
+                    const t = dir === 1 ? phase : 1 - phase;
 
-                const x = this.x + (scrapCollector.x - this.x) * t;
-                const y = this.y + (scrapCollector.y - this.y) * t;
+                    const x = this.x + (scrapCollector.x - this.x) * t;
+                    const y = this.y + (scrapCollector.y - this.y) * t;
 
-                ctx.save();
-                ctx.fillStyle = "rgba(255, 255, 0, 0.9)";
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
+                    ctx.save();
+                    ctx.fillStyle = "rgba(255, 255, 0, 0.9)";
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
         }
     }
@@ -284,8 +287,57 @@ export class Shop {
         }
     }
 
+    refreshShopPopup() {
+        const popup = document.getElementById("shop-popup");
+        if (popup.classList.contains("hidden")) return;
 
+        const container = document.getElementById("shop-content");
+        container.innerHTML = "";
 
+        this.targetFolder = this.getClosestFolder(this.folders);
+
+        for (const btn of this.buttons) {
+            const div = document.createElement("div");
+            div.className = "shop-item";
+            div.innerHTML = `
+            <span>${btn.name}</span>
+            <span>${btn.cost} <img src="assets/scrapCollect.png" alt="scrap icon"></span>
+        `;
+
+            if (this.numberOfScraps >= btn.cost) {
+                div.onclick = () => {
+                    const target = this.targetFolder;
+                    if (target) {
+                        this.numberOfScraps -= btn.cost;
+                        spendScrap(btn.cost);
+                        upgradeFolder(target, btn.key);
+                        this.refreshShopPopup(); // important : refresh after buying
+                    }
+                };
+            } else {
+                div.style.borderColor = "#ff4444";
+                div.style.color = "#ff9999";
+                div.style.cursor = "not-allowed";
+            }
+
+            container.appendChild(div);
+        }
+
+        if (this.targetFolder) {
+            const statsDiv = document.createElement("div");
+            statsDiv.className = "folder-stats";
+            statsDiv.innerHTML = `
+            <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
+            <strong>Stats:</strong><br>
+            ATK Speed: ${this.targetFolder.stats.atkSpeed}<br>
+            Damage: ${this.targetFolder.stats.atkDamage}<br>
+            Range: ${this.targetFolder.stats.range}<br>
+            Bullet Speed: ${this.targetFolder.stats.bulletSpeed}<br>
+            Pierce: ${this.targetFolder.stats.pierce}
+        `;
+            container.appendChild(statsDiv);
+        }
+    }
 }
 
 window.closeShop = function () {
@@ -319,6 +371,6 @@ window.makeShopPopupDraggable = function () {
     });
 };
 
-window.makeShopPopupDraggable(); // Appele une seule fois au chargement
+window.makeShopPopupDraggable(); // Call once during the chargement
 
 
