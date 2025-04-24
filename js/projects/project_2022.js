@@ -1,7 +1,7 @@
 // project_2022.js
 export function getProjectContent() {
     return {
-        title: "2022 - Scryptalking",
+        title: "2022-2023 - Scryptalking",
         slides: [
             {
                 img: "assets/projects/2022/gameplay1.png",

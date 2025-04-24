@@ -82,8 +82,8 @@ export class Shop {
     openShopPopup() {
         // Si folders est null ou vide, on ferme le shop
         if (!Array.isArray(this.folders) || this.folders.length === 0) {
-            this.shopIsOpen = false;
             closeShop(this);
+            this.shopIsOpen = false;
             return;
         }
 
@@ -302,6 +302,7 @@ export class Shop {
     }
 
     refreshShopPopup() {
+        console.log(shopIsOpen);
         if (this.shopIsOpen == true) {
             closeShop(this);
             this.openShopPopup();
