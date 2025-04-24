@@ -183,6 +183,10 @@ export class Folder {
     }
 }
 
+window.closeFolder = function () {
+    document.getElementById("folder-popup").classList.add("hidden");
+};
+
 window.makeFolderPopupDraggable = function () {
     const popup = document.getElementById("folder-popup");
     const header = document.querySelector(".popup-header");
