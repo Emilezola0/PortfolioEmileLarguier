@@ -371,9 +371,11 @@ function updateGame() {
             // Update if number are not the same
             shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
             shop.refreshShopPopup(); // update pop up if open
+            shop.refreshFoldersStats();
         } else {
             // Don't if it's not the same
             shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
+            shop.refreshFoldersStats();
         }
         //For now no particle === shop.update(particles);
         shop.draw(ctx);

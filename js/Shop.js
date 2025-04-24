@@ -322,7 +322,9 @@ export class Shop {
 
             container.appendChild(div);
         }
+    }
 
+    refreshFoldersStats() {
         if (this.targetFolder) {
             const statsDiv = document.createElement("div");
             statsDiv.className = "folder-stats";
