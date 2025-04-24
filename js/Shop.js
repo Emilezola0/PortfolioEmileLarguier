@@ -221,55 +221,56 @@ export class Shop {
                 ctx.restore();
             }
         }
+    }
 
-        drawConnectionWithScrapCollector(ctx, scrapCollector) {
-            if (!scrapCollector) return;
+    drawConnectionWithScrapCollector(ctx, scrapCollector) {
+        if (!scrapCollector) return;
 
-            if (this.connectionProgress < 1) {
-                this.connectionProgress += 0.02;
-            }
+        if (this.connectionProgress < 1) {
+            this.connectionProgress += 0.02;
+        }
 
-            const progress = Math.min(this.connectionProgress, 1);
+        const progress = Math.min(this.connectionProgress, 1);
 
-            const xEnd = this.x + (scrapCollector.x - this.x) * progress;
-            const yEnd = this.y + (scrapCollector.y - this.y) * progress;
+        const xEnd = this.x + (scrapCollector.x - this.x) * progress;
+        const yEnd = this.y + (scrapCollector.y - this.y) * progress;
 
-            // === Ligne de connexion ===
-            ctx.save();
-            ctx.strokeStyle = "rgba(255, 255, 0, 0.8)";
-            ctx.setLineDash([4, 3]);
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(this.x, this.y);
-            ctx.lineTo(xEnd, yEnd);
-            ctx.stroke();
-            ctx.restore();
+        // === Ligne de connexion ===
+        ctx.save();
+        ctx.strokeStyle = "rgba(255, 255, 0, 0.8)";
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(xEnd, yEnd);
+        ctx.stroke();
+        ctx.restore();
 
-            // === Effet de flux ping-pong ===
-            const now = Date.now() / 1000;
-            const packetCount = 3;
-            const packetSpacing = 0.3;
+        // === Effet de flux ping-pong ===
+        const now = Date.now() / 1000;
+        const packetCount = 3;
+        const packetSpacing = 0.3;
 
-            for (let i = 0; i < packetCount; i++) {
-                const directions = [1, -1];
+        for (let i = 0; i < packetCount; i++) {
+            const directions = [1, -1];
 
-                for (const dir of directions) {
-                    const offset = i * packetSpacing;
-                    const phase = (now * 0.5 + offset) % 1;
-                    const t = dir === 1 ? phase : 1 - phase;
+            for (const dir of directions) {
+                const offset = i * packetSpacing;
+                const phase = (now * 0.5 + offset) % 1;
+                const t = dir === 1 ? phase : 1 - phase;
 
-                    const x = this.x + (scrapCollector.x - this.x) * t;
-                    const y = this.y + (scrapCollector.y - this.y) * t;
+                const x = this.x + (scrapCollector.x - this.x) * t;
+                const y = this.y + (scrapCollector.y - this.y) * t;
 
-                    ctx.save();
-                    ctx.fillStyle = "rgba(255, 255, 0, 0.9)";
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
+                ctx.save();
+                ctx.fillStyle = "rgba(255, 255, 0, 0.9)";
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             }
         }
+    }
 
     update(particles) {
         // Ajoute des particules de connexion si en lien avec un dossier
