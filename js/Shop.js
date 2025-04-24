@@ -169,6 +169,7 @@ export class Shop {
             this.openShopPopup();
         }
         this.wasDragged = false;
+        this.refreshShopPopup();
     }
 
     drawConnectionLine(ctx) {
@@ -182,7 +183,6 @@ export class Shop {
         if (!this.lastTargetFolder || this.lastTargetFolder !== this.targetFolder) {
             this.connectionProgress = 0;
             this.lastTargetFolder = this.targetFolder;
-            this.refreshShopPopup();
         }
 
         if (this.connectionProgress < 1) {
