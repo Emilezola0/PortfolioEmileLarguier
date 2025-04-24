@@ -98,7 +98,7 @@ const bullets = [];
 const mobs = [];
 let particles = [];
 let voidParticles = [];
-let score = 0;
+let totalNumberOfScraps = 0;
 let flyingScraps = [];
 let mobParticles = [];
 
@@ -195,7 +195,7 @@ function drawUI() {
     ctx.drawImage(scrapImg, canvas.width - 100, 20, 24, 24);
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
-    ctx.fillText(score, canvas.width - 70, 38);
+    ctx.fillText(totalNumberOfScraps, canvas.width - 70, 38);
 
     // Barre de pause entre vagues (uniquement si pas en Game Over)
     if (spawnManager.isPaused() && !isGameOver) {
@@ -328,7 +328,7 @@ function updateGame() {
         const result = scrap.update(collector);
 
         if (result === "collected") {
-            score += 1;
+            totalNumberOfScraps += 1;
             flyingScraps.splice(i, 1);
 
             SoundManager.play(scrapSound, soundEffectVolume);
@@ -348,7 +348,7 @@ function updateGame() {
     }
 
     if (shop) {
-        shop.setContext(score, folders); // player stats == score == number of scrap in possession and folders
+        shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
         //For now no particle === shop.update(particles);
         shop.draw(ctx);
         shop.drawConnectionLine(ctx);
@@ -366,6 +366,16 @@ function updateGame() {
 
     requestAnimationFrame(updateGame); // <== continue que si pas Game Over
 }
+
+function spendScrap(amount) {
+    if (totalNumberOfScraps >= amount) {
+        totalNumberOfScraps -= amount;
+        return true;
+    }
+    return false;
+}
+
+shop.setContext(spendScrap, folders);
 
 fetch("public/projects.json")
     .then(res => res.json())

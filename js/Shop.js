@@ -1,3 +1,4 @@
+import { upgradeFolder } from "./upgrades.js";
 export class Shop {
     constructor(x, y) {
         this.x = x;
@@ -11,7 +12,7 @@ export class Shop {
         this.pulse = 0;
         this.pulseDirection = 1;
 
-        this.playerStats = null;
+        this.numberOfScraps = null;
         this.folders = null;
         this.targetFolder = null;
         this.connectionProgress = 0;
@@ -24,8 +25,8 @@ export class Shop {
         ];
     }
 
-    setContext(playerStats, folders) {
-        this.playerStats = playerStats;
+    setContext(spendScrapFunc, folders) {
+        this.spendScrap = spendScrapFunc;
         this.folders = folders;
     }
 
@@ -98,9 +99,11 @@ export class Shop {
         `;
             div.onclick = () => {
                 const target = this.targetFolder;
-                console.log("click button", this.targetFolder, " // number of scrap: ", this.playerStats);
-                if (target && this.playerStats >= btn.cost) {
-                    this.playerStats -= btn.cost;
+                console.log("with a .cost:", this.numberOfScraps.cost);
+                console.log("click button", this.targetFolder.scrap, " // number of scrap: ", this.numberOfScraps);
+                console.log("btn cost: ", btn.cost, "btn key:", btn.key);
+                if (target && this.numberOfScraps.scrap >= btn.cost) {
+                    this.numberOfScraps.scrap -= btn.cost;
                     upgradeFolder(target, btn.key);
                     closeShop();
                 }
@@ -158,6 +161,7 @@ export class Shop {
         const progress = Math.min(this.connectionProgress, 1);
 
         const xEnd = this.x + (this.targetFolder.x - this.x) * progress;
+        const yEnd = this.y + (this.targetFolder.y - this.y) * progress;
         const yEnd = this.y + (this.targetFolder.y - this.y) * progress;
 
         ctx.save();

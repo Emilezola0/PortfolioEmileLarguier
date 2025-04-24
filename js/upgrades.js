@@ -38,10 +38,6 @@ export const upgrades = [
 
 // Cette fonction applique une upgrade au folder
 export function upgradeFolder(folder, upgrade) {
-    if (folder.scrap >= upgrade.cost) {
-        folder.scrap -= upgrade.cost;
-        upgrade.apply(folder);
-        return true;
-    }
-    return false;
+    upgrade.apply(folder); // Apply bonus
+    return true;
 }
