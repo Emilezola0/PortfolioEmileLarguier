@@ -168,6 +168,8 @@ export class Folder {
 
         import(`./projects/project_${this.name}.js`)
             .then(module => {
+                console.log("IMPORT SUCSS");
+                console.log("TEST ON CONTAINER HTML:", module.getProjectContent());
                 container.innerHTML = module.getProjectContent();
                 popup.classList.remove("hidden");
                 popup.style.display = "block"; // ligne test
