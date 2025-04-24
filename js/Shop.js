@@ -302,7 +302,7 @@ export class Shop {
     }
 
     refreshShopPopup() {
-        console.log(shopIsOpen);
+        console.log(this.shopIsOpen);
         if (this.shopIsOpen == true) {
             closeShop(this);
             this.openShopPopup();
