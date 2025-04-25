@@ -5,9 +5,9 @@
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2021",
         "isEmpty": true,
         "planetStyle": {
-            "baseColor": "#1e90ff", // Bleu tech = Pulse Core – Techno, Dynamisme, Code
-            "ringColor": "#00ffff", // Cyan eclatant
-            "coreColor": "#ffffff" // Blanc pur
+            "baseColor": "#1e90ff",
+            "ringColor": "#00ffff",
+            "coreColor": "#ffffff"
         }
     },
     {
@@ -16,9 +16,9 @@
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2022",
         "isEmpty": true,
         "planetStyle": {
-            "baseColor": "#00bfff", // Bleu glacier = Ice Planet – Calme, Clarte, Structure
-            "ringColor": "#e0ffff", // Cyan pastel
-            "coreColor": "#f0f8ff" // Blanc froid
+            "baseColor": "#00bfff",
+            "ringColor": "#e0ffff",
+            "coreColor": "#f0f8ff"
         }
     },
     {
