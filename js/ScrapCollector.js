@@ -38,7 +38,7 @@ export class ScrapCollector {
         ctx.textAlign = "center";
 
         // Show number
-        ctx.fillText(numberOfScraps, this.x - 6, this.y + 30);
+        ctx.fillText(numberOfScraps, this.x, this.y + 30);
 
         // When loaded draw image next to it
         //if (this.scrapImg != null) {
