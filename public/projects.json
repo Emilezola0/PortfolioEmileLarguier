@@ -7,7 +7,12 @@
         "planetStyle": {
             "baseColor": "#1e90ff",
             "ringColor": "#00ffff",
-            "coreColor": "#ffffff"
+            "coreColor": "#ffffff",
+            "size": 18,
+            "floatAmplitude": 1.5,
+            "floatSpeed": 0.06,
+            "rotationSpeed": 0.0125,
+            "ringRotationSpeed": 0.0175
         }
     },
     {
@@ -18,7 +23,12 @@
         "planetStyle": {
             "baseColor": "#00bfff",
             "ringColor": "#e0ffff",
-            "coreColor": "#f0f8ff"
+            "coreColor": "#f0f8ff",
+            "size": 21,
+            "floatAmplitude": 1.75,
+            "floatSpeed": 0.04,
+            "rotationSpeed": 0.01,
+            "ringRotationSpeed": 0.0125
         }
     },
     {
@@ -29,7 +39,12 @@
         "planetStyle": {
             "baseColor": "#ff69b4",
             "ringColor": "#fffacd",
-            "coreColor": "#fff0f5"
+            "coreColor": "#fff0f5",
+            "size": 24,
+            "floatAmplitude": 2,
+            "floatSpeed": 0.05,
+            "rotationSpeed": 0.015,
+            "ringRotationSpeed": 0.02
         }
     },
     {
@@ -40,7 +55,12 @@
         "planetStyle": {
             "baseColor": "#ff4500",
             "ringColor": "#ffa500",
-            "coreColor": "#ffd580"
+            "coreColor": "#ffd580",
+            "size": 27,
+            "floatAmplitude": 2,
+            "floatSpeed": 0.06,
+            "rotationSpeed": 0.015,
+            "ringRotationSpeed": 0.02
         }
     },
     {
@@ -51,7 +71,12 @@
         "planetStyle": {
             "baseColor": "#228b22",
             "ringColor": "#adff2f",
-            "coreColor": "#7fff00"
+            "coreColor": "#7fff00",
+            "size": 25,
+            "floatAmplitude": 2.5,
+            "floatSpeed": 0.06,
+            "rotationSpeed": 0.015,
+            "ringRotationSpeed": 0.02
         }
     },
     {
@@ -62,7 +87,12 @@
         "planetStyle": {
             "baseColor": "#8a2be2",
             "ringColor": "#ff69b4",
-            "coreColor": "#dda0dd"
+            "coreColor": "#dda0dd",
+            "size": 22,
+            "floatAmplitude": 2.25,
+            "floatSpeed": 0.08,
+            "rotationSpeed": 0.02,
+            "ringRotationSpeed": 0.025
         }
     }
 ]

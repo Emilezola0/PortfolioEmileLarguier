@@ -17,8 +17,16 @@ export class Folder {
         this.planetStyle = {
             baseColor: planetStyle.baseColor || "#44f",
             ringColor: planetStyle.ringColor || "#fff",
-            coreColor: planetStyle.coreColor || "#ccf"
+            coreColor: planetStyle.coreColor || "#ccf",
+            size: planetStyle.size || 16, // Rayon planète
+            floatAmplitude: planetStyle.floatAmplitude || 1.5, // Flottement haut-bas
+            floatSpeed: planetStyle.floatSpeed || 0.05, // Vitesse flottement
+            rotationSpeed: planetStyle.rotationSpeed || 0.01, // Rotation planète
+            ringRotationSpeed: planetStyle.ringRotationSpeed || 0.015 // Rotation anneau
         };
+        this.floatOffset = Math.random() * Math.PI * 2; // pour décaler chaque planète
+        this.planetRotation = 0;
+        this.ringRotation = 0;
 
         // Apparence & interaction
         this.dragging = false;
@@ -129,32 +137,53 @@ export class Folder {
             SoundManager.play(this.projectileAudio, this.volume);
             this.cooldown = this.stats.atkSpeed;
         }
+
+        // Planete rotation
+        this.planetRotation += this.planetStyle.rotationSpeed;
+        this.ringRotation += this.planetStyle.ringRotationSpeed;
+        this.floatOffset += this.planetStyle.floatSpeed;
+
     }
 
     // draw planete
     drawPlanet(ctx) {
+        const size = this.planetStyle.size;
+        const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
+
+        // Flottement + rotation planète
+        ctx.save();
+        ctx.translate(0, floatY);
+        ctx.rotate(this.planetRotation);
+
         // Corps principal
         ctx.beginPath();
         ctx.fillStyle = this.planetStyle.baseColor;
-        ctx.arc(0, 0, 16, 0, Math.PI * 2);
+        ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Effet de core/lumiere au centre
+        // Lumière centrale (pulsation très subtile)
         ctx.beginPath();
-        const gradient = ctx.createRadialGradient(0, 0, 4, 0, 0, 16);
+        const gradient = ctx.createRadialGradient(0, 0, size * 0.25, 0, 0, size);
         gradient.addColorStop(0, this.planetStyle.coreColor);
         gradient.addColorStop(1, "transparent");
         ctx.fillStyle = gradient;
-        ctx.arc(0, 0, 16, 0, Math.PI * 2);
+        ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Anneau (style Saturne)
+        ctx.restore();
+
+        // Rotation anneau séparément
+        ctx.save();
+        ctx.translate(0, floatY);
+        ctx.rotate(this.ringRotation);
         ctx.beginPath();
         ctx.strokeStyle = this.planetStyle.ringColor;
         ctx.lineWidth = 2;
-        ctx.ellipse(0, 0, 20, 6, Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, 0, Math.PI * 2);
         ctx.stroke();
+        ctx.restore();
     }
+
 
 
     isHovered(mx, my) {
