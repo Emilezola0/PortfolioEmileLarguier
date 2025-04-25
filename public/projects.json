@@ -9,8 +9,8 @@
             "ringColor": "#00ffff",
             "coreColor": "#ffffff",
             "size": 18,
-            "floatAmplitude": 1.5,
-            "floatSpeed": 0.06,
+            "floatAmplitude": 0.25,
+            "floatSpeed": 0.005,
             "rotationSpeed": 0.0125,
             "ringRotationSpeed": 0.0175
         }
@@ -25,8 +25,8 @@
             "ringColor": "#e0ffff",
             "coreColor": "#f0f8ff",
             "size": 21,
-            "floatAmplitude": 1.75,
-            "floatSpeed": 0.04,
+            "floatAmplitude": 0.15,
+            "floatSpeed": 0.01,
             "rotationSpeed": 0.01,
             "ringRotationSpeed": 0.0125
         }
@@ -41,8 +41,8 @@
             "ringColor": "#fffacd",
             "coreColor": "#fff0f5",
             "size": 24,
-            "floatAmplitude": 2,
-            "floatSpeed": 0.05,
+            "floatAmplitude": 0.5,
+            "floatSpeed": 0.0125,
             "rotationSpeed": 0.015,
             "ringRotationSpeed": 0.02
         }
@@ -57,8 +57,8 @@
             "ringColor": "#ffa500",
             "coreColor": "#ffd580",
             "size": 27,
-            "floatAmplitude": 2,
-            "floatSpeed": 0.06,
+            "floatAmplitude": 0.5,
+            "floatSpeed": 0.015,
             "rotationSpeed": 0.015,
             "ringRotationSpeed": 0.02
         }
@@ -73,8 +73,8 @@
             "ringColor": "#adff2f",
             "coreColor": "#7fff00",
             "size": 25,
-            "floatAmplitude": 2.5,
-            "floatSpeed": 0.06,
+            "floatAmplitude": 0.75,
+            "floatSpeed": 0.0175,
             "rotationSpeed": 0.015,
             "ringRotationSpeed": 0.02
         }
@@ -89,10 +89,10 @@
             "ringColor": "#ff69b4",
             "coreColor": "#dda0dd",
             "size": 22,
-            "floatAmplitude": 2.25,
-            "floatSpeed": 0.08,
-            "rotationSpeed": 0.02,
-            "ringRotationSpeed": 0.025
+            "floatAmplitude": 0.5,
+            "floatSpeed": 0.0175,
+            "rotationSpeed": 0.015,
+            "ringRotationSpeed": 0.02
         }
     }
 ]
