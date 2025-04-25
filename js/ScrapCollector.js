@@ -7,6 +7,8 @@ export class ScrapCollector {
 
         this.img = new Image();
         this.img.src = "assets/scrap.png";
+        this.scrapsImg = new Image();
+        this.scrapsImg.src = "assets/scrapCollect.png";
     }
 
     draw(ctx, numberOfScraps) {
@@ -36,10 +38,6 @@ export class ScrapCollector {
 
         // Show number
         ctx.fillText(numberOfScraps, this.x - 6, this.y + 30);
-
-        // Load image next to it
-        const scrapsImg = new Image();
-        scrapsImg.src = "assets/scrapCollect.png"; // search path
 
         // When loaded draw image next to it
         if (scrapsImg.complete) {
