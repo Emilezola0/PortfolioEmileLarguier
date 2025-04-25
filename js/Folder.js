@@ -168,18 +168,18 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Cratères generes aleatoirement ===
-        const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 crateres
+        // === Cratères générés aléatoirement ===
+        const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 cratères
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
             const r = size * (0.3 + Math.random() * 0.6);
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
-            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des crateres
+            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des cratères
 
-            // Ombre du cratere
+            // Ombre du cratère
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
-            gradient.addColorStop(0, "rgba(0,0,0,0.3)");  // Ombre plus marquee
+            gradient.addColorStop(0, "rgba(0,0,0,0.35)");  // Ombre plus marquée
             gradient.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.beginPath();
@@ -187,7 +187,7 @@ export class Folder {
             ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Contour leger du cratere
+            // Contour léger du cratère
             ctx.beginPath();
             ctx.strokeStyle = "rgba(255,255,255,0.1)";
             ctx.lineWidth = 0.8;
@@ -195,19 +195,19 @@ export class Folder {
             ctx.stroke();
         }
 
-        // === Ajout de textures de surface simples ===
+        // === Glow autour de la planète ===
+        const glow = ctx.createRadialGradient(0, 0, size * 0.75, 0, 0, size * 1.25);
+        glow.addColorStop(0, "rgba(255, 255, 255, 0.3)");  // Un léger glow blanc
+        glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.05)";  // Legere texture brillante
-        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Juste un petit cercle au centre pour donner l'impression de surface irreguliere
+        ctx.arc(0, 0, size * 1.25, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Glow central doux ===
+        // === Texture de surface simple ===
         ctx.beginPath();
-        const coreGlow = ctx.createRadialGradient(0, 0, size * 0.25, 0, 0, size);
-        coreGlow.addColorStop(0, this.planetStyle.coreColor);
-        coreGlow.addColorStop(1, "transparent");
-        ctx.fillStyle = coreGlow;
-        ctx.arc(0, 0, size, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.05)";  // Legere texture brillante
+        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Juste un petit cercle au centre pour donner l'impression de surface irrégulière
         ctx.fill();
 
         ctx.restore();
