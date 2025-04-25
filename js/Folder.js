@@ -150,29 +150,18 @@ export class Folder {
         const size = this.planetStyle.size;
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
 
-        // === Anneau (derriere/entourant, independant) ===
+        // Flottement + rotation planete
         ctx.save();
-        ctx.translate(0, floatY); // flotte avec la planete, mais rotation separee
-        ctx.rotate(this.ringRotation); // indépendant
-        ctx.beginPath();
-        ctx.strokeStyle = this.planetStyle.ringColor;
-        ctx.lineWidth = 2;
-        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
+        ctx.translate(0, floatY);
+        ctx.rotate(this.planetRotation);
 
-        // === Planete (rotation propre) ===
-        ctx.save();
-        ctx.translate(0, floatY); // meme flottement
-        ctx.rotate(this.planetRotation); // propre rotation
-
-        // Corps
+        // Corps principal
         ctx.beginPath();
         ctx.fillStyle = this.planetStyle.baseColor;
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Glow central
+        // Lumiere centrale (pulsation tres subtile)
         ctx.beginPath();
         const gradient = ctx.createRadialGradient(0, 0, size * 0.25, 0, 0, size);
         gradient.addColorStop(0, this.planetStyle.coreColor);
@@ -182,7 +171,19 @@ export class Folder {
         ctx.fill();
 
         ctx.restore();
+
+        // Rotation anneau separement
+        ctx.save();
+        ctx.translate(0, floatY);
+        ctx.rotate(this.ringRotation);
+        ctx.beginPath();
+        ctx.strokeStyle = this.planetStyle.ringColor;
+        ctx.lineWidth = 2;
+        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
     }
+
 
 
 
