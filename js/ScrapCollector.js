@@ -30,9 +30,21 @@ export class ScrapCollector {
 
         // Dessiner le texte sous le dossier
         ctx.fillStyle = "white";
-        ctx.font = "10px Arial";
+        ctx.font.family = 'PressStart2P', monospace;
+        ctx.font.size = 8;
         ctx.textAlign = "center";
-        ctx.fillText(numberOfScraps + " Scraps", this.x, this.y + 28);
+
+        // Show number
+        ctx.fillText(numberOfScraps, this.x - 6, this.y + 30);
+
+        // Load image next to it
+        const scrapsImg = new Image();
+        scrapsImg.src = "assets/scrapCollect.png"; // search path
+
+        // When loaded draw image next to it
+        if (scrapsImg.complete) {
+            ctx.drawImage(scrapsImg, this.x + 4, this.y + 18, 12, 12); // x, y, width, height
+        }
 
         ctx.restore();
     }
