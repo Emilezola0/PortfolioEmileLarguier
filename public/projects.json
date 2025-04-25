@@ -27,9 +27,9 @@
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2023",
         "isEmpty": true,
         "planetStyle": {
-            "baseColor": "#ff69b4", // Rose cosmos = Stardust Realm – Imagination, Reverie, Invention
-            "ringColor": "#fffacd", // Jaune lumiere
-            "coreColor": "#fff0f5" // Rosé doux
+            "baseColor": "#ff69b4",
+            "ringColor": "#fffacd",
+            "coreColor": "#fff0f5"
         }
     },
     {
@@ -38,9 +38,9 @@
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2024",
         "isEmpty": true,
         "planetStyle": {
-            "baseColor": "#ff4500", // Rouge lave = Puissance, Creation, Intensite
-            "ringColor": "#ffa500", // Orange feu
-            "coreColor": "#ffd580" // Jaune incandescence
+            "baseColor": "#ff4500",
+            "ringColor": "#ffa500",
+            "coreColor": "#ffd580"
         }
     },
     {
@@ -49,9 +49,9 @@
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\Jam",
         "isEmpty": true,
         "planetStyle": {
-            "baseColor": "#228b22", // Vert foret = Cosmic Jungle – Nature, Diversite, Exploration
-            "ringColor": "#adff2f", // Vert acide
-            "coreColor": "#7fff00" // Vert lumiere
+            "baseColor": "#228b22",
+            "ringColor": "#adff2f",
+            "coreColor": "#7fff00"
         }
     },
     {
@@ -60,9 +60,9 @@
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\PersoProj",
         "isEmpty": true,
         "planetStyle": {
-            "baseColor": "#8a2be2", // Violet electrique = NeoCity – Futur, Design, Synthwave
-            "ringColor": "#ff69b4", // Rose neon
-            "coreColor": "#dda0dd" // Lilas retro
+            "baseColor": "#8a2be2",
+            "ringColor": "#ff69b4",
+            "coreColor": "#dda0dd"
         }
     }
 ]
