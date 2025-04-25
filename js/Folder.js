@@ -185,10 +185,6 @@ export class Folder {
     }
 
 
-
-
-
-
     isHovered(mx, my) {
         const isHovered = mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
             my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
