@@ -32,8 +32,9 @@ export class ScrapCollector {
 
         // Dessiner le texte sous le dossier
         ctx.fillStyle = "white";
-        ctx.font.family = 'PressStart2P', monospace;
-        ctx.font.size = 8;
+        document.fonts.ready.then(() => {
+            ctx.font = "8px 'Press Start 2P', monospace";
+        });
         ctx.textAlign = "center";
 
         // Show number
