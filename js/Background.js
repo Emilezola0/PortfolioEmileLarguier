@@ -61,7 +61,7 @@ export class Background {
     }
 
     spawnShootingStar() {
-        if (Math.random() < 0.002) {
+        if (Math.random() < 5) {
             const angle = Math.random() * (Math.PI / 4) + Math.PI / 8; // entre 22.5° et 67.5°
             const speed = Math.random() * 1 + 2;
 
