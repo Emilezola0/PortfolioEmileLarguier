@@ -1,31 +1,37 @@
 [
     {
         "name": "2021-2022",
+        "JsName": "2021",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2021",
         "isEmpty": true
     },
     {
         "name": "2022-2023",
+        "JsName": "2022",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2022",
         "isEmpty": true
     },
     {
         "name": "2023-2024",
+        "JsName": "2023",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2023",
         "isEmpty": true
     },
     {
         "name": "2024-2025",
+        "JsName": "2024",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2024",
         "isEmpty": true
     },
     {
         "name": "Game Jam",
+        "JsName": "Jam",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\Jam",
         "isEmpty": true
     },
     {
         "name": "Personal projects",
+        "JsName": "PersoProj",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\PersoProj",
         "isEmpty": true
     }

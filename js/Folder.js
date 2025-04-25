@@ -2,10 +2,11 @@ import { Bullet } from "./Bullet.js";
 import { SoundManager } from './SoundManager.js';
 
 export class Folder {
-    constructor(x, y, name) {
+    constructor(x, y, name, JsName) {
         this.x = x;
         this.y = y;
         this.name = name;
+        this.JsName = JsName;
         this.cooldown = 0;
         this.absorbing = false;
         this.absorbAngle = 0;
@@ -275,7 +276,7 @@ export class Folder {
         const container = document.getElementById("folder-content");
         const title = document.getElementById("folder-title");
 
-        import(`./projects/project_${this.name}.js`)
+        import(`./projects/project_${this.JsName}.js`)
             .then(module => {
                 const data = module.getProjectContent();
                 let currentIndex = 0;

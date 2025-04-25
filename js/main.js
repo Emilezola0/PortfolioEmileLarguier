@@ -437,7 +437,7 @@ fetch("public/projects.json")
             const angle = i * step;
             const x = canvas.width / 2 + radius * Math.cos(angle);
             const y = canvas.height / 2 + radius * Math.sin(angle);
-            folders.push(new Folder(x, y, proj.name));
+            folders.push(new Folder(x, y, proj.name, proj.JsName));
         });
 
         // Assure-toi de bien initialiser le shop après avoir ajoute les dossiers
