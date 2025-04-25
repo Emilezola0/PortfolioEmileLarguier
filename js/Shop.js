@@ -102,7 +102,7 @@ export class Shop {
         this.targetFolder = this.getClosestFolder(this.folders); // Important : update folder target
 
         for (const btn of this.buttons) {
-            const level = this.targetFolder.upgrades?.[btn.key] || 0;
+            const level = this.targetFolder.upgradeLevels?.[btn.key] || 0;
             const cost = getUpgradeCost(this.targetFolder, btn.key);
 
             const div = document.createElement("div");
@@ -124,9 +124,9 @@ export class Shop {
                     if (target) {
                         this.numberOfScraps -= cost;
                         spendScrap(cost);
-                        const oldLevel = target.upgrades?.[btn.key] || 0;
+                        const oldLevel = target.upgradeLevels?.[btn.key] || 0;
                         upgradeFolder(target, btn.key);
-                        const newLevel = (target.upgrades?.[btn.key] || 0);
+                        const newLevel = target.upgradeLevels?.[btn.key] || 0;
 
                         // If we reach new step
                         if (Math.floor(newLevel / 5) > Math.floor(oldLevel / 5)) {
