@@ -79,6 +79,7 @@ export class Shop {
         const dist = Math.hypot(dx, dy);
 
         if (dist < 20 && !mouse.holding) {
+            console.log("handleClick, shopIsOpenState: " + this.shopIsOpen);
             this.openShopPopup();
         }
     }
@@ -87,7 +88,6 @@ export class Shop {
         // Si folders est null ou vide, on ferme le shop
         if (!Array.isArray(this.folders) || this.folders.length === 0) {
             closeShop(this);
-            this.shopIsOpen = false;
             return;
         }
 
@@ -191,6 +191,7 @@ export class Shop {
     handleMouseUp() {
         // Click without moving => open the shop
         if (!this.wasDragged) {
+            console.log("Shop open state on drag: " + this.shopIsOpen);
             this.openShopPopup();
         }
         this.wasDragged = false;
@@ -324,10 +325,14 @@ export class Shop {
     refreshShopPopup() {
         console.log(this.shopIsOpen);
         if (this.shopIsOpen == true) {
+            console.log("REFRESH S1 ShopIsOpen: " + this.shopIsOpen);
             closeShop(this);
+            console.log("REFRESH S2 ShopIsOpen: " + this.shopIsOpen);
             this.openShopPopup();
+            console.log("REFRESH S3 ShopIsOpen: " + this.shopIsOpen);
             return;
         } else {
+            console.log("ShopIsOpen: " + this.shopIsOpen);
             return;
         }
     }
