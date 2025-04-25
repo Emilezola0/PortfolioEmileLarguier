@@ -74,7 +74,7 @@ export class Background {
             this.shootingStars.push({
                 x: startX,
                 y: startY,
-                vx: -vx,
+                vx: vx,
                 vy: vy,
                 life: 100,
                 length: Math.random() * 80 + 40,
