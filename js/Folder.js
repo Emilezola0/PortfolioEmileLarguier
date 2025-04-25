@@ -159,7 +159,7 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Ombre laterale pour le volume ===
+        // === Ombre laterale pour volume ===
         const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, 0, 0, size);
         shadow.addColorStop(0, "rgba(0,0,0,0.05)");
         shadow.addColorStop(1, "rgba(0,0,0,0.4)");
@@ -168,18 +168,18 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Crateres (zones sombres avec halo) ===
-        const numCraters = 6;
+        // === Cratères generes aléatoirement ===
+        const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 crateres
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
             const r = size * (0.3 + Math.random() * 0.6);
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
-            const craterSize = size * (0.03 + Math.random() * 0.04);
+            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des crateres
 
             // Ombre du cratere
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
-            gradient.addColorStop(0, "rgba(0,0,0,0.2)");
+            gradient.addColorStop(0, "rgba(0,0,0,0.3)");  // Ombre plus marquee
             gradient.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.beginPath();
@@ -187,13 +187,19 @@ export class Folder {
             ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Contour leger
+            // Contour leger du cratere
             ctx.beginPath();
-            ctx.strokeStyle = "rgba(255,255,255,0.05)";
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.lineWidth = 0.8;
             ctx.arc(x, y, craterSize, 0, Math.PI * 2);
             ctx.stroke();
         }
+
+        // === Ajout de textures de surface simples ===
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.05)";  // Legere texture brillante
+        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Juste un petit cercle au centre pour donner l'impression de surface irreguliere
+        ctx.fill();
 
         // === Glow central doux ===
         ctx.beginPath();
