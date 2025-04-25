@@ -150,20 +150,22 @@ export class Folder {
         const size = this.planetStyle.size;
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
 
-        // Dessin de l'anneau — indépendant
+        // === Position flottante ===
         ctx.save();
         ctx.translate(0, floatY);
-        ctx.rotate(this.ringRotation); // peut être 0 si tu veux qu’il soit statique
+
+        // === Dessin anneau arriere (derriere la planete) ===
+        ctx.save();
+        ctx.rotate(this.ringRotation);
         ctx.beginPath();
         ctx.strokeStyle = this.planetStyle.ringColor;
         ctx.lineWidth = 2;
-        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, Math.PI * 0.5, Math.PI * 1.5);
         ctx.stroke();
         ctx.restore();
 
-        // Dessin de la planète (rotation propre)
+        // === Dessin planète ===
         ctx.save();
-        ctx.translate(0, floatY);
         ctx.rotate(this.planetRotation);
 
         // Corps principal
@@ -182,7 +184,20 @@ export class Folder {
         ctx.fill();
 
         ctx.restore();
+
+        // === Dessin anneau avant (devant la planete) ===
+        ctx.save();
+        ctx.rotate(this.ringRotation);
+        ctx.beginPath();
+        ctx.strokeStyle = this.planetStyle.ringColor;
+        ctx.lineWidth = 2;
+        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, -Math.PI * 0.5, Math.PI * 0.5);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.restore(); // translate(floatY)
     }
+
 
 
 
