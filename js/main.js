@@ -128,6 +128,9 @@ const projectileSound = document.getElementById("projectileSound");
 const explodeSound = document.getElementById("explodeSound");
 const soundEffectVolume = 0.6;
 
+//Wave Display
+const waveDisplay = document.getElementById('waveDisplay');
+
 // Drag
 let draggedFolder = null;
 let draggedShop = false;
@@ -238,6 +241,21 @@ function drawUI() {
         ctx.fillStyle = "white";
         ctx.font = "16px sans-serif";
         ctx.fillText("Wave number " + spawnManager.getWave(), canvas.width / 2, 10);
+    }
+}
+
+function updateWaveDisplay() {
+    const wave = spawnManager.getWave();
+    waveDisplay.textContent = `Vague ${wave}`;
+
+    // Reset des classes avant d'appliquer les nouvelles
+    waveDisplay.classList.remove('wave-tier-2', 'wave-tier-3');
+
+    // Ajout des classes selon le niveau de vague
+    if (wave >= 10 && wave < 20) {
+        waveDisplay.classList.add('wave-tier-2');
+    } else if (wave >= 20) {
+        waveDisplay.classList.add('wave-tier-3');
     }
 }
 
@@ -386,15 +404,21 @@ function updateGame() {
         }
     }
 
+    // Collector
     collector.draw(ctx, totalNumberOfScraps);
     drawUI();
+    // Spawn Manager
     spawnManager.update(mobs, voidZone.radius, canvas);
+    // Wave
+    updateWaveDisplay();
 
+    // Mob particle Effect
     mobParticles = mobParticles.filter(p => p.life > 0);
     mobParticles.forEach(p => {
         p.update();
         p.draw(ctx);
     });
+
     requestAnimationFrame(updateGame); // <== continue que si pas Game Over
 }
 

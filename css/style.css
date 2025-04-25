@@ -131,7 +131,7 @@ input[type="checkbox"]:checked + .custom-toggle {
     align-items: center;
     transition: background 0.2s;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 8px;
 }
 
     .shop-item:hover {
