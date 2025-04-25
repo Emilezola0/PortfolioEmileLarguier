@@ -47,6 +47,22 @@ export class Folder {
         this.volume = 0.9;
     }
 
+    // methode create button when folder dead
+    createShortcutButton() {
+        const container = document.getElementById("folder-shortcuts");
+
+        const btn = document.createElement("button");
+        btn.classList.add("folder-shortcut-button");
+        btn.textContent = this.name;
+
+        btn.onclick = () => {
+            this.openFolderPopup();
+        };
+
+        container.appendChild(btn);
+    }
+
+
     update(mobs, bullets, voidCenter, voidRadius, soundEnabled) {
         if (this.absorbing) {
             this.absorbAngle += 0.05;
@@ -60,9 +76,10 @@ export class Folder {
         const dx = this.x - voidCenter.x;
         const dy = this.y - voidCenter.y;
         const d = Math.hypot(dx, dy);
-        if (d < voidRadius + 30) {
+        if (d < voidRadius + 30 && !this.absorbing) {
             this.absorbing = true;
             this.absorbAngle = Math.random() * Math.PI * 2;
+            this.createShortcutButton();
             return;
         }
 
@@ -402,3 +419,30 @@ window.makeFolderPopupDraggable = function () {
 };
 
 window.makeFolderPopupDraggable();
+
+(function enablePopupResize() {
+    const popup = document.getElementById("folder-popup");
+    const resizeHandle = document.querySelector(".resize-handle");
+
+    let isResizing = false;
+
+    resizeHandle.addEventListener("mousedown", (e) => {
+        isResizing = true;
+        e.preventDefault();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (!isResizing) return;
+
+        const rect = popup.getBoundingClientRect();
+        const newWidth = e.clientX - rect.left;
+        const newHeight = e.clientY - rect.top;
+
+        popup.style.width = `${newWidth}px`;
+        popup.style.height = `${newHeight}px`;
+    });
+
+    window.addEventListener("mouseup", () => {
+        isResizing = false;
+    });
+})();
