@@ -1,8 +1,12 @@
 import { upgradeFolder, getUpgradeCost } from "./upgrades.js";
 import { spendScrap } from "./main.js";
+import { SoundManager } from './SoundManager.js';
 
 const powerUpAudio = new Audio("assets/audio/powerUp.mp3");
 powerUpAudio.volume = 0.6; // ajuste si besoin
+
+// Sound manager
+SoundManager.soundEnabled = soundToggle.checked;
 
 export class Shop {
     constructor(x, y) {

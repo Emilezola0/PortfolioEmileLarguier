@@ -578,6 +578,49 @@ input[type="checkbox"]:checked + .custom-toggle {
             transition: background 0.3s ease;
         }
 
+/* STYLE DU BOUTON PLAY */
+.play-button {
+    font-size: 10px;
+    justify-content: center;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    position: relative;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px #00ffcc55;
+}
 
+    .play-button:hover {
+        background: #222;
+        color: #00ffcc;
+        border-color: #00ffcc;
+        box-shadow: 0 0 10px #00ffccaa, 0 0 20px #00ffcc55;
+    }
+
+    /* Ajout d'un effet de lueur sur l'icone */
+    .play-button .icon {
+        margin-right: 6px;
+        animation: flickerIcon 1.2s infinite steps(1);
+        filter: brightness(1.8);
+        color: #00ffcc;
+    }
+
+@keyframes flickerIcon {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.9;
+    }
+}
 
 

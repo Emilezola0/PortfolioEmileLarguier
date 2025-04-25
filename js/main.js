@@ -126,6 +126,7 @@ scrapImgCollect.src = "assets/scrapCollect.png";
 const scrapSound = document.getElementById("scrapSound");
 const projectileSound = document.getElementById("projectileSound");
 const explodeSound = document.getElementById("explodeSound");
+const clickSound = document.getElementById("clickSound");
 const soundEffectVolume = 0.4;
 
 // Drag
@@ -442,27 +443,35 @@ const content = document.createElement('div');
 content.classList.add('popup-content');
 content.innerHTML = `
   <p>Click on game elements with your mouse to move them.</p>
-  
-  <p>The planets are my projects, whether <strong>School</strong>, <strong>Personal</strong> or <strong>Jam</strong>.<br>
-  Just click on a planet to open a tab and discover the project.</p>
+
+  <p>
+    The <span style="color: #00ccff;"><strong>planets</strong></span> are my projects, whether 
+    <span style="color: #ffcc00;"><strong>School</strong></span>, 
+    <span style="color: #ff66cc;"><strong>Personal</strong></span>, or 
+    <span style="color: #66ff66;"><strong>Jam</strong></span>.<br>
+    Click on a <span style="color: #00ccff;"><strong>planet</strong></span> to discover the project!
+  </p>
 
   <p>As for the other game items:</p>
   <ul>
-    <li>The <strong>bag</strong> lets you collect metal pieces to upgrade your planets.</li>
-    <li>The <strong>computer</strong>, when clicked, opens a store window linked to the nearest folder, allowing you to improve the folder's stats in exchange for metal pieces.</li>
+    <li>The <span style="color: #ffaa00;"><strong>bag</strong></span> lets you collect metal pieces to upgrade your planets.</li>
+    <li>The <span style="color: #ff00ff;"><strong>computer</strong></span> opens a store window linked to the nearest folder.</li>
   </ul>
 
-  <p><strong>Defeat condition:</strong><br>
-  All folders have been sucked into the black hole.<br>
-  (If a folder has been sucked into a black hole, it will always be available as a button on the right of the screen.)</p>
+  <p>
+    <strong style="color: #ff4444;">Defeat condition:</strong><br>
+    All folders have been sucked into the <span style="color: #000000; background-color: #ffffff88;"><strong>black hole</strong></span>.<br>
+    (If a folder has been sucked in, it’s still available via a button on the right.)
+  </p>
 `;
 
 const closeButton = document.createElement('button');
-closeButton.classList.add('popup-close-btn');
-closeButton.innerHTML = 'Démarrer le jeu';
+closeButton.classList.add('popup-close-btn', 'shop-item', 'play-button');
+closeButton.innerHTML = 'PLAY';
 
 closeButton.addEventListener('click', () => {
     startGamePopup.style.display = 'none'; // Cache le pop-up lorsque le jeu commence
+    SoundManager.play(clickSound, 0.8);
     // Ici tu peux demarrer ton jeu apres la fermeture du pop-up
     fetch("public/projects.json")
         .then(res => res.json())
