@@ -90,14 +90,14 @@ export class Folder {
             const dy = closest.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            const vx = (dx / dist) * this.stats.bulletSpeed;
-            const vy = (dy / dist) * this.stats.bulletSpeed;
+            const normDx = dx / dist;
+            const normDy = dy / dist;
 
             bullets.push(new Bullet(
                 this.x,
                 this.y,
-                vx,
-                vy,
+                normDx,
+                normDy,
                 this.stats.atkDamage,     // damage
                 this.stats.pierce,        // pierce
                 this.stats.bulletSpeed    // speed projectile

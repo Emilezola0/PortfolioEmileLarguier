@@ -313,6 +313,8 @@ function updateGame() {
 
     for (let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
+        bullet.update();
+        bullet.draw(ctx);
 
         for (let j = mobs.length - 1; j >= 0; j--) {
             const mob = mobs[j];
