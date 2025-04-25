@@ -168,7 +168,7 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Cratères generes aléatoirement ===
+        // === Cratères generes aleatoirement ===
         const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 crateres
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
