@@ -159,7 +159,7 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Ombre latérale pour le volume ===
+        // === Ombre laterale pour le volume ===
         const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, 0, 0, size);
         shadow.addColorStop(0, "rgba(0,0,0,0.05)");
         shadow.addColorStop(1, "rgba(0,0,0,0.4)");
@@ -168,7 +168,7 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Cratères (zones sombres avec halo) ===
+        // === Crateres (zones sombres avec halo) ===
         const numCraters = 6;
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
@@ -177,7 +177,7 @@ export class Folder {
             const y = Math.sin(angle) * r;
             const craterSize = size * (0.03 + Math.random() * 0.04);
 
-            // Ombre du cratère
+            // Ombre du cratere
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
             gradient.addColorStop(0, "rgba(0,0,0,0.2)");
             gradient.addColorStop(1, "rgba(0,0,0,0)");
@@ -187,7 +187,7 @@ export class Folder {
             ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Contour léger
+            // Contour leger
             ctx.beginPath();
             ctx.strokeStyle = "rgba(255,255,255,0.05)";
             ctx.lineWidth = 0.5;
