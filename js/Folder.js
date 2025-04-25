@@ -22,7 +22,7 @@ export class Folder {
         this.stats = {
             atkSpeed: 60,        // Moins = plus rapide
             atkDamage: 1,
-            range: 50,
+            range: 75,
             bulletSpeed: 4,
             pierce: 1
         };
@@ -282,15 +282,33 @@ export class Folder {
 
                 const updateSlide = () => {
                     const slide = data.slides[currentIndex];
+
+                    let mediaHTML = "";
+                    if (slide.type === "image") {
+                        mediaHTML = `<img src="${slide.img}" class="popup-image" />`;
+                    } else if (slide.type === "video") {
+                        mediaHTML = `
+                        <div class="video-container">
+                        <iframe
+                        src="${slide.video}"
+                        title="YouTube video"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        ></iframe>
+                        </div>
+                        `;
+                    }
+
                     container.innerHTML = `
-                    <img src="${slide.img}" class="popup-image" />
+                    ${mediaHTML}
                     <p>${slide.desc}</p>
-                `;
+                    `;
 
                     nav.innerHTML = `
                     ${currentIndex > 0 ? '<button id="prev-slide"><-</button>' : ''}
                     ${currentIndex < data.slides.length - 1 ? '<button id="next-slide">-></button>' : ''}
-                `;
+                    `;
 
                     if (currentIndex > 0)
                         document.getElementById("prev-slide").onclick = () => { currentIndex--; updateSlide(); };

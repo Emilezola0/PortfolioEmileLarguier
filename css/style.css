@@ -279,6 +279,38 @@ input[type="checkbox"]:checked + .custom-toggle {
             color: #111;
         }
 
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Ratio 16:9 */
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 1em;
+}
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        filter: brightness(0.95) contrast(1.1);
+        border: 1px solid #333;
+        box-shadow: 0 0 8px #00ffcc33;
+    }
+
+/* Stylized link */
+.popup-content a {
+    color: #00ffcc;
+    text-decoration: underline;
+    font-family: 'PressStart2P', monospace;
+    font-size: 10px;
+}
+
+    .popup-content a:hover {
+        color: #ff4444;
+    }
+
 .upgrade-tier-1 {
     animation: glow1 1.5s infinite alternate;
     border: 2px solid #88f;
