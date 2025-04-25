@@ -13,6 +13,13 @@ export class Folder {
         this.opacity = 1;
         this.initialDistance = 0;
 
+        // Planete Style
+        this.planetStyle = {
+            baseColor: planetStyle.baseColor || "#44f",
+            ringColor: planetStyle.ringColor || "#fff",
+            coreColor: planetStyle.coreColor || "#ccf"
+        };
+
         // Apparence & interaction
         this.dragging = false;
         this.mouseDownPos = null;
@@ -39,8 +46,8 @@ export class Folder {
 
 
         // Image
-        this.folderImg = new Image();
-        this.folderImg.src = "assets/folder.png";
+        // this.folderImg = new Image();
+        // this.folderImg.src = "assets/folder.png";
 
         // Sound
         this.projectileAudio = new Audio("assets/projectileSoundEffect.mp3");
@@ -124,57 +131,28 @@ export class Folder {
         }
     }
 
-    draw(ctx) {
-        ctx.save();
-        ctx.globalAlpha = this.opacity;
-        ctx.translate(this.x, this.y);
-
-        // Appliquer une rotation si en absorption
-        if (this.absorbing) ctx.rotate(this.absorbAngle);
-
-        // Scale depending of state
-        let scale = 1.0;
-        if (this.dragging) {
-            scale = 1.2;
-        } else if (this.hovered) {
-            scale = 1.1;
-        }
-        ctx.scale(scale, scale);
-
-        // Shadow if drag or hover
-        if (this.dragging) {
-            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
-            ctx.shadowBlur = 20;
-        } else if (this.hovered) {
-            // Halo lumineux avec un flou plus intense
-            ctx.shadowColor = "rgba(255, 255, 255, 0.75)"; // Blanc lumineux
-            ctx.shadowBlur = 30; // Plus de flou pour créer l'effet de halo
-            ctx.shadowOffsetX = 0; // Pas de décalage horizontal
-            ctx.shadowOffsetY = 0; // Pas de décalage vertical
-        }
-
-        // Dessiner l’image du dossier ou un fallback
-        if (this.folderImg.complete) {
-            ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height);
-        } else {
-            ctx.fillStyle = "#ccc";
-            ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-        }
-
-        ctx.restore();
-
-        // Dessiner le texte sous le dossier
-        if (!this.absorbing) {
-            ctx.fillStyle = "white";
-            ctx.font = "10px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText(this.name, this.x, this.y + 28);
-        }
-
-        // Debogage : rayon de detection
+    // draw planete
+    drawPlanet(ctx) {
+        // Corps principal
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.stats.range, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.fillStyle = this.planetStyle.baseColor;
+        ctx.arc(0, 0, 16, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Effet de core/lumiere au centre
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(0, 0, 4, 0, 0, 16);
+        gradient.addColorStop(0, this.planetStyle.coreColor);
+        gradient.addColorStop(1, "transparent");
+        ctx.fillStyle = gradient;
+        ctx.arc(0, 0, 16, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Anneau (style Saturne)
+        ctx.beginPath();
+        ctx.strokeStyle = this.planetStyle.ringColor;
+        ctx.lineWidth = 2;
+        ctx.ellipse(0, 0, 20, 6, Math.PI / 6, 0, Math.PI * 2);
         ctx.stroke();
     }
 
@@ -235,13 +213,7 @@ export class Folder {
             ctx.shadowOffsetY = 0; // Pas de d calage vertical
         }
 
-        // Dessiner l image du dossier ou un fallback
-        if (this.folderImg.complete) {
-            ctx.drawImage(this.folderImg, -this.width / 2, -this.height / 2, this.width, this.height);
-        } else {
-            ctx.fillStyle = "#ccc";
-            ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-        }
+        this.drawPlanet(ctx);
 
         ctx.restore();
 

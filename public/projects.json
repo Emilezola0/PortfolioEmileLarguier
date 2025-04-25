@@ -3,36 +3,66 @@
         "name": "2021-2022",
         "JsName": "2021",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2021",
-        "isEmpty": true
+        "isEmpty": true,
+        "planetStyle": { // Pulse Core – Techno, Dynamisme, Code
+            "baseColor": "#1e90ff", // Bleu tech
+            "ringColor": "#00ffff", // Cyan eclatant
+            "coreColor": "#ffffff" // Blanc pur
+        }
     },
     {
         "name": "2022-2023",
         "JsName": "2022",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2022",
-        "isEmpty": true
+        "isEmpty": true,
+        "planetStyle": { // Ice Planet – Calme, Clarte, Structure
+            "baseColor": "#00bfff", // Bleu glacier
+            "ringColor": "#e0ffff", // Cyan pastel
+            "coreColor": "#f0f8ff" // Blanc froid
+        }
     },
     {
         "name": "2023-2024",
         "JsName": "2023",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2023",
-        "isEmpty": true
+        "isEmpty": true,
+        "planetStyle": { // Stardust Realm – Imagination, Reverie, Invention
+            "baseColor": "#ff69b4", // Rose cosmos
+            "ringColor": "#fffacd", // Jaune lumiere
+            "coreColor": "#fff0f5" // Rosé doux
+        }
     },
     {
         "name": "2024-2025",
         "JsName": "2024",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\2024",
-        "isEmpty": true
+        "isEmpty": true,
+        "planetStyle": { // Puissance, Creation, Intensite
+            "baseColor": "#ff4500", // Rouge lave
+            "ringColor": "#ffa500", // Orange feu
+            "coreColor": "#ffd580" // Jaune incandescence
+        }
     },
     {
         "name": "Game Jam",
         "JsName": "Jam",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\Jam",
-        "isEmpty": true
+        "isEmpty": true,
+        "planetStyle": { // Cosmic Jungle – Nature, Diversite, Exploration
+            "baseColor": "#228b22", // Vert foret
+            "ringColor": "#adff2f", // Vert acide
+            "coreColor": "#7fff00" // Vert lumiere
+        }
     },
     {
         "name": "Personal projects",
         "JsName": "PersoProj",
         "path": "C:\\Users\\milou\\Desktop\\Portfolio\\projects\\PersoProj",
-        "isEmpty": true
+        "isEmpty": true,
+        "planetStyle": { // NeoCity – Futur, Design, Synthwave
+            "baseColor": "#8a2be2", // Violet electrique
+            "ringColor": "#ff69b4", // Rose neon
+            "coreColor": "#dda0dd" // Lilas retro
+        }
     }
 ]
