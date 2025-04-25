@@ -244,6 +244,10 @@ input[type="checkbox"]:checked + .custom-toggle {
         color: #ff4444;
     }
 
+    .popup-close-btn:focus {
+        outline: none;
+    }
+
 .popup-content {
     padding: 10px;
     text-align: center;
@@ -519,6 +523,61 @@ input[type="checkbox"]:checked + .custom-toggle {
     cursor: se-resize;
     z-index: 1001;
 }
+
+/* POP UP START GAME */
+.popup-start-game {
+    position: fixed; /* Utilise fixed pour un positionnement par rapport à la fenetre */
+    top: 0; /* Met le pop-up en haut */
+    left: 0; /* Mets-le a gauche */
+    width: 100vw; /* Prend toute la largeur de la fenetre */
+    height: 100vh; /* Prend toute la hauteur de la fenetre */
+    background: #0a0a0a; /* Fond sombre */
+    color: #f0f0f0; /* Texte clair */
+    border: 2px solid #ffffff33; /* Bordure semi-transparente */
+    box-shadow: 0 0 10px #ffffff44; /* Ombre portee */
+    font-family: 'PressStart2P', monospace; /* Police retro */
+    font-size: 16px; /* Taille de police un peu plus grande */
+    border-radius: 6px; /* Coins arrondis */
+    z-index: 1000; /* Place-le au-dessus des autres elements */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centre le contenu verticalement */
+    align-items: center; /* Centre le contenu horizontalement */
+}
+
+    .popup-start-game .popup-header {
+        background: #111;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px dashed #444;
+        color: #00ffcc;
+        font-size: 18px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .popup-start-game .popup-content {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .popup-start-game .popup-close-btn {
+        background: none;
+        color: #ffffff;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 20px;
+    }
+
+        .popup-start-game .popup-close-btn:hover {
+            background: #333;
+            transition: background 0.3s ease;
+        }
+
 
 
 

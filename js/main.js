@@ -430,22 +430,63 @@ export function spendScrap(amount) {
     return false;
 }
 
-fetch("public/projects.json")
-    .then(res => res.json())
-    .then(data => {
-        const radius = 300;
-        const step = (2 * Math.PI) / data.length;
-        data.forEach((proj, i) => {
-            const angle = i * step;
-            const x = canvas.width / 2 + radius * Math.cos(angle);
-            const y = canvas.height / 2 + radius * Math.sin(angle);
-            folders.push(new Folder(x, y, proj.name, proj.JsName, proj.planetStyle));
+// Creer le pop-up de demarrage
+const startGamePopup = document.createElement('div');
+startGamePopup.classList.add('popup-start-game');
+
+const header = document.createElement('div');
+header.classList.add('popup-header');
+header.innerHTML = 'Bienvenue dans le Jeu !'; // Titre du pop-up
+
+const content = document.createElement('div');
+content.classList.add('popup-content');
+content.innerHTML = `
+  <p>Click on game elements with your mouse to move them.</p>
+  
+  <p>The planets are my projects, whether <strong>School</strong>, <strong>Personal</strong> or <strong>Jam</strong>.<br>
+  Just click on a planet to open a tab and discover the project.</p>
+
+  <p>As for the other game items:</p>
+  <ul>
+    <li>The <strong>bag</strong> lets you collect metal pieces to upgrade your planets.</li>
+    <li>The <strong>computer</strong>, when clicked, opens a store window linked to the nearest folder, allowing you to improve the folder's stats in exchange for metal pieces.</li>
+  </ul>
+
+  <p><strong>Defeat condition:</strong><br>
+  All folders have been sucked into the black hole.<br>
+  (If a folder has been sucked into a black hole, it will always be available as a button on the right of the screen.)</p>
+`;
+
+const closeButton = document.createElement('button');
+closeButton.classList.add('popup-close-btn');
+closeButton.innerHTML = 'Démarrer le jeu';
+
+closeButton.addEventListener('click', () => {
+    startGamePopup.style.display = 'none'; // Cache le pop-up lorsque le jeu commence
+    // Ici tu peux demarrer ton jeu apres la fermeture du pop-up
+    fetch("public/projects.json")
+        .then(res => res.json())
+        .then(data => {
+            const radius = 300;
+            const step = (2 * Math.PI) / data.length;
+            data.forEach((proj, i) => {
+                const angle = i * step;
+                const x = canvas.width / 2 + radius * Math.cos(angle);
+                const y = canvas.height / 2 + radius * Math.sin(angle);
+                folders.push(new Folder(x, y, proj.name, proj.JsName, proj.planetStyle));
+            });
+
+            // Assure-toi de bien initialiser le shop après avoir ajoute les dossiers
+            const firstFolder = folders[0];
+            shop = new Shop(firstFolder.x + 50, firstFolder.y);
+
+            // Demarrer le jeu apres l'initialisation
+            updateGame();
         });
+});
 
-        // Assure-toi de bien initialiser le shop après avoir ajoute les dossiers
-        const firstFolder = folders[0];
-        shop = new Shop(firstFolder.x + 50, firstFolder.y);
+startGamePopup.appendChild(header);
+startGamePopup.appendChild(content);
+startGamePopup.appendChild(closeButton);
 
-        // Demarrer le jeu apres l'initialisation
-        updateGame();
-    });
+document.body.appendChild(startGamePopup);
