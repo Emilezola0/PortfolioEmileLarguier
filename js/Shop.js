@@ -1,12 +1,15 @@
 import { upgradeFolder, getUpgradeCost } from "./upgrades.js";
 import { spendScrap } from "./main.js";
 import { SoundManager } from './SoundManager.js';
+import { spawnManager } from "./spawnManager.js";
 
 const powerUpAudio = new Audio("assets/audio/powerUp.mp3");
 powerUpAudio.volume = 0.6; // ajuste si besoin
 
 // Sound manager
 SoundManager.soundEnabled = soundToggle.checked;
+const clickSound = document.getElementById("clickSound");
+const soundEffectVolume = 0.8;
 
 export class Shop {
     constructor(x, y) {
@@ -120,6 +123,7 @@ export class Shop {
 
             if (this.numberOfScraps >= cost) {
                 div.onclick = () => {
+                    spawnManager.play(clickSound, soundEffectVolume);
                     const target = this.targetFolder;
                     if (target) {
                         this.numberOfScraps -= cost;
