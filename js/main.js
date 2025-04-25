@@ -126,7 +126,7 @@ scrapImgCollect.src = "assets/scrapCollect.png";
 const scrapSound = document.getElementById("scrapSound");
 const projectileSound = document.getElementById("projectileSound");
 const explodeSound = document.getElementById("explodeSound");
-const soundEffectVolume = 0.6;
+const soundEffectVolume = 0.4;
 
 // Drag
 let draggedFolder = null;
