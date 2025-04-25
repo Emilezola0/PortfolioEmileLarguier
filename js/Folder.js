@@ -168,18 +168,18 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Cratères générés aléatoirement ===
+        // === Crateres generes aleatoirement ===
         const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 cratères
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
             const r = size * (0.3 + Math.random() * 0.6);
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
-            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des cratères
+            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des crateres
 
             // Ombre du cratère
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
-            gradient.addColorStop(0, "rgba(0,0,0,0.35)");  // Ombre plus marquée
+            gradient.addColorStop(0, "rgba(0,0,0,0.35)");  // Ombre plus marquee
             gradient.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.beginPath();
@@ -187,7 +187,7 @@ export class Folder {
             ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Contour léger du cratère
+            // Contour leger du cratere
             ctx.beginPath();
             ctx.strokeStyle = "rgba(255,255,255,0.1)";
             ctx.lineWidth = 0.8;
@@ -195,9 +195,9 @@ export class Folder {
             ctx.stroke();
         }
 
-        // === Glow autour de la planète ===
+        // === Glow autour de la planete ===
         const glow = ctx.createRadialGradient(0, 0, size * 0.75, 0, 0, size * 1.25);
-        glow.addColorStop(0, "rgba(255, 255, 255, 0.3)");  // Un léger glow blanc
+        glow.addColorStop(0, "rgba(255, 255, 255, 0.3)");  // Un leger glow blanc
         glow.addColorStop(1, "rgba(0, 0, 0, 0)");
         ctx.fillStyle = glow;
         ctx.beginPath();
@@ -207,7 +207,7 @@ export class Folder {
         // === Texture de surface simple ===
         ctx.beginPath();
         ctx.fillStyle = "rgba(255, 255, 255, 0.05)";  // Legere texture brillante
-        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Juste un petit cercle au centre pour donner l'impression de surface irrégulière
+        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Juste un petit cercle au centre pour donner l'impression de surface irreguliere
         ctx.fill();
 
         ctx.restore();
