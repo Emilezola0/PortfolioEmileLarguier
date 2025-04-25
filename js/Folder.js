@@ -145,6 +145,7 @@ export class Folder {
     }
 
     // draw planete
+    // Dessin de la planète avec effets 3D
     drawPlanet(ctx) {
         const size = this.planetStyle.size;
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
@@ -153,33 +154,37 @@ export class Folder {
         ctx.translate(0, floatY);
         ctx.rotate(this.planetRotation);
 
+        // Définir la source de lumière
+        const lightX = Math.cos(this.planetRotation) * 0.5; // Position du soleil
+        const lightY = Math.sin(this.planetRotation) * 0.5;
+
         // === Corps principal ===
         ctx.beginPath();
         ctx.fillStyle = this.planetStyle.baseColor;
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Ombre laterale pour volume ===
-        const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, 0, 0, size);
-        shadow.addColorStop(0, "rgba(0,0,0,0.05)");
-        shadow.addColorStop(1, "rgba(0,0,0,0.4)");
+        // Ombre dynamique : on applique une ombre plus sombre sur l'opposé de la lumière
+        const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, lightX, lightY, size);
+        shadow.addColorStop(0, "rgba(0,0,0,0.1)");  // Ombre moins marquée
+        shadow.addColorStop(1, "rgba(0,0,0,0.5)");  // Ombre sur la face opposée à la lumière
         ctx.fillStyle = shadow;
         ctx.beginPath();
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Crateres generes aleatoirement ===
+        // === Cratères avec texture et lumière ===
         const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 cratères
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
             const r = size * (0.3 + Math.random() * 0.6);
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
-            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des crateres
+            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des cratères
 
-            // Ombre du cratère
+            // Ombre du cratère avec dégradé réaliste
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
-            gradient.addColorStop(0, "rgba(0,0,0,0.35)");  // Ombre plus marquee
+            gradient.addColorStop(0, "rgba(0,0,0,0.4)");  // Ombre plus marquée
             gradient.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.beginPath();
@@ -187,27 +192,27 @@ export class Folder {
             ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Contour leger du cratere
+            // Contour léger du cratère
             ctx.beginPath();
-            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.strokeStyle = "rgba(255,255,255,0.2)";
             ctx.lineWidth = 0.8;
             ctx.arc(x, y, craterSize, 0, Math.PI * 2);
             ctx.stroke();
         }
 
-        // === Glow autour de la planete ===
-        const glow = ctx.createRadialGradient(0, 0, size * 0.75, 0, 0, size * 1.25);
-        glow.addColorStop(0, "rgba(255, 255, 255, 0.3)");  // Un leger glow blanc
+        // === Éclairage global autour de la planète ===
+        const glow = ctx.createRadialGradient(0, 0, size * 0.75, lightX, lightY, size * 1.25);
+        glow.addColorStop(0, "rgba(255, 255, 255, 0.2)");  // Un léger glow lumineux
         glow.addColorStop(1, "rgba(0, 0, 0, 0)");
         ctx.fillStyle = glow;
         ctx.beginPath();
         ctx.arc(0, 0, size * 1.25, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Texture de surface simple ===
+        // === Texture de surface simple avec dégradé ===
         ctx.beginPath();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.05)";  // Legere texture brillante
-        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Juste un petit cercle au centre pour donner l'impression de surface irreguliere
+        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";  // Légère texture brillante
+        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Un petit cercle au centre pour donner l'impression de surface irrégulière
         ctx.fill();
 
         ctx.restore();
