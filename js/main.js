@@ -128,9 +128,6 @@ const projectileSound = document.getElementById("projectileSound");
 const explodeSound = document.getElementById("explodeSound");
 const soundEffectVolume = 0.6;
 
-//Wave Display
-const waveDisplay = document.getElementById('waveDisplay');
-
 // Drag
 let draggedFolder = null;
 let draggedShop = false;
