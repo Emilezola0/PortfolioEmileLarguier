@@ -267,9 +267,11 @@ export class Folder {
         // Dessiner le texte sous le dossier
         if (!this.absorbing) {
             ctx.fillStyle = "white";
-            ctx.font = "10px Arial";
+            document.fonts.ready.then(() => {
+                ctx.font = "8px 'Press Start 2P', monospace";
+            });;
             ctx.textAlign = "center";
-            ctx.fillText(this.name, this.x, this.y + 28);
+            ctx.fillText(this.name, this.x, this.y + 30);
         }
 
         // Debogage : rayon de detection
