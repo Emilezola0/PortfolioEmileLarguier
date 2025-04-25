@@ -6,9 +6,8 @@
         "isEmpty": true,
         "planetStyle": {
             "baseColor": "#1e90ff",
-            "ringColor": "#00ffff",
             "coreColor": "#ffffff",
-            "size": 18,
+            "size": 20,
             "floatAmplitude": 0.25,
             "floatSpeed": 0.005,
             "rotationSpeed": 0.0125,
@@ -22,9 +21,8 @@
         "isEmpty": true,
         "planetStyle": {
             "baseColor": "#00bfff",
-            "ringColor": "#e0ffff",
             "coreColor": "#f0f8ff",
-            "size": 21,
+            "size": 22,
             "floatAmplitude": 0.15,
             "floatSpeed": 0.01,
             "rotationSpeed": 0.01,
@@ -38,7 +36,6 @@
         "isEmpty": true,
         "planetStyle": {
             "baseColor": "#ff69b4",
-            "ringColor": "#fffacd",
             "coreColor": "#fff0f5",
             "size": 24,
             "floatAmplitude": 0.5,
@@ -54,9 +51,8 @@
         "isEmpty": true,
         "planetStyle": {
             "baseColor": "#ff4500",
-            "ringColor": "#ffa500",
             "coreColor": "#ffd580",
-            "size": 27,
+            "size": 26,
             "floatAmplitude": 0.5,
             "floatSpeed": 0.015,
             "rotationSpeed": 0.015,
@@ -70,7 +66,6 @@
         "isEmpty": true,
         "planetStyle": {
             "baseColor": "#228b22",
-            "ringColor": "#adff2f",
             "coreColor": "#7fff00",
             "size": 25,
             "floatAmplitude": 0.75,
@@ -86,7 +81,6 @@
         "isEmpty": true,
         "planetStyle": {
             "baseColor": "#8a2be2",
-            "ringColor": "#ff69b4",
             "coreColor": "#dda0dd",
             "size": 22,
             "floatAmplitude": 0.5,

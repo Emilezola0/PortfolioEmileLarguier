@@ -16,7 +16,6 @@ export class Folder {
         // Planete Style
         this.planetStyle = {
             baseColor: planetStyle.baseColor || "#44f",
-            ringColor: planetStyle.ringColor || "#fff",
             coreColor: planetStyle.coreColor || "#ccf",
             size: planetStyle.size || 16, // Rayon planète
             floatAmplitude: planetStyle.floatAmplitude || 1.5, // Flottement haut-bas
@@ -150,37 +149,61 @@ export class Folder {
         const size = this.planetStyle.size;
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
 
-        // Flottement + rotation planete
         ctx.save();
         ctx.translate(0, floatY);
         ctx.rotate(this.planetRotation);
 
-        // Corps principal
+        // === Corps principal ===
         ctx.beginPath();
         ctx.fillStyle = this.planetStyle.baseColor;
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Lumiere centrale (pulsation tres subtile)
+        // === Ombre latérale pour le volume ===
+        const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, 0, 0, size);
+        shadow.addColorStop(0, "rgba(0,0,0,0.05)");
+        shadow.addColorStop(1, "rgba(0,0,0,0.4)");
+        ctx.fillStyle = shadow;
         ctx.beginPath();
-        const gradient = ctx.createRadialGradient(0, 0, size * 0.25, 0, 0, size);
-        gradient.addColorStop(0, this.planetStyle.coreColor);
-        gradient.addColorStop(1, "transparent");
-        ctx.fillStyle = gradient;
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.restore();
+        // === Cratères (zones sombres avec halo) ===
+        const numCraters = 6;
+        for (let i = 0; i < numCraters; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const r = size * (0.3 + Math.random() * 0.6);
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+            const craterSize = size * (0.03 + Math.random() * 0.04);
 
-        // Rotation anneau separement
-        ctx.save();
-        ctx.translate(0, floatY);
-        ctx.rotate(this.ringRotation);
+            // Ombre du cratère
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
+            gradient.addColorStop(0, "rgba(0,0,0,0.2)");
+            gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Contour léger
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255,255,255,0.05)";
+            ctx.lineWidth = 0.5;
+            ctx.arc(x, y, craterSize, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // === Glow central doux ===
         ctx.beginPath();
-        ctx.strokeStyle = this.planetStyle.ringColor;
-        ctx.lineWidth = 2;
-        ctx.ellipse(0, 0, size * 1.25, size * 0.35, Math.PI / 6, 0, Math.PI * 2);
-        ctx.stroke();
+        const coreGlow = ctx.createRadialGradient(0, 0, size * 0.25, 0, 0, size);
+        coreGlow.addColorStop(0, this.planetStyle.coreColor);
+        coreGlow.addColorStop(1, "transparent");
+        ctx.fillStyle = coreGlow;
+        ctx.arc(0, 0, size, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.restore();
     }
 
