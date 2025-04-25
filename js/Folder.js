@@ -23,6 +23,7 @@ export class Folder {
             rotationSpeed: planetStyle.rotationSpeed || 0.01, // Rotation planète
             ringRotationSpeed: planetStyle.ringRotationSpeed || 0.015 // Rotation anneau
         };
+        this.craters = this.getCraters(planetStyle.size);
         this.floatOffset = Math.random() * Math.PI * 2; // pour décaler chaque planète
         this.planetRotation = 0;
         this.ringRotation = 0;
@@ -145,7 +146,6 @@ export class Folder {
     }
 
     // draw planete
-    // Dessin de la planète avec effets 3D
     drawPlanet(ctx) {
         const size = this.planetStyle.size;
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
@@ -154,7 +154,7 @@ export class Folder {
         ctx.translate(0, floatY);
         ctx.rotate(this.planetRotation);
 
-        // Définir la source de lumière
+        // Définir la source de lumière (position du soleil)
         const lightX = Math.cos(this.planetRotation) * 0.5; // Position du soleil
         const lightY = Math.sin(this.planetRotation) * 0.5;
 
@@ -164,27 +164,22 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Ombre dynamique : on applique une ombre plus sombre sur l'opposé de la lumière
+        // Ombre dynamique : ombre sur la face opposée à la lumière
         const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, lightX, lightY, size);
         shadow.addColorStop(0, "rgba(0,0,0,0.1)");  // Ombre moins marquée
-        shadow.addColorStop(1, "rgba(0,0,0,0.5)");  // Ombre sur la face opposée à la lumière
+        shadow.addColorStop(1, "rgba(0,0,0,0.5)");  // Ombre plus forte sur l'opposée de la lumière
         ctx.fillStyle = shadow;
         ctx.beginPath();
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Cratères avec texture et lumière ===
-        const numCraters = Math.floor(Math.random() * 4) + 4; // entre 4 et 7 cratères
-        for (let i = 0; i < numCraters; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const r = size * (0.3 + Math.random() * 0.6);
-            const x = Math.cos(angle) * r;
-            const y = Math.sin(angle) * r;
-            const craterSize = size * (0.03 + Math.random() * 0.1);  // variation plus grande sur la taille des cratères
+        // === Cratères fixes avec texture et lumière ===
+        for (let i = 0; i < this.craters.length; i++) {
+            const { x, y, craterSize } = this.craters[i];
 
-            // Ombre du cratère avec dégradé réaliste
+            // Ombre du cratère avec un dégradé réaliste
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
-            gradient.addColorStop(0, "rgba(0,0,0,0.4)");  // Ombre plus marquée
+            gradient.addColorStop(0, "rgba(0,0,0,0.4)");  // Ombre marquée
             gradient.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.beginPath();
@@ -200,13 +195,13 @@ export class Folder {
             ctx.stroke();
         }
 
-        // === Éclairage global autour de la planète ===
-        const glow = ctx.createRadialGradient(0, 0, size * 0.75, lightX, lightY, size * 1.25);
-        glow.addColorStop(0, "rgba(255, 255, 255, 0.2)");  // Un léger glow lumineux
-        glow.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = glow;
+        // === Rayon lumineux autour de la planète ===
+        const lightRay = ctx.createRadialGradient(0, 0, size * 0.75, lightX, lightY, size * 1.5);
+        lightRay.addColorStop(0, "rgba(255, 255, 255, 0.3)");  // Légère illumination blanche
+        lightRay.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = lightRay;
         ctx.beginPath();
-        ctx.arc(0, 0, size * 1.25, 0, Math.PI * 2);
+        ctx.arc(0, 0, size * 1.5, 0, Math.PI * 2);
         ctx.fill();
 
         // === Texture de surface simple avec dégradé ===
@@ -218,32 +213,22 @@ export class Folder {
         ctx.restore();
     }
 
+    // Fonction pour générer une fois les cratères
+    getCraters(size) {
+        const craters = [];
+        const numCraters = Math.floor(Math.random() * 4) + 4; // Entre 4 et 7 cratères
 
-    isHovered(mx, my) {
-        const isHovered = mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
-            my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
-        this.hovered = isHovered; // update state 'hovered'
-        return isHovered;
-    }
+        for (let i = 0; i < numCraters; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const r = size * (0.3 + Math.random() * 0.6);
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+            const craterSize = size * (0.05 + Math.random() * 0.1); // Taille plus grande des cratères
 
-    handleClick(mouse) {
-        this.mouseDownPos = { x: mouse.x, y: mouse.y };
-    }
-
-    handleMouseUp(mouse) {
-        if (this.mouseDownPos) {
-            const dx = mouse.x - this.mouseDownPos.x;
-            const dy = mouse.y - this.mouseDownPos.y;
-            const moved = Math.hypot(dx, dy) > 20;
-            console.log(Math.hypot(dx, dy));
-
-            if (!moved) {
-                console.log("OPEN FOLDER");
-                this.openFolderPopup();
-            }
+            craters.push({ x, y, craterSize });
         }
-        this.dragging = false;
-        this.mouseDownPos = null;
+
+        return craters;
     }
 
     draw(ctx) {
