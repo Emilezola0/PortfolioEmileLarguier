@@ -41,7 +41,7 @@ export class ScrapCollector {
         ctx.fillText(numberOfScraps, this.x - 6, this.y + 30);
 
         // When loaded draw image next to it
-        if (this.scrapImg.complete) {
+        if (this.scrapImg != null) {
             ctx.drawImage(scrapsImg, this.x + 4, this.y + 18, 12, 12); // x, y, width, height
         }
 
