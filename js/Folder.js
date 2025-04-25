@@ -2,7 +2,7 @@ import { Bullet } from "./Bullet.js";
 import { SoundManager } from './SoundManager.js';
 
 export class Folder {
-    constructor(x, y, name, JsName) {
+    constructor(x, y, name, JsName, planetStyle = {}) {
         this.x = x;
         this.y = y;
         this.name = name;
