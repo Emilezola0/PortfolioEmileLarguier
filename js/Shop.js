@@ -18,7 +18,6 @@ export class Shop {
         this.pulseDirection = 1;
 
         this.lastTargetFolder = null;
-        this.shopIsOpen = false;
 
         this.numberOfScraps = 0;
         this.folders = null;
@@ -79,7 +78,6 @@ export class Shop {
         const dist = Math.hypot(dx, dy);
 
         if (dist < 20 && !mouse.holding) {
-            console.log("handleClick, shopIsOpenState: " + this.shopIsOpen);
             this.openShopPopup();
         }
     }
@@ -87,11 +85,9 @@ export class Shop {
     openShopPopup() {
         // Si folders est null ou vide, on ferme le shop
         if (!Array.isArray(this.folders) || this.folders.length === 0) {
-            closeShop(this);
+            closeShop();
             return;
         }
-
-        this.shopIsOpen = true;
 
         const popup = document.getElementById("shop-popup");
         popup.classList.remove("hidden");
@@ -191,7 +187,6 @@ export class Shop {
     handleMouseUp() {
         // Click without moving => open the shop
         if (!this.wasDragged) {
-            console.log("Shop open state on drag: " + this.shopIsOpen);
             this.openShopPopup();
         }
         this.wasDragged = false;
@@ -323,25 +318,18 @@ export class Shop {
     }
 
     refreshShopPopup() {
-        console.log(this.shopIsOpen);
-        if (this.shopIsOpen == true) {
-            console.log("REFRESH S1 ShopIsOpen: " + this.shopIsOpen);
-            closeShop(this);
-            console.log("REFRESH S2 ShopIsOpen: " + this.shopIsOpen);
+        var popup = document.getElementById("shop-popup");
+        if (!popup.classList.contains("hidden")) {
+            closeShop();
             this.openShopPopup();
-            console.log("REFRESH S3 ShopIsOpen: " + this.shopIsOpen);
-            return;
         } else {
-            console.log("ShopIsOpen: " + this.shopIsOpen);
-            return;
         }
     }
 }
 
-window.closeShop = function (shopInstance) {
+window.closeShop = function () {
     // Cache le popup
     document.getElementById("shop-popup").classList.add("hidden");
-    shopInstance.shopIsOpen = false;
 }
 
 window.makeShopPopupDraggable = function () {
