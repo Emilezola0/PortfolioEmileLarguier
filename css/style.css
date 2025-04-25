@@ -299,6 +299,39 @@ input[type="checkbox"]:checked + .custom-toggle {
         box-shadow: 0 0 8px #00ffcc33;
     }
 
+/* Video Stylized */
+.video-thumbnail-wrapper {
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+}
+
+    .video-thumbnail-wrapper .popup-image {
+        display: block;
+        border: 1px solid #333;
+        box-shadow: 0 0 8px #00ffcc33;
+    }
+
+.video-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #00ffcc;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00ffcc;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'PressStart2P', monospace;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
 /* Stylized link */
 .popup-content a {
     color: #00ffcc;

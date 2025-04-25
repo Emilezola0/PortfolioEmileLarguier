@@ -288,17 +288,33 @@ export class Folder {
                     if (slide.type === "image") {
                         mediaHTML = `<img src="${slide.img}" class="popup-image" />`;
                     } else if (slide.type === "video") {
-                        mediaHTML = `
-                        <div class="video-container">
-                        <iframe
-                        src="${slide.video}"
-                        title="YouTube video"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                        ></iframe>
-                        </div>
-                        `;
+                        const embedURL = convertToEmbedURL(slide.video);
+
+                        if (embedURL.includes("youtube.com/embed/")) {
+                            mediaHTML = `
+                            <div class="video-container">
+                            <iframe
+                            src="${embedURL}"
+                            title="YouTube video"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            ></iframe>
+                            </div>
+                            `;
+                        } else {
+                            const videoId =
+                                (slide.video.includes("youtu.be/") && slide.video.split("youtu.be/")[1]) ||
+                                (slide.video.includes("watch?v=") && slide.video.split("watch?v=")[1].split("&")[0]);
+
+                            const thumbnailURL = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+                            mediaHTML = `
+                            <a href="${slide.video}" target="_blank" class="video-link video-thumbnail-wrapper">
+                            <img src="${thumbnailURL}" class="popup-image" alt="Video thumbnail" />
+                            <div class="video-play-button">Play</div>
+                            </a>`;
+                        }
                     }
 
                     container.innerHTML = `
@@ -335,6 +351,23 @@ export class Folder {
         this.x += dx;
         this.y += dy;
     }
+}
+
+function convertToEmbedURL(url) {
+    if (!url) return "";
+
+    if (url.includes("youtu.be/")) {
+        const videoId = url.split("youtu.be/")[1];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    if (url.includes("watch?v=")) {
+        const videoId = url.split("watch?v=")[1].split("&")[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // Not a YouTube URL? Return as-is (will fallback to a clickable link)
+    return url;
 }
 
 window.closeFolderPopup = function () {
