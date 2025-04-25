@@ -61,14 +61,14 @@ export class Background {
     }
 
     spawnShootingStar() {
-        if (Math.random() < 5) {
-            const angle = Math.random() * (Math.PI / 4) + Math.PI / 8; // entre 22.5° et 67.5°
-            const speed = Math.random() * 1 + 2;
+        if (Math.random() < 0.005) {
+            const angle = Math.PI / 4; // 45°
+            const speed = Math.random() * 3 + 3;
 
-            const startX = Math.random() < 0.5 ? -50 : this.canvas.width + 50;
-            const startY = Math.random() * this.canvas.height * 0.3;
+            const startX = Math.random() * this.canvas.width * 0.5;
+            const startY = -50; // elles viennent du haut
 
-            const vx = Math.cos(angle) * (startX < 0 ? speed : -speed);
+            const vx = Math.cos(angle) * speed;
             const vy = Math.sin(angle) * speed;
 
             this.shootingStars.push({
@@ -76,9 +76,8 @@ export class Background {
                 y: startY,
                 vx: vx,
                 vy: vy,
-                life: 100,
-                length: Math.random() * 80 + 40,
-                alpha: 1
+                alpha: 1,
+                length: Math.random() * 80 + 40
             });
         }
     }
@@ -95,9 +94,16 @@ export class Background {
             const s = this.shootingStars[i];
             s.x += s.vx;
             s.y += s.vy;
-            s.life -= 0.5;
-            s.alpha = s.life / 100; // gradually decreases  
-            if (s.life <= 0) this.shootingStars.splice(i, 1);
+
+            // alpha peut diminuer si tu veux un effet de traînée qui s’eteint
+            s.alpha -= 0.005;
+            if (
+                s.x < -100 || s.x > this.canvas.width + 100 ||
+                s.y < -100 || s.y > this.canvas.height + 100 ||
+                s.alpha <= 0
+            ) {
+                this.shootingStars.splice(i, 1);
+            }
         }
 
         this.spawnShootingStar();
