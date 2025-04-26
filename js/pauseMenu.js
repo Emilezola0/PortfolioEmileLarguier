@@ -1,6 +1,7 @@
 // pauseMenu.js
 import { SoundManager } from './SoundManager.js';
 import { Planet } from './Planet.js';
+import { resumeGame } from './main.js';
 
 export let gamePaused = false;
 
@@ -63,6 +64,7 @@ export function setupPauseMenu() {
     resumeButton.addEventListener('click', () => {
         SoundManager.play('click');
         gamePaused = false;
+        resumeGame();
         pauseOverlay.classList.add('hidden');
 
         // Retire toutes les planètes quand on reprend
