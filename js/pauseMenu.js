@@ -1,5 +1,3 @@
-import projects from './projects.json';
-
 // Variables
 export let gamePaused = false;
 
@@ -65,14 +63,24 @@ const radius = 10;
 // Nombre total de planètes
 const totalPlanets = projects.length;
 
-projects.forEach((proj, index) => {
-    // Calcule l'angle pour chaque planète
-    const angle = (index / totalPlanets) * 2 * Math.PI; // de 0 to 2pi
+let projects = [];
 
-    // Position en cercle
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
+fetch('./projects.json')
+    .then(response => response.json())
+    .then(data => {
+        projects = data;
+        projects.forEach((proj, index) => {
+            // Calcule l'angle pour chaque planète
+            const angle = (index / totalPlanets) * 2 * Math.PI; // de 0 to 2pi
 
-    // Instancie ta planete
-    const planet = new Planet(x, y, proj.name, proj.JsName, proj.planetStyle || {});
-});
+            // Position en cercle
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+
+            // Instancie ta planete
+            const planet = new Planet(x, y, proj.name, proj.JsName, proj.planetStyle || {});
+        });
+    })
+    .catch(error => {
+        console.error("Erreur de chargement de projects.json :", error);
+    });
