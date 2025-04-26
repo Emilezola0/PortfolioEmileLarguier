@@ -708,6 +708,10 @@ input[type="checkbox"]:checked + .custom-toggle {
     text-transform: uppercase;
 }
 
+input[type="checkbox"] {
+    display: none; /* Cacher la case à cocher réelle */
+}
+
 
 /* Overlay complet */
 #pauseOverlay {
