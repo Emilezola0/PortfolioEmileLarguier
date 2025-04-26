@@ -5,8 +5,6 @@ class Item {
         this.x = x;
         this.y = y;
         this.folders = folders; // liste des folders du jeu
-        this.clickSound = clickSound;
-        this.soundEffectVolume = soundEffectVolume;
 
         // Apparence & interaction
         this.itemIcon = new Image();
