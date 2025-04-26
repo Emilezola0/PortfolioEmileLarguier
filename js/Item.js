@@ -50,7 +50,7 @@ class Item {
 
         for (const buff of this.buffs) {
             buff(this.targetFolder); // Chaque buff est une fonction
-            shopRef.refreshShopPopup();
+            shopInstanceRef.refreshShopPopup();
         }
     }
 
