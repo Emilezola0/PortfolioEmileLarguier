@@ -116,13 +116,15 @@ class Item {
     draw(ctx) {
         // === icon ===
         if (this.itemIcon.complete) {
-            ctx.drawImage(this.shopImg, -16, -16, this.iconSize, this.iconSize);
+            ctx.drawImage(this.itemIcon, -16, -16, this.width, this.height);
         } else {
             ctx.fillStyle = "gray";
             ctx.beginPath();
             ctx.arc(0, 0, 16, 0, Math.PI * 2);
             ctx.fill();
         }
+
+        this.drawConnectionLine(ctx);
     }
 
     // Movement
