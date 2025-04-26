@@ -12,7 +12,7 @@ import { Background } from "./Background.js";
 import { upgrades, upgradeFolder } from './upgrades.js';
 import { Shop } from "./Shop.js";
 import { CVBuffer } from "./CVBuffer.js";
-import { gamePaused } from './pauseMenu.js';
+import { setupPauseMenu } from './pauseMenu.js';
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
