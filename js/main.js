@@ -13,6 +13,7 @@ import { upgrades, upgradeFolder } from './upgrades.js';
 import { Shop } from "./Shop.js";
 import { CVBuffer } from "./CVBuffer.js";
 import { setupPauseMenu } from './pauseMenu.js';
+import { gamePaused } from './pauseMenu.js';
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
