@@ -158,3 +158,5 @@ class Item {
         this.y += dy;
     }
 }
+
+export { Item };
