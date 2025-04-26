@@ -12,6 +12,7 @@ import { Background } from "./Background.js";
 import { upgrades, upgradeFolder } from './upgrades.js';
 import { Shop } from "./Shop.js";
 import { CVBuffer } from "./CVBuffer.js";
+import { gamePaused } from './pauseMenu.js';
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
@@ -279,6 +280,7 @@ function updateWaveDisplay() {
 
 function updateGame() {
     if (isGameOver) return; // <== stop loop here if game over
+    if (gamePaused) return; // stop loop here if pause
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     background.update();
