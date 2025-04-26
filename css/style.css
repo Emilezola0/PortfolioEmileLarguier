@@ -9,71 +9,6 @@ canvas {
     display: block;
 }
 
-#soundToggleContainer {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    font-family: 'PressStart2P', monospace;
-    font-size: 10px;
-    color: #00ffcc;
-}
-
-.toggle-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    user-select: none;
-}
-
-    .toggle-wrapper input[type="checkbox"] {
-        display: none;
-    }
-
-.custom-toggle {
-    width: 50px;
-    height: 24px;
-    background: #0a0a0a;
-    border: 2px solid #00ffcc;
-    border-radius: 12px;
-    position: relative;
-    transition: background 0.3s, border-color 0.3s;
-    box-shadow: 0 0 8px #00ffcc66;
-}
-
-    .custom-toggle::before {
-        content: "";
-        width: 18px;
-        height: 18px;
-        background: #00ffcc;
-        border: 2px solid #ffffff;
-        border-radius: 50%;
-        position: absolute;
-        top: 1px;
-        left: 1px;
-        transition: transform 0.3s;
-        box-shadow: 0 0 6px #00ffcc;
-    }
-
-input[type="checkbox"]:checked + .custom-toggle {
-    background: #111;
-    border-color: #ff0066;
-    box-shadow: 0 0 8px #ff006666;
-}
-
-    input[type="checkbox"]:checked + .custom-toggle::before {
-        transform: translateX(26px);
-        background: #ff0066;
-        box-shadow: 0 0 6px #ff0066;
-    }
-
-.toggle-label {
-    color: #f0f0f0;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
 @font-face {
     font-family: 'PressStart2P';
     src: url('./PressStart2P-Regular.ttf'); /* optionnel : police pixel style */
@@ -690,26 +625,18 @@ input[type="checkbox"]:checked + .custom-toggle {
     }
 }
 
-/* Container des boutons Pause + Sound Toggle */
+/* BUTTON PAUSE AND TOGGLE SOUND */
 #menuControls {
     position: fixed;
     top: 20px;
-    left: 100px;
+    left: 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Disposition verticale */
     align-items: center;
-    gap: 15px; /* Espacement de 10px entre les elements */
+    gap: 15px; /* Espacement entre les éléments */
     z-index: 1000;
 }
 
-/* Container du bouton Pause */
-#pauseButtonContainer,
-#soundToggleContainer {
-    display: block;
-    width: 100%; /* Ou definis une largeur plus petite si necessaire */
-}
-
-/* Bouton Pause */
 #pauseButton {
     background: #0a0a0a;
     color: #00ffcc;
@@ -723,17 +650,64 @@ input[type="checkbox"]:checked + .custom-toggle {
     text-transform: uppercase;
 }
 
-/* Style du Toggle */
-#soundToggleContainer .toggle-wrapper {
+#soundToggleContainer {
     display: flex;
+    flex-direction: column; /* Alignement vertical */
     align-items: center;
-    gap: 8px; /* Ajuste l'espacement entre le label et le bouton */
 }
 
-/* Position du Toggle */
-#soundToggleContainer {
-    margin-top: 10px; /* Assure qu'il y ait un écart de 10px sous le bouton Pause */
+.toggle-wrapper {
+    display: flex;
+    flex-direction: column; /* Alignement vertical du toggle */
+    align-items: center;
+    gap: 5px; /* Espacement entre le toggle et le label */
+    cursor: pointer;
+    user-select: none;
 }
+
+.custom-toggle {
+    width: 50px;
+    height: 24px;
+    background: #0a0a0a;
+    border: 2px solid #00ffcc;
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.3s, border-color 0.3s;
+    box-shadow: 0 0 8px #00ffcc66;
+}
+
+    .custom-toggle::before {
+        content: "";
+        width: 18px;
+        height: 18px;
+        background: #00ffcc;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        transition: transform 0.3s;
+        box-shadow: 0 0 6px #00ffcc;
+    }
+
+input[type="checkbox"]:checked + .custom-toggle {
+    background: #111;
+    border-color: #ff0066;
+    box-shadow: 0 0 8px #ff006666;
+}
+
+    input[type="checkbox"]:checked + .custom-toggle::before {
+        transform: translateX(26px);
+        background: #ff0066;
+        box-shadow: 0 0 6px #ff0066;
+    }
+
+.toggle-label {
+    color: #f0f0f0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
 
 /* Overlay complet */
 #pauseOverlay {
