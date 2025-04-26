@@ -252,24 +252,12 @@ canvas.addEventListener("mouseup", (e) => {
 });
 
 function drawUI() {
-    // Barre de pause entre vagues (uniquement si pas en Game Over)
     if (spawnManager.isPaused() && !isGameOver) {
-        const progress = spawnManager.getPauseProgress();
-        const barWidth = 200;
-        const barHeight = 10;
-        const x = canvas.width / 2 - barWidth / 2;
-        const y = 20;
-
-        ctx.fillStyle = "rgba(255,255,255,0.2)";
-        ctx.fillRect(x, y, barWidth, barHeight);
-        ctx.fillStyle = "white";
-        ctx.fillRect(x, y, barWidth * progress, barHeight);
-
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = "white";
-        ctx.font = "16px sans-serif";
-        ctx.fillText("Wave number " + spawnManager.getWave(), canvas.width / 2, 10);
+        ctx.font = "16px 'PressStart2P', monospace"; // Si tu veux garder ton style arcade
+        ctx.fillText(`Vague ${spawnManager.getWave()}`, canvas.width / 2, 10);
     }
 }
 
@@ -287,6 +275,7 @@ function updateWaveDisplay() {
         waveDisplay.classList.add('wave-tier-3');
     }
 }
+
 
 function updateGame() {
     if (isGameOver) return; // <== stop loop here if game over
@@ -442,10 +431,10 @@ function updateGame() {
 
     // Collector
     collector.draw(ctx, totalNumberOfScraps);
-    drawUI();
     // Spawn Manager
     spawnManager.update(mobs, voidZone.radius, canvas);
     // Wave
+    drawUI();
     updateWaveDisplay();
 
     // Mob particle Effect

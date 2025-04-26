@@ -6,7 +6,7 @@ export const spawnManager = {
     interval: 60, // 1 mob/seconde
     wave: 1,
     pause: false,
-    pauseDuration: 20 * 60, // 10s to 60fps
+    pauseDuration: 20 * 60, // 10s à 60fps
     pauseTimer: 0,
 
     mobsToSpawn: 10, // nombre de mobs par vague
@@ -16,14 +16,19 @@ export const spawnManager = {
         if (this.pause) {
             this.pauseTimer++;
 
+            this.updateSlider();
+
             if (this.pauseTimer >= this.pauseDuration) {
                 this.pause = false;
                 this.pauseTimer = 0;
                 this.wave++;
 
                 // Nouvelle vague
-                this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5); // scalability
+                this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5);
                 this.mobsSpawned = 0;
+
+                // Déclencher l'évènement de changement de vague
+                this.waveChangeEvent();
             }
             return;
         }
@@ -42,6 +47,7 @@ export const spawnManager = {
         // Fin de la vague
         if (this.mobsSpawned >= this.mobsToSpawn) {
             this.pause = true;
+            this.pauseTimer = 0; // reset pauseTimer
         }
     },
 
@@ -55,5 +61,18 @@ export const spawnManager = {
 
     getWave() {
         return this.wave;
+    },
+
+    waveChangeEvent() {
+        const event = new CustomEvent("waveChange", { detail: { wave: this.wave } });
+        window.dispatchEvent(event);
+    },
+
+    updateSlider() {
+        const slider = document.getElementById('waveSlider');
+        if (slider) {
+            slider.max = this.pauseDuration;
+            slider.value = this.pauseTimer;
+        }
     }
 };

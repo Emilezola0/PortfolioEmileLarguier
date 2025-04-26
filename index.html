@@ -7,7 +7,13 @@
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    <!-- Wave Display-->
     <div id="waveDisplay">Vague 1</div>
+    <div class="wave-slider-container">
+        <div class="wave-slider-header">Prochaine Wave</div>
+        <input type="range" id="waveSlider" min="0" value="0" disabled>
+    </div>
+    <!-- Sound Toggle -->
     <div id="soundToggleContainer">
         <label class="toggle-wrapper">
             <input type="checkbox" id="soundToggle" checked>

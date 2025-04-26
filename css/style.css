@@ -446,6 +446,58 @@ input[type="checkbox"]:checked + .custom-toggle {
     animation: glow4 0.8s infinite alternate, crtFlicker 0.8s infinite steps(1);
 }
 
+/* Wave Slider */
+.wave-slider-container {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: 320px;
+    background: #0a0a0a;
+    color: #f0f0f0;
+    border: 2px solid #ffffff33;
+    box-shadow: 0 0 10px #ffffff44;
+    font-family: 'PressStart2P', monospace;
+    font-size: 10px;
+    border-radius: 6px;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.wave-slider-header {
+    background: #111;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #444;
+    color: #00ffcc;
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#waveSlider {
+    width: 100%;
+    background: #222;
+    border: 1px solid #555;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 4px;
+}
+
+    #waveSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #00ffcc;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        cursor: pointer;
+        margin-top: -4px;
+        box-shadow: 0 0 5px #00ffcc;
+    }
+
 /* Anomalie mobs */
 .lightAnomaly {
     filter: contrast(1.2) saturate(2) hue-rotate(20deg);
