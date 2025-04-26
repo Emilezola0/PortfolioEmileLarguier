@@ -1,4 +1,4 @@
-import Item from './Item.js';
+import { Item } from './Item.js';
 
 class CVBuffer extends Item {
     constructor(x, y, folders) {
@@ -29,4 +29,4 @@ class CVBuffer extends Item {
     }
 }
 
-export default CVBuffer;
+export { CVBuffer };

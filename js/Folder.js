@@ -40,8 +40,9 @@ export class Folder {
             atkDamage: 1,
             range: 75,
             bulletSpeed: 4,
-            pierce: 1
+            pierce: 1,
         };
+        this.activeBuffs = []; // bonus is in (%)
 
         // === Upgrade Levels ===
         this.upgradeLevels = {
@@ -416,6 +417,21 @@ export class Folder {
             });
     }
 
+    getBuffedStat(statKey) {
+        let baseStat = this[statKey] || 0;
+        let buffValue = 0;
+
+        if (this.activeBuffs) {
+            for (const buff of this.activeBuffs) {
+                if (buff.type === statKey) {
+                    buffValue += buff.value;
+                }
+            }
+        }
+
+        return baseStat * (1 + buffValue);
+    }
+
 
     updatePosition(dx, dy) {
         this.x += dx;
@@ -470,6 +486,13 @@ window.makeFolderPopupDraggable = function () {
         document.body.style.userSelect = "";
     });
 };
+
+export function applyBuff(folder, buffType, buffValue) {
+    if (!folder.activeBuffs) {
+        folder.activeBuffs = [];
+    }
+    folder.activeBuffs.push({ type: buffType, value: buffValue });
+}
 
 window.makeFolderPopupDraggable();
 

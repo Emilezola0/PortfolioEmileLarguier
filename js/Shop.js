@@ -153,15 +153,43 @@ export class Shop {
             const statsDiv = document.createElement("div");
             statsDiv.className = "folder-stats";
             statsDiv.innerHTML = `
-        <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
-        <strong>Stats:</strong><br>
-        ATK Speed: ${this.targetFolder.stats.atkSpeed}<br>
-        Damage: ${this.targetFolder.stats.atkDamage}<br>
-        Range: ${this.targetFolder.stats.range}<br>
-        Bullet Speed: ${this.targetFolder.stats.bulletSpeed}<br>
-        Pierce: ${this.targetFolder.stats.pierce}
-    `;
+            <hr style="border: 0; border-top: 1px dashed #333; margin: 8px 0;">
+            <strong>Stats:</strong><br>
+            ${this.getStatLine("ATK Speed", "atkSpeed")}<br>
+            ${this.getStatLine("Damage", "atkDamage")}<br>
+            ${this.getStatLine("Range", "range")}<br>
+            ${this.getStatLine("Bullet Speed", "bulletSpeed")}<br>
+            ${this.getStatLine("Pierce", "pierce")}
+            `;
+
             container.appendChild(statsDiv);
+        }
+    }
+
+    getBuffedStat(folder, statKey) {
+        let baseValue = folder.stats[statKey];
+        let buffValue = 0;
+
+        if (folder.activeBuffs) {
+            for (const buff of folder.activeBuffs) {
+                if (buff.type === statKey) {
+                    buffValue += buff.value;
+                }
+            }
+        }
+
+        const finalValue = baseValue * (1 + buffValue);
+
+        return { base: baseValue, bonusPercent: buffValue * 100, final: finalValue };
+    }
+
+    getStatLine(label, statKey) {
+        const stat = this.getBuffedStat(this.targetFolder, statKey);
+
+        if (stat.bonusPercent !== 0) {
+            return `${label}: ${stat.final.toFixed(2)} <span style="color:lime;">(+${stat.bonusPercent.toFixed(0)}%)</span>`;
+        } else {
+            return `${label}: ${stat.base.toFixed(2)}`;
         }
     }
 
