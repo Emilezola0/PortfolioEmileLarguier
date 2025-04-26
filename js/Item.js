@@ -137,17 +137,22 @@ class Item {
     }
 
     draw(ctx) {
+        ctx.save();             // Save contexte state
+        ctx.translate(this.x, this.y);  // Move context to item pos
+
         // === icon ===
         if (this.itemIcon.complete) {
-            ctx.drawImage(this.itemIcon, -16, -16, this.width, this.height);
+            ctx.drawImage(this.itemIcon, -this.width / 2, -this.height / 2, this.width, this.height);
         } else {
             ctx.fillStyle = "gray";
             ctx.beginPath();
-            ctx.arc(0, 0, 16, 0, Math.PI * 2);
+            ctx.arc(0, 0, this.width / 2, 0, Math.PI * 2);
             ctx.fill();
         }
 
         this.drawConnectionLine(ctx);
+
+        ctx.restore();           // restore context origin state
     }
 
     // Movement
