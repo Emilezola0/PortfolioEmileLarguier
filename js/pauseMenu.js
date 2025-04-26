@@ -40,7 +40,7 @@ export function setupPauseMenu() {
     let projects = [];
 
     // Fetch les projets une fois
-    fetch('./projects.json')
+    fetch('public/projects.json')
         .then(response => response.json())
         .then(data => {
             projects = data;
