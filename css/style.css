@@ -745,6 +745,39 @@ input[type="checkbox"]:checked + .custom-toggle {
     text-shadow: 0 0 8px #ff0066;
 }
 
+/* Bouton Reprendre */
+#resumeButton {
+    background: #0a0a0a;
+    color: #00ffcc;
+    border: 2px solid #00ffcc;
+    padding: 10px 20px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px #00ffcc;
+}
+
+.restart-button {
+    padding: 10px 20px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 12px;
+    color: #00ffcc;
+    background: black;
+    border: 2px solid #00ffcc;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+    .restart-button:hover {
+        background: #00ffcc;
+        color: black;
+    }
+
+
 /* Container des planètes */
 #planetContainer {
     display: flex;
@@ -783,38 +816,6 @@ input[type="checkbox"]:checked + .custom-toggle {
         transform: translateY(-10px);
     }
 }
-
-/* Bouton Reprendre */
-#resumeButton {
-    background: #0a0a0a;
-    color: #00ffcc;
-    border: 2px solid #00ffcc;
-    padding: 10px 20px;
-    font-family: 'PressStart2P', monospace;
-    font-size: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    text-transform: uppercase;
-    box-shadow: 0 0 15px #00ffcc;
-}
-
-.restart-button {
-    padding: 10px 20px;
-    font-family: 'PressStart2P', monospace;
-    font-size: 12px;
-    color: #00ffcc;
-    background: black;
-    border: 2px solid #00ffcc;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.2s ease;
-}
-
-    .restart-button:hover {
-        background: #00ffcc;
-        color: black;
-    }
 
 
 

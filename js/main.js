@@ -286,7 +286,7 @@ function updateWaveDisplay() {
 
 function updateGame() {
     if (isGameOver) return; // <== stop loop here if game over
-    if (gamePaused) return; // stop loop here if pause
+    if (gamePaused) return updateGame(); // stop loop here if pause
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     background.update();
