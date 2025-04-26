@@ -23,11 +23,14 @@ export const spawnManager = {
                 this.pauseTimer = 0;
                 this.wave++;
 
-                // Nouvelle vague
+                const container = document.getElementById('waveSliderContainer');
+                if (container) {
+                    container.classList.add('hidden'); // Cache le slider à la fin de la pause
+                }
+
                 this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5);
                 this.mobsSpawned = 0;
 
-                // Déclencher l'évènement de changement de vague
                 this.waveChangeEvent();
             }
             return;
@@ -70,9 +73,15 @@ export const spawnManager = {
 
     updateSlider() {
         const slider = document.getElementById('waveSlider');
-        if (slider) {
+        const container = document.getElementById('waveSliderContainer');
+        if (slider && container) {
+            container.classList.remove('hidden'); // Montre le slider pendant la pause
+
             slider.max = this.pauseDuration;
             slider.value = this.pauseTimer;
+
+            const percentage = (this.pauseTimer / this.pauseDuration) * 100;
+            slider.style.background = `linear-gradient(to right, #00ffcc ${percentage}%, #222 ${percentage}%)`;
         }
     }
 };
