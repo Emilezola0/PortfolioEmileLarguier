@@ -1,17 +1,22 @@
+import { SoundManager } from './SoundManager.js';
+
 class Item {
-    constructor(x, y, folders, imagePath, bufferName) {
+    constructor(x, y, folders, imagePath, bufferName, shopRef) {
         this.x = x;
         this.y = y;
         this.folders = folders; // liste des folders du jeu
+        this.clickSound = clickSound;
+        this.soundEffectVolume = soundEffectVolume;
 
         // Apparence & interaction
         this.itemIcon = new Image();
         this.itemIcon.src = imagePath;
         this.dragging = false;
         this.mouseDownPos = null;
-        this.width = 32;
-        this.height = 32;
+        this.width = 64;
+        this.height = 64;
         this.bufferSourceName = bufferName;
+        this.shopInstanceRef = shopRef;
 
         this.connectionProgress = 0;
         this.lastTargetFolder = null;
@@ -47,6 +52,7 @@ class Item {
 
         for (const buff of this.buffs) {
             buff(this.targetFolder); // Chaque buff est une fonction
+            shopRef.refreshShopPopup();
         }
     }
 
@@ -87,6 +93,7 @@ class Item {
         if (folder.activeBuffs) {
             this.buffApplied = false; // Reinitialiser car on change de cible
             folder.activeBuffs = folder.activeBuffs.filter(buff => buff.source !== this.bufferSourceName);
+            this.shopInstanceRef.refreshShopPopup();
         }
     }
 
@@ -176,8 +183,10 @@ class Item {
             console.log(Math.hypot(dx, dy));
 
             if (!moved) {
-                SoundManager.play(this.clickSound, this.volume);
-                this.openFolderPopup();
+                if (typeof this.openCustomPopup === "function") {
+                    SoundManager.play('click');
+                    this.openCustomPopup();
+                }
             }
         }
         this.dragging = false;

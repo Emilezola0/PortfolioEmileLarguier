@@ -126,13 +126,6 @@ scrapImg.src = "assets/scrap.png";
 const scrapImgCollect = new Image();
 scrapImgCollect.src = "assets/scrapCollect.png";
 
-// Ajout pour le son :
-const scrapSound = document.getElementById("scrapSound");
-const projectileSound = document.getElementById("projectileSound");
-const explodeSound = document.getElementById("explodeSound");
-const clickSound = document.getElementById("clickSound");
-const soundEffectVolume = 0.4;
-
 // Drag
 let draggedFolder = null;
 let draggedShop = false;
@@ -312,7 +305,7 @@ function updateGame() {
     }
 
     for (const folder of folders) {
-        folder.update(mobs, bullets, voidZone.center, voidZone.radius, soundEnabled, projectileSound);
+        folder.update(mobs, bullets, voidZone.center, voidZone.radius);
         folder.draw(ctx);
     }
 
@@ -378,7 +371,7 @@ function updateGame() {
 
                 if (mob.hp <= 0) {
                     mobs.splice(j, 1);
-                    SoundManager.play(explodeSound, soundEffectVolume);
+                    SoundManager.play('explode');
 
                     const scrapCount = mob.scrapNumber || 1;
                     for (let s = 0; s < scrapCount; s++) {
@@ -412,7 +405,7 @@ function updateGame() {
             totalNumberOfScraps += 1;
             flyingScraps.splice(i, 1);
 
-            SoundManager.play(scrapSound, soundEffectVolume);
+            SoundManager.play('scrapCollect');
 
             for (let p = 0; p < 6; p++) {
                 const angle = Math.random() * Math.PI * 2;
@@ -514,7 +507,7 @@ closeButton.innerHTML = 'PLAY';
 
 closeButton.addEventListener('click', () => {
     startGamePopup.style.display = 'none'; // Cache le pop-up lorsque le jeu commence
-    SoundManager.play(clickSound, 0.8);
+    SoundManager.play('click');
     // Ici tu peux demarrer ton jeu apres la fermeture du pop-up
     fetch("public/projects.json")
         .then(res => res.json())
@@ -533,7 +526,7 @@ closeButton.addEventListener('click', () => {
             const secondFolder = folders[1];
             shop = new Shop(firstFolder.x + 50, firstFolder.y);
             // Ajouter l'instance au tableau items
-            items.push(new CVBuffer(secondFolder.x + 50, firstFolder.y, folders));
+            items.push(new CVBuffer(secondFolder.x + 50, firstFolder.y, folders, shop));
 
             // Demarrer le jeu apres l'initialisation
             updateGame();

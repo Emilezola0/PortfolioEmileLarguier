@@ -1,8 +1,9 @@
 import { Item } from './Item.js';
+import { openCustomPopup } from './PopupManager.js';
 
 class CVBuffer extends Item {
-    constructor(x, y, folders) {
-        super(x, y, folders, "assets/Items/CVBuffer.png", "CVBuffer");
+    constructor(x, y, folders, shopRef) {
+        super(x, y, folders, "assets/Items/CVBuffer.png", "CVBuffer", shopRef);
 
         // Définir le buff de dégâts +20%
         this.buffs.push((folder) => {
@@ -19,14 +20,19 @@ class CVBuffer extends Item {
         });
     }
 
+    openCustomPopup() {
+        openCustomPopup({
+            title: "CV",
+            slides: [
+                { type: "image", img: "assets/Items/CVBuffer.png", desc: "<br><a href='https://xxxxxxxx' target='_blank'>Portfolio</a>" }
+            ]
+        });
+    }
+
     setContext(folders) {
         this.folders = folders;
     }
 
-    onClick() {
-        // Action quand on clique : ouvrir ton CV
-        window.open('https://emilelarguier2.wixsite.com/game-designer-portfo', '_blank');
-    }
 }
 
 export { CVBuffer };

@@ -2,14 +2,6 @@ import { upgradeFolder, getUpgradeCost } from "./upgrades.js";
 import { spendScrap } from "./main.js";
 import { SoundManager } from './SoundManager.js';
 
-const powerUpAudio = new Audio("assets/audio/powerUp.mp3");
-powerUpAudio.volume = 0.6; // ajuste si besoin
-
-// Sound manager
-SoundManager.soundEnabled = soundToggle.checked;
-const clickSound = document.getElementById("clickSound");
-const soundEffectVolume = 0.8;
-
 export class Shop {
     constructor(x, y) {
         this.x = x;
@@ -84,7 +76,7 @@ export class Shop {
         const dist = Math.hypot(dx, dy);
 
         if (dist < 20 && !mouse.holding) {
-            SoundManager.play(clickSound, soundEffectVolume);
+            SoundManager.play('click');
             this.openShopPopup();
         }
     }
@@ -123,7 +115,7 @@ export class Shop {
 
             if (this.numberOfScraps >= cost) {
                 div.onclick = () => {
-                    SoundManager.play(clickSound, soundEffectVolume);
+                    SoundManager.play('click');
                     const target = this.targetFolder;
                     if (target) {
                         this.numberOfScraps -= cost;
@@ -134,8 +126,7 @@ export class Shop {
 
                         // If we reach new step
                         if (Math.floor(newLevel / 5) > Math.floor(oldLevel / 5)) {
-                            powerUpAudio.currentTime = 0;
-                            powerUpAudio.play();
+                            SoundManager.play('powerUp');
                         }
                         this.refreshShopPopup();
                     }
@@ -223,7 +214,7 @@ export class Shop {
     handleMouseUp() {
         // Click without moving => open the shop
         if (!this.wasDragged) {
-            SoundManager.play(clickSound, soundEffectVolume);
+            SoundManager.play('click');
             this.openShopPopup();
         }
         this.wasDragged = false;
