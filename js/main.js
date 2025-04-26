@@ -437,7 +437,7 @@ startGamePopup.classList.add('popup-start-game');
 
 const header = document.createElement('div');
 header.classList.add('popup-header');
-header.innerHTML = 'Bienvenue dans le Jeu !'; // Titre du pop-up
+header.innerHTML = 'Welcome to my game and portfolio!'; // Titre du pop-up
 
 const content = document.createElement('div');
 content.classList.add('popup-content');
@@ -460,7 +460,7 @@ content.innerHTML = `
 
   <p>
     <strong style="color: #ff4444;">Defeat condition:</strong><br>
-    All folders have been sucked into the <span style="color: #000000; background-color: #ffffff88;"><strong>black hole</strong></span>!<br>
+    All folders have been sucked into the <span style="color: #ff4444;"><strong>black hole</strong></span>!<br>
     (If a folder has been sucked in, it’s still available via a button on the right)
   </p>
 `;
