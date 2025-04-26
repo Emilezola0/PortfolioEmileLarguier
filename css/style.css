@@ -801,10 +801,15 @@ input[type="checkbox"]:checked + .custom-toggle {
     box-shadow: 0 0 15px #00ffcc;
 }
 
-#menu {
+#menuControls {
     display: flex;
-    flex-direction: column; /* pour que les boutons soient l'un sous l'autre */
-    gap: 10px; /* espace entre les boutons */
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#pauseButtonContainer, #soundToggleContainer {
+    display: block;
 }
 
 
