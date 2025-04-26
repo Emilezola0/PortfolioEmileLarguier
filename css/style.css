@@ -690,12 +690,23 @@ input[type="checkbox"]:checked + .custom-toggle {
     }
 }
 
-/* Container du bouton Pause */
-#pauseButtonContainer {
+/* Container des boutons Pause + Sound Toggle */
+#menuControls {
     position: fixed;
     top: 20px;
     left: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Espacement de 10px entre les elements */
     z-index: 1000;
+}
+
+/* Container du bouton Pause */
+#pauseButtonContainer,
+#soundToggleContainer {
+    display: block;
+    width: 100%; /* Ou definis une largeur plus petite si necessaire */
 }
 
 /* Bouton Pause */
@@ -710,6 +721,18 @@ input[type="checkbox"]:checked + .custom-toggle {
     border-radius: 6px;
     box-shadow: 0 0 10px #00ffcc;
     text-transform: uppercase;
+}
+
+/* Style du Toggle */
+#soundToggleContainer .toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Ajuste l'espacement entre le label et le bouton */
+}
+
+/* Position du Toggle */
+#soundToggleContainer {
+    margin-top: 10px; /* Assure qu'il y ait un écart de 10px sous le bouton Pause */
 }
 
 /* Overlay complet */
@@ -801,23 +824,6 @@ input[type="checkbox"]:checked + .custom-toggle {
     box-shadow: 0 0 15px #00ffcc;
 }
 
-/* Container des boutons Pause + Sound Toggle */
-#menuControls {
-    position: fixed;
-    top: 20px;
-    left: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    z-index: 1000;
-}
-
-/* Plus besoin de position fixed ici */
-#pauseButtonContainer,
-#soundToggleContainer {
-    display: block;
-}
 .restart-button {
     padding: 10px 20px;
     font-family: 'PressStart2P', monospace;
