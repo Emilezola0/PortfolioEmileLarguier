@@ -1,5 +1,5 @@
 class Item {
-    constructor(x, y, folders, imagePath) {
+    constructor(x, y, folders, imagePath, bufferName) {
         this.x = x;
         this.y = y;
         this.folders = folders; // liste des folders du jeu
@@ -11,6 +11,7 @@ class Item {
         this.mouseDownPos = null;
         this.width = 32;
         this.height = 32;
+        this.bufferSourceName = bufferName;
 
         this.connectionProgress = 0;
         this.lastTargetFolder = null;
@@ -50,23 +51,38 @@ class Item {
     update() {
         this.targetFolder = this.getClosestFolder(this.folders);
 
+        // Si aucun dossier cible n'est trouvé, on ne fait rien
         if (!this.targetFolder) return;
 
-        // Reset si nouvel objectif
+        // Si le dossier cible change (ou si c'est le premier changement), reset la progression
         if (!this.lastTargetFolder || this.lastTargetFolder !== this.targetFolder) {
-            this.connectionProgress = 0;
-            this.lastTargetFolder = this.targetFolder;
+            // Si un dossier était déjà cible, on retire ses buffs
+            if (this.lastTargetFolder) {
+                this.removeBuffsFromFolder(this.lastTargetFolder);
+            }
+
+            this.connectionProgress = 0;  // Reset de la progression de connexion
+            this.lastTargetFolder = this.targetFolder; // Mettre à jour l'ancien dossier cible
         }
 
+        // On continue à avancer la progression de connexion
         if (this.connectionProgress < 1) {
             this.connectionProgress += 0.015;
         }
 
-        // Applique les buffs une fois connecté
+        // Lorsque la connexion est complète, appliquer les buffs
         if (this.connectionProgress >= 1) {
             this.applyBuffs();
         }
     }
+
+    // Fonction pour retirer les buffs d'un dossier
+    removeBuffsFromFolder(folder) {
+        if (folder.activeBuffs) {
+            folder.activeBuffs = folder.activeBuffs.filter(buff => buff.source !== this.bufferSourceName);
+        }
+    }
+
 
     drawConnectionLine(ctx) {
         if (!this.targetFolder) return;

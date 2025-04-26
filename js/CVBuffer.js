@@ -2,7 +2,7 @@ import { Item } from './Item.js';
 
 class CVBuffer extends Item {
     constructor(x, y, folders) {
-        super(x, y, folders, "assets/Items/CVBuffer.png");
+        super(x, y, folders, "assets/Items/CVBuffer.png", "CVBuffer");
 
         // Définir le buff de dégâts +20%
         this.buffs.push((folder) => {
