@@ -1,3 +1,5 @@
+import projects from './projects.json';
+
 // Variables
 export let gamePaused = false;
 
@@ -6,6 +8,9 @@ const pauseButton = document.getElementById('pauseButton');
 const pauseOverlay = document.getElementById('pauseOverlay');
 const resumeButton = document.getElementById('resumeButton');
 const planetContainer = document.getElementById('planetContainer');
+const pauseMenu = document.getElementById('pauseMenu'); // <<< Important
+
+// Creation du bouton Restart
 const restartButton = document.createElement('button');
 restartButton.textContent = 'Restart Game';
 restartButton.style.padding = '10px 20px';
@@ -18,6 +23,7 @@ restartButton.style.borderRadius = '8px';
 restartButton.style.cursor = 'pointer';
 restartButton.style.marginTop = '10px';
 restartButton.style.transition = 'all 0.2s ease';
+
 restartButton.addEventListener('mouseover', () => {
     restartButton.style.background = '#00ffcc';
     restartButton.style.color = 'black';
@@ -27,14 +33,13 @@ restartButton.addEventListener('mouseout', () => {
     restartButton.style.color = '#00ffcc';
 });
 
-// Action quand on clique
+// Action quand on clique sur Restart
 restartButton.addEventListener('click', () => {
     SoundManager.play('click');
     window.location.reload();
 });
 
 pauseMenu.appendChild(restartButton);
-
 
 // Event : Cliquer sur Pause
 pauseButton.addEventListener('click', () => {
@@ -50,20 +55,24 @@ resumeButton.addEventListener('click', () => {
     pauseOverlay.classList.add('hidden');
 });
 
-// Liste des planètes et liens (à adapter à tes projets)
-const planets = [
-    { name: 'Projet A', link: 'https://exemple-projet-a.com' },
-    { name: 'Projet B', link: 'https://exemple-projet-b.com' },
-    { name: 'Projet C', link: 'https://exemple-projet-c.com' },
-];
+// Generation dynamique des planetes avec PlanetsManager
+// Centre du cercle
+const centerX = 0;
+const centerY = 0;
+// Rayon du cercle
+const radius = 10;
 
-// Génération dynamique des planètes
-planets.forEach(planet => {
-    const planetElement = document.createElement('div');
-    planetElement.className = 'planet';
-    planetElement.title = planet.name;
-    planetElement.addEventListener('click', () => {
-        window.open(planet.link, '_blank');
-    });
-    planetContainer.appendChild(planetElement);
+// Nombre total de planètes
+const totalPlanets = projects.length;
+
+projects.forEach((proj, index) => {
+    // Calcule l'angle pour chaque planète
+    const angle = (index / totalPlanets) * 2 * Math.PI; // de 0 to 2pi
+
+    // Position en cercle
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius;
+
+    // Instancie ta planete
+    const planet = new Planet(x, y, proj.name, proj.JsName, proj.planetStyle || {});
 });
