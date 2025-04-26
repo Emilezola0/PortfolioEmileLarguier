@@ -812,5 +812,24 @@ input[type="checkbox"]:checked + .custom-toggle {
     display: block;
 }
 
+.restart-button {
+    padding: 10px 20px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 12px;
+    color: #00ffcc;
+    background: black;
+    border: 2px solid #00ffcc;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+    .restart-button:hover {
+        background: #00ffcc;
+        color: black;
+    }
+
+
 
 

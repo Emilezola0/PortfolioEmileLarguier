@@ -80,6 +80,11 @@ window.addEventListener("resize", () => {
     background.onResize();
 });
 
+// pause menu
+window.addEventListener('DOMContentLoaded', () => {
+    setupPauseMenu();
+});
+
 // Background
 const background = new Background(canvas);
 
