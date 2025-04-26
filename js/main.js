@@ -453,15 +453,15 @@ content.innerHTML = `
   </p>
 
   <p>As for the other game items:</p>
-  <ul>
-    <li>The <span style="color: #ffaa00;"><strong>bag</strong></span> lets you collect metal pieces to upgrade your planets.</li>
-    <li>The <span style="color: #ff00ff;"><strong>computer</strong></span> opens a store window linked to the nearest folder.</li>
-  </ul>
+  <p>
+    The <span style="color: #ffaa00;"><strong>bag</strong></span> lets you collect metal pieces to upgrade your planets<br>
+    The <span style="color: #ff00ff;"><strong>computer</strong></span> opens a store window linked to the nearest folder
+  </p>
 
   <p>
     <strong style="color: #ff4444;">Defeat condition:</strong><br>
-    All folders have been sucked into the <span style="color: #000000; background-color: #ffffff88;"><strong>black hole</strong></span>.<br>
-    (If a folder has been sucked in, it’s still available via a button on the right.)
+    All folders have been sucked into the <span style="color: #000000; background-color: #ffffff88;"><strong>black hole</strong></span>!<br>
+    (If a folder has been sucked in, it’s still available via a button on the right)
   </p>
 `;
 
