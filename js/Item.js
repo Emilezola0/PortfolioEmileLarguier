@@ -1,12 +1,12 @@
 class Item {
-    constructor(x, y, folders) {
+    constructor(x, y, folders, imagePath) {
         this.x = x;
         this.y = y;
         this.folders = folders; // liste des folders du jeu
 
         // Apparence & interaction
         this.itemIcon = new Image();
-        this.sitemIcon.src = "assets/Items/CVBuffet.png";
+        this.itemIcon.src = imagePath;
         this.dragging = false;
         this.mouseDownPos = null;
         this.width = 32;
