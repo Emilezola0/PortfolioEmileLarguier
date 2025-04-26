@@ -11,6 +11,7 @@ import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
 import { upgrades, upgradeFolder } from './upgrades.js';
 import { Shop } from "./Shop.js";
+import CVBuffer from "./CVBuffer.js";
 
 // Canvas
 const canvas = document.getElementById("gameCanvas");
@@ -104,6 +105,7 @@ let voidParticles = [];
 let totalNumberOfScraps = 0;
 let flyingScraps = [];
 let mobParticles = [];
+const items = [];
 
 // Mouse
 let mouseDown = false;
@@ -111,6 +113,8 @@ let shopStartX = 0;
 let shopStartY = 0;
 let folderStartX = 0;
 let folderStartY = 0;
+let itemStartX = 0;
+let itemStartY = 0;
 
 
 let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
@@ -132,6 +136,7 @@ const soundEffectVolume = 0.4;
 // Drag
 let draggedFolder = null;
 let draggedShop = false;
+let draggedItem = null;
 
 canvas.addEventListener("mousedown", e => {
     if (collector.isHovered(e.clientX, e.clientY)) {
@@ -146,6 +151,17 @@ canvas.addEventListener("mousedown", e => {
             folderStartY = e.clientY;
             folder.handleClick({ x: e.clientX, y: e.clientY });
             draggedFolder.dragging = false;
+            return;
+        }
+    }
+
+    for (const item of items) {
+        if (item.isHovered(e.clientX, e.clientY)) {
+            draggedItem = item;
+            itemStartX = e.clientX;
+            itemStartY = e.clientY;
+            item.handleClick({ x: e.clientX, y: e.clientY });
+            draggedItem.dragging = false;
             return;
         }
     }
@@ -168,6 +184,9 @@ canvas.addEventListener("mousemove", e => {
         // check if mouse hover folder
         folder.hovered = folder.isHovered(e.clientX, e.clientY);
     }
+    for (const item of items) {
+        item.hovered = item.isHovered(e.clientX, e.clientY);
+    }
 
     if (collector.dragging) {
         collector.update(e.clientX, e.clientY);
@@ -186,6 +205,19 @@ canvas.addEventListener("mousemove", e => {
         draggedFolder.updatePosition(e.movementX, e.movementY);
         folderStartX = e.clientX;
         folderStartY = e.clientY;
+    }
+
+    if (draggedItem) {
+        const dx = e.clientX - itemStartX;
+        const dy = e.clientY - itemStartY;
+
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            draggedItem.dragging = true;
+        }
+
+        draggedItem.updatePosition(e.movementX, e.movementY);
+        itemStartX = e.clientX;
+        itemStartY = e.clientY;
     }
 
     if (draggedShop && shop && !draggedFolder) {
@@ -210,6 +242,12 @@ canvas.addEventListener("mouseup", (e) => {
         draggedFolder.handleMouseUp({ x: e.clientX, y: e.clientY });
     }
     draggedFolder = null;
+
+    // Items
+    if (draggedItem && draggedItem.isHovered(e.clientX, e.clientY)) {
+        draggedItem.handleMouseUp({ x: e.clientX, y: e.clientY });
+    }
+    draggedItem = null;
 
     // Shop
     if (shop && shop.isHovered(e.clientX, e.clientY)) {
@@ -276,6 +314,11 @@ function updateGame() {
     for (const folder of folders) {
         folder.update(mobs, bullets, voidZone.center, voidZone.radius, soundEnabled, projectileSound);
         folder.draw(ctx);
+    }
+
+    for (const item of items) {
+        item.update();
+        item.draw(ctx);
     }
 
     for (let i = mobs.length - 1; i >= 0; i--) {
@@ -487,7 +530,9 @@ closeButton.addEventListener('click', () => {
 
             // Assure-toi de bien initialiser le shop après avoir ajoute les dossiers
             const firstFolder = folders[0];
+            const secondFolder = folders[1];
             shop = new Shop(firstFolder.x + 50, firstFolder.y);
+            CVBuffer = new CVBuffer(secondFolder.x + 50, firstFolder.y, folders);
 
             // Demarrer le jeu apres l'initialisation
             updateGame();
