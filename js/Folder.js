@@ -296,7 +296,7 @@ export class Folder {
         if (!this.absorbing) {
             ctx.fillStyle = "white";
             document.fonts.ready.then(() => {
-                ctx.font = "12px 'Press Start 2P', monospace";
+                ctx.font = "24px 'Press Start 2P', monospace";
             });;
             ctx.textAlign = "center";
             ctx.fillText(this.name, this.x, this.y + 35);
