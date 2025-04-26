@@ -13,7 +13,7 @@
         <div class="wave-slider-header">Prochaine Wave</div>
         <input type="range" id="waveSlider" min="0" value="0" disabled>
     </div>
-    <!-- Pause and Sound Toggle -->
+    <!-- Pause Button in game and Sound Toggle -->
     <div id="menuControls">
         <div id="pauseButtonContainer">
             <button id="pauseButton">Pause</button>
@@ -30,11 +30,18 @@
     <div id="pauseOverlay" class="hidden">
         <div id="pauseContent">
             <h1 class="pause-title">Pause Menu</h1>
-            <div id="planetContainer">
-                <!-- Les planètes seront générées ici -->
-            </div>
-            <button id="resumeButton">Reprendre</button>
+
+            <!-- Ajoute ici le vrai pauseMenu -->
+            <div id="pauseMenu"></div>
+
+            <!-- Planet container en dessous -->
+            <div id="planetContainer"></div>
         </div>
+    </div>
+    <!-- Les planetes seront generees ici -->
+    </div>
+    <button id="resumeButton">Reprendre</button>
+    </div>
     </div>
     <!-- Shop Pop-up -->
     <div id="shop-popup" class="shop-popup hidden">
