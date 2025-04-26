@@ -17,6 +17,8 @@ class Item {
         this.lastTargetFolder = null;
         this.targetFolder = null;
 
+        this.buffApplied = false;
+
         this.buffs = []; // Liste des buffs appliqués par cet item
     }
 
@@ -62,6 +64,7 @@ class Item {
             }
 
             this.connectionProgress = 0;  // Reset de la progression de connexion
+            this.buffApplied = false;      // IMPORTANT : reset pour le nouveau folder
             this.lastTargetFolder = this.targetFolder; // Mettre à jour l'ancien dossier cible
         }
 
@@ -70,15 +73,19 @@ class Item {
             this.connectionProgress += 0.015;
         }
 
-        // Lorsque la connexion est complète, appliquer les buffs
+        // Lorsque la connexion est complète
         if (this.connectionProgress >= 1) {
-            this.applyBuffs();
+            if (!this.buffApplied) {
+                this.applyBuffs();
+                this.buffApplied = true; // On note qu'on l'a appliqué une fois
+            }
         }
     }
 
     // Fonction pour retirer les buffs d'un dossier
     removeBuffsFromFolder(folder) {
         if (folder.activeBuffs) {
+            this.buffApplied = false; // Reinitialiser car on change de cible
             folder.activeBuffs = folder.activeBuffs.filter(buff => buff.source !== this.bufferSourceName);
         }
     }
