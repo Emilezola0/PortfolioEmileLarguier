@@ -154,11 +154,21 @@ export class Folder {
 
         ctx.save();
         ctx.translate(0, floatY);
-        ctx.rotate(this.planetRotation);
+        // ctx.rotate(this.planetRotation); // Rotation Desactivate
 
-        // Définir la source de lumière (position du soleil)
-        const lightX = Math.cos(this.planetRotation) * 0.5; // Position du soleil
+        // Position de la lumiere
+        const lightX = Math.cos(this.planetRotation) * 0.5;
         const lightY = Math.sin(this.planetRotation) * 0.5;
+
+        // === Halo lumineux autour de la planete ===
+        const atmosphere = ctx.createRadialGradient(0, 0, size, 0, 0, size * 1.4);
+        atmosphere.addColorStop(0, "rgba(255, 255, 255, 0.15)");
+        atmosphere.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+        ctx.beginPath();
+        ctx.fillStyle = atmosphere;
+        ctx.arc(0, 0, size * 1.4, 0, Math.PI * 2);
+        ctx.fill();
 
         // === Corps principal ===
         ctx.beginPath();
@@ -166,22 +176,50 @@ export class Folder {
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Ombre dynamique : ombre sur la face opposée à la lumière
-        const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, lightX, lightY, size);
-        shadow.addColorStop(0, "rgba(0,0,0,0.1)");  // Ombre moins marquée
-        shadow.addColorStop(1, "rgba(0,0,0,0.5)");  // Ombre plus forte sur l'opposée de la lumière
-        ctx.fillStyle = shadow;
+        // === Effet de volume/lumiere ===
+        const volumeGradient = ctx.createRadialGradient(-lightX * size * 0.5, -lightY * size * 0.5, 0, 0, 0, size);
+        volumeGradient.addColorStop(0, "rgba(255,255,255,0.1)");
+        volumeGradient.addColorStop(1, "rgba(0,0,0,0)");
+
         ctx.beginPath();
+        ctx.fillStyle = volumeGradient;
         ctx.arc(0, 0, size, 0, Math.PI * 2);
         ctx.fill();
 
-        // === Cratères fixes avec texture et lumière ===
+        // === Ombre dynamique ===
+        const shadow = ctx.createRadialGradient(-size * 0.4, -size * 0.4, size * 0.1, lightX, lightY, size);
+        shadow.addColorStop(0, "rgba(0,0,0,0.1)");
+        shadow.addColorStop(1, "rgba(0,0,0,0.5)");
+
+        ctx.beginPath();
+        ctx.fillStyle = shadow;
+        ctx.arc(0, 0, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // === Noyau brillant (facultatif) ===
+        ctx.beginPath();
+        ctx.fillStyle = this.planetStyle.coreColor;
+        ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // === Texture granuleuse / poussiere ===
+        for (let i = 0; i < 30; i++) {
+            const rx = (Math.random() - 0.5) * size * 1.6;
+            const ry = (Math.random() - 0.5) * size * 1.6;
+            const r = Math.random() * 0.8;
+
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(255,255,255,0.05)";
+            ctx.arc(rx, ry, r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // === Crateres ===
         for (let i = 0; i < this.craters.length; i++) {
             const { x, y, craterSize } = this.craters[i];
 
-            // Ombre du cratère avec un dégradé réaliste
             const gradient = ctx.createRadialGradient(x, y, 0, x, y, craterSize * 1.5);
-            gradient.addColorStop(0, "rgba(0,0,0,0.4)");  // Ombre marquée
+            gradient.addColorStop(0, "rgba(0,0,0,0.4)");
             gradient.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.beginPath();
@@ -189,7 +227,6 @@ export class Folder {
             ctx.arc(x, y, craterSize * 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Contour léger du cratère
             ctx.beginPath();
             ctx.strokeStyle = "rgba(255,255,255,0.2)";
             ctx.lineWidth = 0.8;
@@ -197,35 +234,28 @@ export class Folder {
             ctx.stroke();
         }
 
-        // === Rayon lumineux autour de la planète ===
-        const lightRay = ctx.createRadialGradient(0, 0, size * 0.75, lightX, lightY, size * 1.5);
-        lightRay.addColorStop(0, "rgba(255, 255, 255, 0.3)");  // Légère illumination blanche
-        lightRay.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = lightRay;
+        // === Anneau autour de la planete ===
         ctx.beginPath();
-        ctx.arc(0, 0, size * 1.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // === Texture de surface simple avec dégradé ===
-        ctx.beginPath();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";  // Légère texture brillante
-        ctx.arc(0, 0, size - 5, 0, Math.PI * 2);  // Un petit cercle au centre pour donner l'impression de surface irrégulière
-        ctx.fill();
+        ctx.strokeStyle = "rgba(200,200,255,0.2)";
+        ctx.lineWidth = 2;
+        ctx.ellipse(0, 0, size * 1.4, size * 0.5, 0, 0, Math.PI * 2);
+        ctx.stroke();
 
         ctx.restore();
     }
 
-    // Fonction pour générer une fois les cratères
+
+    // Fonction pour generer une fois les crateres
     getCraters(size) {
         const craters = [];
-        const numCraters = Math.floor(Math.random() * 4) + 4; // Entre 4 et 7 cratères
+        const numCraters = Math.floor(Math.random() * 4) + 4; // Entre 4 et 7 crateres
 
         for (let i = 0; i < numCraters; i++) {
             const angle = Math.random() * Math.PI * 2;
             const r = size * (0.3 + Math.random() * 0.6);
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
-            const craterSize = size * (0.05 + Math.random() * 0.1); // Taille plus grande des cratères
+            const craterSize = size * (0.05 + Math.random() * 0.1); // Taille plus grande des crateres
 
             craters.push({ x, y, craterSize });
         }
