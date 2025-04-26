@@ -137,8 +137,11 @@ class Item {
     }
 
     draw(ctx) {
-        ctx.save();             // Save contexte state
-        ctx.translate(this.x, this.y);  // Move context to item pos
+        ctx.save(); // Save context
+
+        this.drawConnectionLine(ctx); // <<< D'abord la ligne, tant que le contexte est normal
+
+        ctx.translate(this.x, this.y); // Puis on translate pour dessiner l'item
 
         // === icon ===
         if (this.itemIcon.complete) {
@@ -150,9 +153,7 @@ class Item {
             ctx.fill();
         }
 
-        this.drawConnectionLine(ctx);
-
-        ctx.restore();           // restore context origin state
+        ctx.restore(); // Restore context
     }
 
     // Movement
