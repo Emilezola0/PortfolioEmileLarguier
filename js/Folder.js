@@ -58,7 +58,8 @@ export class Folder {
         // this.folderImg.src = "assets/folder.png";
 
         // Sound
-        this.projectileAudio = new Audio("assets/projectileSoundEffect.mp3");
+        this.projectileAudio = new Audio("assets/sounds/projectileSoundEffect.mp3");
+        this.clickSound = document.getElementById("clickSound");
         this.volume = 0.9;
     }
 
@@ -71,6 +72,7 @@ export class Folder {
         btn.textContent = this.name;
 
         btn.onclick = () => {
+            SoundManager.play(this.clickSound, this.volume);
             this.openFolderPopup();
         };
 
@@ -297,10 +299,11 @@ export class Folder {
         if (this.mouseDownPos) {
             const dx = mouse.x - this.mouseDownPos.x;
             const dy = mouse.y - this.mouseDownPos.y;
-            const moved = Math.hypot(dx, dy) > 20;
+            const moved = Math.hypot(dx, dy) > 2;
             console.log(Math.hypot(dx, dy));
 
             if (!moved) {
+                SoundManager.play(this.clickSound, this.volume);
                 this.openFolderPopup();
             }
         }
