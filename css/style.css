@@ -801,17 +801,23 @@ input[type="checkbox"]:checked + .custom-toggle {
     box-shadow: 0 0 15px #00ffcc;
 }
 
+/* Container des boutons Pause + Sound Toggle */
 #menuControls {
+    position: fixed;
+    top: 20px;
+    left: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
+    z-index: 1000;
 }
 
-#pauseButtonContainer, #soundToggleContainer {
+/* Plus besoin de position fixed ici */
+#pauseButtonContainer,
+#soundToggleContainer {
     display: block;
 }
-
 .restart-button {
     padding: 10px 20px;
     font-family: 'PressStart2P', monospace;
