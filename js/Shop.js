@@ -85,6 +85,7 @@ export class Shop {
         const dist = Math.hypot(dx, dy);
 
         if (dist < 20 && !mouse.holding) {
+            spawnManager.play(clickSound, soundEffectVolume);
             this.openShopPopup();
         }
     }
@@ -195,6 +196,7 @@ export class Shop {
     handleMouseUp() {
         // Click without moving => open the shop
         if (!this.wasDragged) {
+            spawnManager.play(clickSound, soundEffectVolume);
             this.openShopPopup();
         }
         this.wasDragged = false;
