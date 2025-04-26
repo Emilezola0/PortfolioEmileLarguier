@@ -24,7 +24,7 @@ class CVBuffer extends Item {
         openCustomPopup({
             title: "CV",
             slides: [
-                { type: "image", img: "assets/Items/CVBuffer.png", desc: "<br><a href='https://xxxxxxxx' target='_blank'>Portfolio</a>" }
+                { type: "image", img: "assets/Items/CVBuffer.png", desc: "<br><a href='https://emilelarguier2.wixsite.com/game-designer-portfo' target='_blank'>Portfolio</a>" }
             ]
         });
     }
