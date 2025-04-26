@@ -532,7 +532,8 @@ closeButton.addEventListener('click', () => {
             const firstFolder = folders[0];
             const secondFolder = folders[1];
             shop = new Shop(firstFolder.x + 50, firstFolder.y);
-            CVBuffer = new CVBuffer(secondFolder.x + 50, firstFolder.y, folders);
+            // Ajouter l'instance au tableau items
+            items.push(new CVBuffer(secondFolder.x + 50, firstFolder.y, folders));
 
             // Demarrer le jeu apres l'initialisation
             updateGame();
