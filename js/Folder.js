@@ -399,6 +399,7 @@ export class Folder {
 
                 title.textContent = data.title;
                 const nav = document.getElementById("popup-nav");
+                SoundManager.play('click');
                 updateSlide();
                 popup.classList.remove("hidden");
             })
@@ -450,6 +451,7 @@ function convertToEmbedURL(url) {
 }
 
 window.closeFolderPopup = function () {
+    SoundManager.play('click');
     document.getElementById("folder-popup").classList.add("hidden");
 };
 
