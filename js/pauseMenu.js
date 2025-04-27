@@ -164,3 +164,10 @@ canvas.addEventListener('mousemove', (e) => {
         planet.hovered = planet.isHovered(mouse.x, mouse.y);
     }
 });
+
+function resizeCanvas() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // Appel immediat au chargement
