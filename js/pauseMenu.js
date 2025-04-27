@@ -85,7 +85,7 @@ export function setupPauseMenu() {
 
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const radius = Math.min(canvas.width, canvas.height) / 3;
+        const radius = 150;
 
         const totalPlanets = projects.length;
 
