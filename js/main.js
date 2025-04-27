@@ -388,8 +388,9 @@ function updateGame() {
                         const radius = 10 + Math.random() * 20;
                         const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
-                        scrapImgCollect.src = getRandomScrapImage();
-                        flyingScraps.push(new Scrap(x, y, scrapImgCollect));
+                        const scrapCollectImage = new Image();
+                        scrapCollectImage.src = getRandomScrapImage();
+                        flyingScraps.push(new Scrap(x, y, scrapCollectImage));
                     }
                 }
 
@@ -426,8 +427,7 @@ function updateGame() {
 
             continue;
         }
-        scrapImgCollect.src = getRandomScrapImage();
-        scrap.draw(ctx, scrapImgCollect);
+        scrap.draw(ctx);
     }
 
     if (shop) {

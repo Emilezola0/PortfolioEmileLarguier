@@ -8,7 +8,7 @@ export class Scrap {
         this.radius = 12;
         this.alpha = 0; // apparition progressive
         this.size = 24; // taille de l'image à dessiner
-        this.image = image; // image assignée dynamiquement
+        this.image = image; // image assignee dynamiquement
     }
 
     update(collector) {
@@ -37,13 +37,13 @@ export class Scrap {
         return "flying";
     }
 
-    draw(ctx, fallbackImage) {
+    draw(ctx) {
         ctx.save();
         ctx.globalAlpha = this.alpha;
         ctx.translate(this.x, this.y);
         ctx.scale(this.alpha, this.alpha);
 
-        const img = this.image || fallbackImage;
+        const img = this.image;
         if (img && img.complete) {
             ctx.drawImage(img, -this.size / 2, -this.size / 2, this.size, this.size);
         }
