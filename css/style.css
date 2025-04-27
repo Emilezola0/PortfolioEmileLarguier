@@ -136,7 +136,7 @@ canvas {
     font-family: 'PressStart2P', monospace;
     font-size: 10px;
     border-radius: 6px;
-    z-index: 1000;
+    z-index: 3500;
 }
 
     .popup.hidden {
