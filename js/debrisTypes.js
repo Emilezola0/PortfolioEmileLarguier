@@ -33,13 +33,13 @@ export const debrisTypes = [
         waveMax: -1
     },
     {
-        name: "planetScrap",
+        name: "bigAsteroid",
         hp: 15,
-        image: "object1.png",
+        image: "bigAsteroid.png",
         nutrition: 10,
-        scale: 3,
+        scale: 2,
         scrapNumber: 20,
-        speed: 0.2,
+        speed: 0.3,
         waveMin: 5,
         waveMax: -1
     },
@@ -51,7 +51,7 @@ export const debrisTypes = [
         scale: 0.25,
         scrapNumber: 1,
         speed: 1.25,
-        waveMin: 10,
+        waveMin: 5,
         waveMax: -1
     },
     {
@@ -62,7 +62,40 @@ export const debrisTypes = [
         scale: 1,
         scrapNumber: 10,
         speed: 1.25,
-        waveMin: 15,
+        waveMin: 10,
+        waveMax: -1
+    },
+    {
+        name: "planetScrapBasic",
+        hp: 50,
+        image: "object1.png",
+        nutrition: 25,
+        scale: 4,
+        scrapNumber: 20,
+        speed: 0.25,
+        waveMin: 10,
+        waveMax: -1
+    },
+    {
+        name: "planetScrapFast",
+        hp: 50,
+        image: "object2.png",
+        nutrition: 25,
+        scale: 4,
+        scrapNumber: 20,
+        speed: 0.5,
+        waveMin: 10,
+        waveMax: -1
+    },
+    {
+        name: "planetScrapTank",
+        hp: 100,
+        image: "object3.png",
+        nutrition: 25,
+        scale: 4,
+        scrapNumber: 20,
+        speed: 0.2,
+        waveMin: 10,
         waveMax: -1
     }
 ];
