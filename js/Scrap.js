@@ -12,7 +12,7 @@ export class Scrap {
         const scrapImgCollect = new Image();
         function getRandomScrapImage() {
             const scrapCollectImages = [
-                "assets/scraps/scrap.png",
+                "assets/scraps/scrap1.png",
                 "assets/scraps/scrap2.png",
                 "assets/scraps/scrap3.png",
                 "assets/scraps/scrap4.png"
