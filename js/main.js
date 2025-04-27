@@ -133,14 +133,14 @@ scrapImg.src = "assets/scrap.png";
 // Scraps
 const scrapImgCollect = new Image();
 function getRandomScrapImage() {
-    const scrapImages = [
+    const scrapCollectImages = [
         "assets/scraps/scrap.png",
         "assets/scraps/scrap2.png",
         "assets/scraps/scrap3.png",
         "assets/scraps/scrap4.png"
     ];
-    const randomIndex = Math.floor(Math.random() * scrapImages.length);
-    return scrapImages[randomIndex];
+    const randomIndex = Math.floor(Math.random() * scrapCollectImages.length);
+    return scrapCollectImages[randomIndex];
 }
 
 scrapImgCollect.src = getRandomScrapImage();
