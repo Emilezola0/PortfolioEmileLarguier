@@ -56,7 +56,7 @@ export function setupPauseMenu() {
         gamePaused = true;
         pauseOverlay.classList.remove('hidden');
 
-        // Génération des planètes uniquement quand on pause
+        // generate planet when pause
         generatePlanets(projects);
     });
 
