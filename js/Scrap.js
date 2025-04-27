@@ -1,5 +1,5 @@
 export class Scrap {
-    constructor(x, y, image = null) {
+    constructor(x, y, image) {
         this.x = x;
         this.y = y;
         this.collected = false;
