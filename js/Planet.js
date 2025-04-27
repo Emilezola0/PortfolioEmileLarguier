@@ -32,13 +32,14 @@ export class Planet {
         this.opacity = 1;
 
         console.log("GENERATE PLANET");
+        this.updatePlanet();
     }
 
     updatePlanet() {
-        update();
-        draw();
+        this.update();
+        this.draw();
 
-        requestAnimationFrame(updatePlanet); // update every time it will be destroy when pause is over
+        requestAnimationFrame(this.updatePlanet()); // update every time it will be destroy when pause is over
     }
 
     update() {
