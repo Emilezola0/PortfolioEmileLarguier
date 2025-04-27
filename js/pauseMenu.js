@@ -73,9 +73,10 @@ export function setupPauseMenu() {
 
     function generatePlanets(projects) {
         console.log("generate planet");
-        const centerX = 0;
-        const centerY = 0;
-        const radius = 10;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 150; // Plus grand pour bien séparer les planètes
 
         const totalPlanets = projects.length;
 
