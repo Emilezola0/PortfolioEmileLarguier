@@ -295,9 +295,7 @@ export class Folder {
         // Dessiner le texte sous le dossier
         if (!this.absorbing) {
             ctx.fillStyle = "white";
-            document.fonts.ready.then(() => {
-                ctx.font = "24px 'Press Start 2P', monospace";
-            });;
+            ctx.font = "14px 'Press Start 2P', monospace"; // Mets le font ici directement
             ctx.textAlign = "center";
             ctx.fillText(this.name, this.x, this.y + 35);
         }
