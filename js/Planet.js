@@ -1,3 +1,5 @@
+import { SoundManager } from './SoundManager.js';
+
 // Canvas
 const canvas = document.getElementById("planetCanvas");
 const ctx = canvas.getContext("2d");
@@ -222,8 +224,27 @@ export class Planet {
         return dist < this.planetStyle.size;
     }
 
-    handleClick() {
-        // Ici, ouvre ton popup, comme dans Folder.js
+    handleClick(mouse) {
+        this.mouseDownPos = { x: mouse.x, y: mouse.y };
+    }
+
+    handleMouseUp(mouse) {
+        if (this.mouseDownPos) {
+            const dx = mouse.x - this.mouseDownPos.x;
+            const dy = mouse.y - this.mouseDownPos.y;
+            const moved = Math.hypot(dx, dy) > 2;
+            console.log(Math.hypot(dx, dy));
+
+            if (!moved) {
+                SoundManager.play('click');
+                this.openFolderPopup();
+            }
+        }
+        this.dragging = false;
+        this.mouseDownPos = null;
+    }
+
+    openFolderPopup() {
         const popup = document.getElementById("folder-popup");
         const container = document.getElementById("folder-content");
         const title = document.getElementById("folder-title");
@@ -231,13 +252,70 @@ export class Planet {
         import(`./projects/project_${this.JsName}.js`)
             .then(module => {
                 const data = module.getProjectContent();
-                container.innerHTML = `<p>${data.title}</p><p>${data.slides[0]?.desc || ''}</p>`;
+                let currentIndex = 0;
+
+                const updateSlide = () => {
+                    const slide = data.slides[currentIndex];
+
+                    let mediaHTML = "";
+                    if (slide.type === "image") {
+                        mediaHTML = `<img src="${slide.img}" class="popup-image" />`;
+                    } else if (slide.type === "video") {
+                        const embedURL = convertToEmbedURL(slide.video);
+
+                        if (embedURL.includes("youtube.com/embed/")) {
+                            mediaHTML = `
+                            <div class="video-container">
+                            <iframe
+                            src="${embedURL}"
+                            title="YouTube video"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            ></iframe>
+                            </div>
+                            `;
+                        } else {
+                            const videoId =
+                                (slide.video.includes("youtu.be/") && slide.video.split("youtu.be/")[1]) ||
+                                (slide.video.includes("watch?v=") && slide.video.split("watch?v=")[1].split("&")[0]);
+
+                            const thumbnailURL = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+                            mediaHTML = `
+                            <a href="${slide.video}" target="_blank" class="video-link video-thumbnail-wrapper">
+                            <img src="${thumbnailURL}" class="popup-image" alt="Video thumbnail" />
+                            <div class="video-play-button">Play</div>
+                            </a>`;
+                        }
+                    }
+
+                    container.innerHTML = `
+                    ${mediaHTML}
+                    <p>${slide.desc}</p>
+                    `;
+
+                    nav.innerHTML = `
+                    ${currentIndex > 0 ? '<button id="prev-slide"><-</button>' : ''}
+                    ${currentIndex < data.slides.length - 1 ? '<button id="next-slide">-></button>' : ''}
+                    `;
+
+                    if (currentIndex > 0)
+                        document.getElementById("prev-slide").onclick = () => { currentIndex--; updateSlide(); };
+                    if (currentIndex < data.slides.length - 1)
+                        document.getElementById("next-slide").onclick = () => { currentIndex++; updateSlide(); };
+                };
+
                 title.textContent = data.title;
+                const nav = document.getElementById("popup-nav");
+                SoundManager.play('click');
+                updateSlide();
                 popup.classList.remove("hidden");
             })
-            .catch(() => {
+            .catch(err => {
                 title.textContent = "Erreur";
-                container.innerHTML = "<p>Erreur de chargement du projet.</p>";
+                container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
+                document.getElementById("popup-nav").innerHTML = "";
                 popup.classList.remove("hidden");
             });
     }
