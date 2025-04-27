@@ -63,6 +63,7 @@ export function setupPauseMenu() {
         SoundManager.play('click');
         gamePaused = true;
         pauseOverlay.classList.remove('hidden');
+        canvas.style.pointerEvents = 'auto'; // Le canvas recoit pas les evenements de la souris
 
         // generate planet when pause
         generatePlanets(projects);
@@ -75,8 +76,9 @@ export function setupPauseMenu() {
         gamePaused = false;
         resumeGame();
         pauseOverlay.classList.add('hidden');
+        canvas.style.pointerEvents = 'none'; // Le canvas laisse passer les clics aux boutons en dessous
 
-        // Retire toutes les planètes quand on reprend
+        // Retire toutes les planetes quand on reprend
         removeGeneratedPlanets();
     });
 
@@ -118,7 +120,7 @@ export function setupPauseMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (let planet of generatedPlanets) {
-            planet.update();
+            planet.update(ctx);
             planet.draw(ctx);
         }
 

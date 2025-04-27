@@ -1,8 +1,4 @@
 import { SoundManager } from './SoundManager.js';
-
-// Canvas
-const canvas = document.getElementById("planetCanvas");
-const ctx = canvas.getContext("2d");
 export class Planet {
     constructor(x, y, name, JsName, planetStyle = {}) {
         this.x = x;
@@ -40,11 +36,11 @@ export class Planet {
         this.planetRotation = 0;
         this.ringRotation = 0;
         this.opacity = 1;
-
-        console.log("GENERATE PLANET");
     }
 
-    update() {
+    update(ctx) {
+        const centerX = ctx.width / 2;
+        const centerY = ctx.height / 2;
         this.floatOffset += this.planetStyle.floatSpeed;
         this.planetRotation += this.planetStyle.rotationSpeed;
 
