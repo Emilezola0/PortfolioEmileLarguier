@@ -39,8 +39,6 @@ export class Planet {
     }
 
     update(ctx) {
-        const centerX = ctx.width / 2;
-        const centerY = ctx.height / 2;
         this.floatOffset += this.planetStyle.floatSpeed;
         this.planetRotation += this.planetStyle.rotationSpeed;
 
@@ -49,8 +47,8 @@ export class Planet {
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
 
         // Recalculer la position en cercle + flottement haut-bas
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
+        const centerX = ctx.width / 2;
+        const centerY = ctx.height / 2;
 
         this.x = centerX + Math.cos(this.orbitAngle) * this.orbitRadius;
         this.y = centerY + Math.sin(this.orbitAngle) * this.orbitRadius + floatY;
