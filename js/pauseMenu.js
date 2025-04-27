@@ -1,5 +1,5 @@
 // Canvas
-const canvas = document.getElementById("planetCanvas");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Force to correspond with client
