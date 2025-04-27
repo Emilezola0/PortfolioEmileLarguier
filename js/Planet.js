@@ -1,5 +1,5 @@
 // Canvas
-const canvas = document.getElementById("gameCanvas");
+const canvas = document.getElementById("planetCanvas");
 const ctx = canvas.getContext("2d");
 export class Planet {
     constructor(x, y, name, JsName, planetStyle = {}) {
@@ -39,10 +39,15 @@ export class Planet {
     }
 
     updatePlanet() {
-        update();
-        draw(ctx);
+        this.update();
+        this.clearCanvas();
+        this.draw(ctx);
 
-        requestAnimationFrame(updatePlanet()); // update every time it will be destroy when pause is over
+        requestAnimationFrame(this.updatePlanet.bind(this));
+    }
+
+    clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     update() {
