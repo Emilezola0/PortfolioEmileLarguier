@@ -25,7 +25,7 @@ export class Mob {
         this.scale = type.scale || 1;
 
         this.image = new Image();
-        this.image.src = `assets/${type.image}`;
+        this.image.src = `assets/mobs/${type.image}`;
 
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() * 0.005 + 0.0025) * (Math.random() < 0.5 ? 1 : -1);
