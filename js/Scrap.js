@@ -1,5 +1,5 @@
 export class Scrap {
-    constructor(x, y, image = null) {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
         this.collected = false;
@@ -8,7 +8,21 @@ export class Scrap {
         this.radius = 12;
         this.alpha = 0; // apparition progressive
         this.size = 24; // taille de l'image à dessiner
-        this.image = image; // image assignee dynamiquement
+        // Scraps
+        const scrapImgCollect = new Image();
+        function getRandomScrapImage() {
+            const scrapCollectImages = [
+                "assets/scraps/scrap.png",
+                "assets/scraps/scrap2.png",
+                "assets/scraps/scrap3.png",
+                "assets/scraps/scrap4.png"
+            ];
+            const randomIndex = Math.floor(Math.random() * scrapCollectImages.length);
+            return scrapCollectImages[randomIndex];
+        }
+
+        scrapImgCollect.src = getRandomScrapImage();
+        this.image = scrapImgCollect.src;
     }
 
     update(collector) {
