@@ -84,6 +84,7 @@ export class Shop {
     openShopPopup() {
         // Si folders est null ou vide, on ferme le shop
         if (!Array.isArray(this.folders) || this.folders.length === 0) {
+            SoundManager.play('click');
             closeShop();
             return;
         }
