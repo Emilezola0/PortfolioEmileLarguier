@@ -62,6 +62,7 @@ export function setupPauseMenu() {
 
         // generate planet when pause
         generatePlanets(projects);
+        animatePlanets();
     });
 
     // Event : Cliquer sur Reprendre
@@ -102,5 +103,18 @@ export function setupPauseMenu() {
             }
         });
         generatedPlanets = [];
+    }
+
+    function animatePlanets() {
+        if (!gamePaused) return; // Stop si pas en pause
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let planet of generatedPlanets) {
+            planet.update();
+            planet.draw(ctx);
+        }
+
+        requestAnimationFrame(animatePlanets);
     }
 }

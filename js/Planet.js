@@ -35,19 +35,6 @@ export class Planet {
         this.opacity = 1;
 
         console.log("GENERATE PLANET");
-        this.updatePlanet();
-    }
-
-    updatePlanet() {
-        this.update();
-        this.clearCanvas();
-        this.draw(ctx);
-
-        requestAnimationFrame(this.updatePlanet.bind(this));
-    }
-
-    clearCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     update() {
