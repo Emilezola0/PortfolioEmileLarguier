@@ -131,17 +131,27 @@ const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
 
 // Scraps
-const scrapImgCollect = new Image();
+const scrapCollectImages = [
+    "assets/scraps/scrap.png",
+    "assets/scraps/scrap2.png",
+    "assets/scraps/scrap3.png",
+    "assets/scraps/scrap4.png"
+];
+
 function getRandomScrapImage() {
-    const scrapCollectImages = [
-        "assets/scraps/scrap.png",
-        "assets/scraps/scrap2.png",
-        "assets/scraps/scrap3.png",
-        "assets/scraps/scrap4.png"
-    ];
     const randomIndex = Math.floor(Math.random() * scrapCollectImages.length);
     return scrapCollectImages[randomIndex];
 }
+
+// Ton image
+const scrapImgCollect = new Image();
+
+// Getter dynamique
+Object.defineProperty(scrapImgCollect, 'randomSrc', {
+    get() {
+        return getRandomScrapImage();
+    }
+});
 
 scrapImgCollect.src = getRandomScrapImage();
 
@@ -388,7 +398,7 @@ function updateGame() {
                         const radius = 10 + Math.random() * 20;
                         const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
                         const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
-
+                        scrapImgCollect.src = scrapImgCollect.randomSrc;
                         flyingScraps.push(new Scrap(x, y, scrapImgCollect));
                     }
                 }
@@ -426,7 +436,7 @@ function updateGame() {
 
             continue;
         }
-
+        scrapImgCollect.src = scrapImgCollect.randomSrc;
         scrap.draw(ctx, scrapImgCollect);
     }
 
