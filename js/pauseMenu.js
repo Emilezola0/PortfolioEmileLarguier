@@ -121,3 +121,42 @@ export function setupPauseMenu() {
         requestAnimationFrame(animatePlanets);
     }
 }
+
+let mouse = { x: 0, y: 0 };
+
+canvas.addEventListener('mousedown', (e) => {
+    if (!gamePaused) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+
+    for (let planet of generatedPlanets) {
+        if (planet.isHovered(mouse.x, mouse.y)) {
+            planet.handleClick(mouse);
+        }
+    }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+    if (!gamePaused) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+
+    for (let planet of generatedPlanets) {
+        if (planet.isHovered(mouse.x, mouse.y)) {
+            planet.handleMouseUp(mouse);
+        }
+    }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (!gamePaused) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+
+    for (let planet of generatedPlanets) {
+        planet.hovered = planet.isHovered(mouse.x, mouse.y);
+    }
+});
