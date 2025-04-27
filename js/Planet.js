@@ -19,6 +19,8 @@ export class Planet {
             floatSpeed: planetStyle.floatSpeed || 0.05,
             rotationSpeed: planetStyle.rotationSpeed || 0.01,
         };
+
+        console.log("GENERATE PLANET");
     }
 
     update() {
