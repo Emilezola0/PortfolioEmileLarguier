@@ -47,8 +47,8 @@ export class Planet {
         const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
 
         // Recalculer la position en cercle + flottement haut-bas
-        const centerX = ctx.width / 2;
-        const centerY = ctx.height / 2;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
 
         this.x = centerX + Math.cos(this.orbitAngle) * this.orbitRadius;
         this.y = centerY + Math.sin(this.orbitAngle) * this.orbitRadius + floatY;
