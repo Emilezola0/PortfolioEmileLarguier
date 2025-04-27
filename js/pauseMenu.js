@@ -1,10 +1,6 @@
 // Canvas
-const canvas = document.getElementById("gameCanvas");
+const canvas = document.getElementById("planetCanvas");
 const ctx = canvas.getContext("2d");
-
-// Force to correspond with client
-canvas.width = canvas.clientWidth;
-canvas.height = canvas.clientHeight;
 
 // pauseMenu.js
 import { SoundManager } from './SoundManager.js';
@@ -63,7 +59,6 @@ export function setupPauseMenu() {
         SoundManager.play('click');
         gamePaused = true;
         pauseOverlay.classList.remove('hidden');
-        canvas.style.pointerEvents = 'auto'; // Le canvas recoit pas les evenements de la souris
 
         // generate planet when pause
         generatePlanets(projects);
@@ -76,7 +71,6 @@ export function setupPauseMenu() {
         gamePaused = false;
         resumeGame();
         pauseOverlay.classList.add('hidden');
-        canvas.style.pointerEvents = 'none'; // Le canvas laisse passer les clics aux boutons en dessous
 
         // Retire toutes les planetes quand on reprend
         removeGeneratedPlanets();
