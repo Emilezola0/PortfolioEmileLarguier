@@ -81,19 +81,23 @@ export function setupPauseMenu() {
 
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const radius = 150; // Plus grand pour bien séparer les planètes
+        const radius = Math.min(canvas.width, canvas.height) / 3;
 
         const totalPlanets = projects.length;
 
         projects.forEach((proj, index) => {
             const angle = (index / totalPlanets) * 2 * Math.PI;
 
-            const planet = new Planet(0, 0, proj.name, proj.JsName, proj.planetStyle || {});
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+
+            const planet = new Planet(x, y, proj.name, proj.JsName, proj.planetStyle || {});
             planet.orbitRadius = radius;
             planet.orbitAngle = angle;
             generatedPlanets.push(planet);
         });
     }
+
 
     function removeGeneratedPlanets() {
         generatedPlanets.forEach(planet => {
