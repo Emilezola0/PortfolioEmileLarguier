@@ -72,6 +72,7 @@ export function setupPauseMenu() {
     });
 
     function generatePlanets(projects) {
+        console.log("generate planet");
         const centerX = 0;
         const centerY = 0;
         const radius = 10;
