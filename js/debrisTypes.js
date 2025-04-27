@@ -30,6 +30,17 @@ export const debrisTypes = [
         scrapNumber: 1,
         speed: 0.8,
         waveMin: 1,
-        waveMax: 5
+        waveMax: -1
+    },
+    {
+        name: "planetScrap",
+        hp: 15,
+        image: "object3.png",
+        nutrition: 10,
+        scale: 3,
+        scrapNumber: 10,
+        speed: 0.2,
+        waveMin: 5,
+        waveMax: -1
     }
 ];

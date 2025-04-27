@@ -669,37 +669,37 @@ canvas {
     width: 50px;
     height: 24px;
     background: #0a0a0a;
-    border: 2px solid #00ffcc;
+    border: 2px solid #ff0066;
     border-radius: 12px;
     position: relative;
     transition: background 0.3s, border-color 0.3s;
-    box-shadow: 0 0 8px #00ffcc66;
+    box-shadow: 0 0 8px #ff006666;
 }
 
     .custom-toggle::before {
         content: "";
         width: 18px;
         height: 18px;
-        background: #00ffcc;
+        background: #ff0066;
         border: 2px solid #ffffff;
         border-radius: 50%;
         position: absolute;
         top: 1px;
         left: 1px;
         transition: transform 0.3s;
-        box-shadow: 0 0 6px #00ffcc;
+        box-shadow: 0 0 6px #ff0066;
     }
 
 input[type="checkbox"]:checked + .custom-toggle {
     background: #111;
-    border-color: #ff0066;
-    box-shadow: 0 0 8px #ff006666;
+    border-color: #00ffcc;
+    box-shadow: 0 0 8px #00ffcc66;
 }
 
     input[type="checkbox"]:checked + .custom-toggle::before {
         transform: translateX(26px);
-        background: #ff0066;
-        box-shadow: 0 0 6px #ff0066;
+        background: #00ffcc;
+        box-shadow: 0 0 6px #00ffcc;
     }
 
 .toggle-label {
