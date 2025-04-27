@@ -1,3 +1,6 @@
+// Canvas
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 export class Planet {
     constructor(x, y, name, JsName, planetStyle = {}) {
         this.x = x;
@@ -32,14 +35,14 @@ export class Planet {
         this.opacity = 1;
 
         console.log("GENERATE PLANET");
-        this.updatePlanet();
+        updatePlanet();
     }
 
     updatePlanet() {
-        this.update();
-        this.draw();
+        update();
+        draw(ctx);
 
-        requestAnimationFrame(this.updatePlanet()); // update every time it will be destroy when pause is over
+        requestAnimationFrame(updatePlanet()); // update every time it will be destroy when pause is over
     }
 
     update() {
@@ -76,7 +79,7 @@ export class Planet {
             ctx.shadowOffsetY = 0; // Pas de d calage vertical
         }
 
-        this.drawPlanet(ctx);
+        drawPlanet(ctx);
 
         ctx.restore();
 
