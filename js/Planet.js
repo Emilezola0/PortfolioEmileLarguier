@@ -35,7 +35,7 @@ export class Planet {
         this.opacity = 1;
 
         console.log("GENERATE PLANET");
-        updatePlanet();
+        this.updatePlanet();
     }
 
     updatePlanet() {
@@ -84,7 +84,7 @@ export class Planet {
             ctx.shadowOffsetY = 0; // Pas de d calage vertical
         }
 
-        drawPlanet(ctx);
+        this.drawPlanet(ctx);
 
         ctx.restore();
 
