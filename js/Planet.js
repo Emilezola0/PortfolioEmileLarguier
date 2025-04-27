@@ -95,12 +95,6 @@ export class Planet {
             ctx.textAlign = "center";
             ctx.fillText(this.name, this.x, this.y + 35);
         }
-
-        // Debogage : rayon de detection
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.stats.range, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.stroke();
     }
 
     // Draw planet
