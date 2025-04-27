@@ -17,6 +17,11 @@ export class Planet {
         this.dragging = false;
         this.hovered = false;
         this.mouseDownPos = null;
+        // ORBIT
+        this.orbitRadius = 150; // Rayon d'orbite autour du centre
+        this.orbitSpeed = 0.002 + Math.random() * 0.001; // Vitesse unique pour chaque planète
+        this.orbitAngle = Math.random() * Math.PI * 2; // Angle initial random
+
 
         // Planete Style
         this.planetStyle = {
@@ -40,6 +45,17 @@ export class Planet {
     update() {
         this.floatOffset += this.planetStyle.floatSpeed;
         this.planetRotation += this.planetStyle.rotationSpeed;
+
+        this.orbitAngle += this.orbitSpeed; // Fait tourner la planete doucement
+
+        const floatY = Math.sin(this.floatOffset) * this.planetStyle.floatAmplitude;
+
+        // Recalculer la position en cercle + flottement haut-bas
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        this.x = centerX + Math.cos(this.orbitAngle) * this.orbitRadius;
+        this.y = centerY + Math.sin(this.orbitAngle) * this.orbitRadius + floatY;
     }
 
     draw(ctx) {

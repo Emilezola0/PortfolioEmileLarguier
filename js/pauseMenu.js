@@ -88,10 +88,9 @@ export function setupPauseMenu() {
         projects.forEach((proj, index) => {
             const angle = (index / totalPlanets) * 2 * Math.PI;
 
-            const x = centerX + Math.cos(angle) * radius;
-            const y = centerY + Math.sin(angle) * radius;
-
-            const planet = new Planet(x, y, proj.name, proj.JsName, proj.planetStyle || {});
+            const planet = new Planet(0, 0, proj.name, proj.JsName, proj.planetStyle || {});
+            planet.orbitRadius = radius;
+            planet.orbitAngle = angle;
             generatedPlanets.push(planet);
         });
     }
