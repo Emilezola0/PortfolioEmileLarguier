@@ -2,6 +2,10 @@
 const canvas = document.getElementById("planetCanvas");
 const ctx = canvas.getContext("2d");
 
+// Force to correspond with client
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
 // pauseMenu.js
 import { SoundManager } from './SoundManager.js';
 import { Planet } from './Planet.js';
