@@ -1,3 +1,7 @@
+// Canvas
+const canvas = document.getElementById("planetCanvas");
+const ctx = canvas.getContext("2d");
+
 // pauseMenu.js
 import { SoundManager } from './SoundManager.js';
 import { Planet } from './Planet.js';
