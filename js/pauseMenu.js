@@ -114,7 +114,7 @@ export function setupPauseMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (let planet of generatedPlanets) {
-            planet.update(ctx);
+            // planet.update(ctx);
             planet.draw(ctx);
         }
 
