@@ -99,14 +99,47 @@ export const debrisTypes = [
         waveMax: -1
     },
     {
-        name: "BigPlanet",
-        hp: 250,
-        image: "object1.png",
+        name: "BigRocket",
+        hp: 100,
+        image: "rocket.png",
         nutrition: 25,
+        scale: 1.5,
+        scrapNumber: 75,
+        speed: 0.6,
+        waveMin: 20,
+        waveMax: -1
+    },
+    {
+        name: "BigPlanet",
+        hp: 300,
+        image: "object1.png",
+        nutrition: 30,
         scale: 5,
-        scrapNumber: 100,
+        scrapNumber: 300,
         speed: 0.3,
-        waveMin: 15,
+        waveMin: 20,
+        waveMax: -1
+    },
+    {
+        name: "BigPlanetFast",
+        hp: 250,
+        image: "object2.png",
+        nutrition: 25,
+        scale: 4,
+        scrapNumber: 400,
+        speed: 0.5,
+        waveMin: 25,
+        waveMax: -1
+    },
+    {
+        name: "BigPlanetTank",
+        hp: 1000,
+        image: "object3.png",
+        nutrition: 50,
+        scale: 7,
+        scrapNumber: 500,
+        speed: 0.15,
+        waveMin: 25,
         waveMax: -1
     }
 ];

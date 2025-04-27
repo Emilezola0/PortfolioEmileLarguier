@@ -14,7 +14,7 @@ class CVBuffer extends Item {
             // Ajoute un buff spécifique
             folder.activeBuffs.push({
                 type: 'atkDamage',   // Ou le nom de la stat que tu veux booster
-                value: 0.2,          // +20% => 0.2
+                value: 0.5,          // +50% => 0.5
                 source: 'CVBuffer'   // (facultatif) pour identifier l'origine du buff
             });
         });
