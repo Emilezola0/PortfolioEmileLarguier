@@ -81,7 +81,7 @@ export function setupPauseMenu() {
 
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
-        const radius = 150;
+        const radius = 250;
 
         const totalPlanets = projects.length;
 
