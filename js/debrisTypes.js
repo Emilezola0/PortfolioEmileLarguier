@@ -42,5 +42,16 @@ export const debrisTypes = [
         speed: 0.2,
         waveMin: 5,
         waveMax: -1
+    },
+    {
+        name: "basicFast",
+        hp: 2,
+        image: "object1.png",
+        nutrition: 1,
+        scale: 0.25,
+        scrapNumber: 1,
+        speed: 1.5,
+        waveMin: 10,
+        waveMax: -1
     }
 ];
