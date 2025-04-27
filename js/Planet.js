@@ -34,6 +34,13 @@ export class Planet {
         console.log("GENERATE PLANET");
     }
 
+    updatePlanet() {
+        update();
+        draw();
+
+        requestAnimationFrame(updatePlanet); // update every time it will be destroy when pause is over
+    }
+
     update() {
         this.floatOffset += this.planetStyle.floatSpeed;
         this.planetRotation += this.planetStyle.rotationSpeed;
