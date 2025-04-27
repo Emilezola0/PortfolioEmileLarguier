@@ -130,8 +130,20 @@ let shop = null; // initialize after charging folders
 const scrapImg = new Image();
 scrapImg.src = "assets/scrap.png";
 
+// Scraps
 const scrapImgCollect = new Image();
-scrapImgCollect.src = "assets/scrapCollect.png";
+function getRandomScrapImage() {
+    const scrapImages = [
+        "assets/scraps/scrap.png",
+        "assets/scraps/scrap2.png",
+        "assets/scraps/scrap3.png",
+        "assets/scraps/scrap4.png"
+    ];
+    const randomIndex = Math.floor(Math.random() * scrapImages.length);
+    return scrapImages[randomIndex];
+}
+
+scrapImgCollect.src = getRandomScrapImage();
 
 // Drag
 let draggedFolder = null;
