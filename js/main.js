@@ -73,6 +73,8 @@ const voidZone = new Void(canvas.width / 2, canvas.height / 2);
 
 // Game Over to false
 let isGameOver = false;
+// UPDATE
+let lastTime = performance.now();
 
 window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
