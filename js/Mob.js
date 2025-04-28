@@ -132,4 +132,13 @@ export class Mob {
         const dy = this.y - voidZone.center.y;
         return Math.sqrt(dx * dx + dy * dy) < voidZone.radius;
     }
+
+    getAuraColor() {
+        switch (this.portalType) {
+            case 'basic': return 'rgba(255, 255, 255, 0.5)';
+            case 'fast': return 'rgba(0, 255, 255, 0.5)';
+            case 'tank': return 'rgba(0, 255, 0, 0.5)';
+            default: return 'rgba(255, 255, 255, 0.5)';
+        }
+    }
 }
