@@ -36,7 +36,7 @@ export class Folder {
 
         // === STATS personnalisables ===
         this.stats = {
-            atkSpeed: 60,        // Moins = plus rapide
+            atkSpeed: 1.5,        // test in seconds
             atkDamage: 1,
             range: 75,
             bulletSpeed: 4,
@@ -76,7 +76,7 @@ export class Folder {
     }
 
 
-    update(mobs, bullets, voidCenter, voidRadius) {
+    update(mobs, bullets, voidCenter, voidRadius, deltaTime) {
         if (this.absorbing) {
             this.absorbAngle += 0.05;
             const dist = voidRadius - 10;
@@ -97,7 +97,7 @@ export class Folder {
         }
 
         if (this.cooldown > 0) {
-            this.cooldown--;
+            this.cooldown -= deltaTime;
             return;
         }
 
