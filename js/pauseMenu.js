@@ -9,7 +9,7 @@ import { resumeGame } from './main.js';
 
 export let gamePaused = false;
 
-// On garde une référence des planètes générées pour pouvoir les supprimer après
+// On garde une référence des planètes générées pour pouvoir les supprimer apres
 let generatedPlanets = [];
 
 // Setup du pause menu
@@ -114,7 +114,7 @@ export function setupPauseMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (let planet of generatedPlanets) {
-            // planet.update(ctx);
+            planet.update(ctx);
             planet.draw(ctx);
         }
 

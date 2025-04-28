@@ -16,8 +16,8 @@ export class Planet {
         this.hovered = false;
         this.mouseDownPos = null;
         // ORBIT
-        this.orbitRadius = 150; // Rayon d'orbite autour du centre
-        this.orbitSpeed = 0.002 + Math.random() * 0.001; // Vitesse unique pour chaque planète
+        this.orbitRadius = 250; // Rayon d'orbite autour du centre
+        this.orbitSpeed = 0.002 + Math.random() * 0.001; // Vitesse unique pour chaque planete
         this.orbitAngle = Math.random() * Math.PI * 2; // Angle initial random
 
 
