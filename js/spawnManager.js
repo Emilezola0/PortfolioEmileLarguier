@@ -3,18 +3,18 @@ import { debrisTypes } from "./debrisTypes.js";
 
 export const spawnManager = {
     timer: 0,
-    interval: 60, // 1 mob/seconde
+    interval: 10 * 1000, // seconds * millisecondes
     wave: 1,
     pause: false,
-    pauseDuration: 20 * 60, // 10s à 60fps
+    pauseDuration: 10 * 1000, // seconds * millisecondes
     pauseTimer: 0,
 
     mobsToSpawn: 10, // nombre de mobs par vague
     mobsSpawned: 0,
 
-    update(mobs, voidRadius, canvas) {
+    update(mobs, voidRadius, canvas, deltaTime) {
         if (this.pause) {
-            this.pauseTimer++;
+            this.pauseTimer += deltaTime;
 
             this.updateSlider();
 
@@ -25,7 +25,7 @@ export const spawnManager = {
 
                 const container = document.getElementById('waveSliderContainer');
                 if (container) {
-                    container.classList.add('hidden'); // Cache le slider à la fin de la pause
+                    container.classList.add('hidden');
                 }
 
                 this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5);
@@ -36,7 +36,7 @@ export const spawnManager = {
             return;
         }
 
-        this.timer++;
+        this.timer += deltaTime;
         if (this.timer >= this.interval && this.mobsSpawned < this.mobsToSpawn) {
             this.timer = 0;
 
@@ -47,10 +47,9 @@ export const spawnManager = {
             }
         }
 
-        // Fin de la vague
         if (this.mobsSpawned >= this.mobsToSpawn) {
             this.pause = true;
-            this.pauseTimer = 0; // reset pauseTimer
+            this.pauseTimer = 0;
         }
     },
 

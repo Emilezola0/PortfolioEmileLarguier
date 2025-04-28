@@ -283,6 +283,9 @@ function updateWaveDisplay() {
 
 
 function updateGame() {
+    const now = performance.now();
+    const deltaTime = now - lastTime;
+    lastTime = now;
     if (isGameOver) return; // <== stop loop here if game over
     if (gamePaused) return; // stop loop here if pause
 
@@ -436,7 +439,7 @@ function updateGame() {
     // Collector
     collector.draw(ctx, totalNumberOfScraps);
     // Spawn Manager
-    spawnManager.update(mobs, voidZone.radius, canvas);
+    spawnManager.update(mobs, voidZone.radius, canvas, deltaTime);
     // Wave
     drawUI();
     updateWaveDisplay();
