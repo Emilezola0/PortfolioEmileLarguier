@@ -18,7 +18,7 @@ export const spawnManager = {
     respawningPortals: [],
     portalsDisappearing: false,
 
-    update(mobs, voidRadius, canvas, deltaTime) {
+    update(mobs, voidRadius, deltaTime) {
         if (this.pause) {
             this.pauseTimer += deltaTime;
             this.updateSlider();
@@ -34,7 +34,7 @@ export const spawnManager = {
                 const container = document.getElementById('waveSliderContainer');
                 if (container) container.classList.add('hidden');
 
-                this.spawnPortals(canvas);
+                this.spawnPortals();
                 this.waveChangeEvent();
             }
             return;
@@ -50,7 +50,7 @@ export const spawnManager = {
         // Remove dead portals and track respawns
         this.portals = this.portals.filter(portal => {
             if (portal.dead && !this.pause) {
-                this.schedulePortalRespawn(canvas);
+                this.schedulePortalRespawn();
                 return false;
             }
             return true;
@@ -61,7 +61,7 @@ export const spawnManager = {
             const p = this.respawningPortals[i];
             p.timer -= deltaTime;
             if (p.timer <= 0) {
-                this.createSinglePortal(canvas);
+                this.createSinglePortal();
                 this.respawningPortals.splice(i, 1);
             }
         }
@@ -94,34 +94,37 @@ export const spawnManager = {
         }
     },
 
-    schedulePortalRespawn(canvas) {
+    schedulePortalRespawn() {
         if (this.pause) return;
         this.respawningPortals.push({
             timer: 2000 + Math.random() * 3000, // 2–5 sec avant re-spawn
-            canvas: canvas
         });
     },
 
-    spawnPortals(canvas) {
+    spawnPortals() {
         this.portals = [];
         this.respawningPortals = [];
         const types = ['basic', 'fast', 'tank'];
 
         for (let i = 0; i < this.portalCount; i++) {
-            this.createSinglePortal(canvas, types);
+            this.createSinglePortal(types);
         }
     },
 
-    createSinglePortal(canvas, types = ['basic', 'fast', 'tank']) {
+    createSinglePortal(types = ['basic', 'fast', 'tank']) {
         const type = types[Math.floor(Math.random() * types.length)];
         const side = Math.floor(Math.random() * 4);
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
         let x, y;
+
         switch (side) {
-            case 0: x = Math.random() * canvas.width; y = Math.random() * 100; break;
-            case 1: x = Math.random() * canvas.width; y = canvas.height - Math.random() * 100; break;
-            case 2: x = Math.random() * 100; y = Math.random() * canvas.height; break;
-            case 3: x = canvas.width - Math.random() * 100; y = Math.random() * canvas.height; break;
+            case 0: x = Math.random() * screenWidth; y = Math.random() * 100; break;
+            case 1: x = Math.random() * screenWidth; y = screenHeight - Math.random() * 100; break;
+            case 2: x = Math.random() * 100; y = Math.random() * screenHeight; break;
+            case 3: x = screenWidth - Math.random() * 100; y = Math.random() * screenHeight; break;
         }
+
         this.portals.push(new Portal(x, y, type, this.wave));
     },
 
