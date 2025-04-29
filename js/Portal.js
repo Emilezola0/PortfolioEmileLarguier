@@ -54,9 +54,11 @@ export class Portal {
 
     spawnMob(mobs) {
         const typeList = mobTypes[this.type];
+        debug.log("spawnMob type list : " + typeList);
         if (!typeList) return;
 
         const baseMobData = typeList[Math.floor(Math.random() * typeList.length)];
+        debug.log("spawnMob mob data : " + baseMobData);
         const mobData = this.scaleMobData(baseMobData, this.wave);
 
         const mob = new Mob(mobData, this.x, this.y, this.wave);

@@ -125,7 +125,8 @@ export class Folder {
                 normDy,
                 this.stats.atkDamage,     // damage
                 this.stats.pierce,        // pierce
-                this.stats.bulletSpeed    // speed projectile
+                this.stats.bulletSpeed,    // speed projectile
+                self
             ));
             SoundManager.play('projectile');
             this.cooldown = this.stats.atkSpeed;
