@@ -17,6 +17,10 @@ export class Portal {
         this.rotationSpeed = (Math.random() - 0.5) * 0.001;
 
         this.floatAngle = Math.random() * Math.PI * 2;
+
+        // Spawn parameters
+        this.spawnInterval = 500; // 0.5 sec
+        this.spawnTimer = 0;
     }
 
     update(mobs, deltaTime) {
@@ -33,13 +37,17 @@ export class Portal {
                 this.dead = true;
             }
         }
+
+        // Handle mob spawning
+        this.spawnTimer += deltaTime;
+        if (this.spawnTimer >= this.spawnInterval) {
+            this.spawnTimer = 0;
+            this.spawnMob(mobs);
+        }
     }
 
-    /**
-     * Lance la disparition du portail. Si `isFinal` est vrai, il ne sera pas respawné.
-     */
     startDisappearing(isFinal = false) {
-        if (this.disappearing) return; // eviter double appel
+        if (this.disappearing) return;
         this.disappearing = true;
         this.respawnable = !isFinal;
     }

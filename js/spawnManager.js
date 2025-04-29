@@ -1,24 +1,18 @@
-// spawnManager.js
 import { Portal } from './Portal.js';
-import { Mob } from './Mob.js';
 
 export const spawnManager = {
     timer: 0,
-    interval: 1 * 1000,
     wave: 1,
     pause: true,
     pauseDuration: 10 * 1000,
     pauseTimer: 0,
-
-    mobsToSpawn: 10,
-    mobsSpawned: 0,
 
     portalCount: 6,
     portals: [],
     respawningPortals: [],
     portalsDisappearing: false,
 
-    update(mobs, voidRadius, deltaTime) {
+    update(mobs, deltaTime) {
         if (this.pause) {
             this.pauseTimer += deltaTime;
             this.updateSlider();
@@ -27,8 +21,6 @@ export const spawnManager = {
                 this.pause = false;
                 this.pauseTimer = 0;
                 this.wave++;
-                this.mobsToSpawn = 5 + Math.floor(this.wave * 1.5);
-                this.mobsSpawned = 0;
                 this.portalsDisappearing = false;
 
                 const container = document.getElementById('waveSliderContainer');
@@ -40,8 +32,6 @@ export const spawnManager = {
             return;
         }
 
-        this.timer += deltaTime;
-
         // Update portals
         for (let portal of this.portals) {
             portal.update(mobs, deltaTime);
@@ -49,14 +39,14 @@ export const spawnManager = {
 
         // Remove dead portals and track respawns
         this.portals = this.portals.filter(portal => {
-            if (portal.dead && !this.pause) {
+            if (portal.dead && !this.pause && portal.respawnable) {
                 this.schedulePortalRespawn();
                 return false;
             }
             return true;
         });
 
-        // Respawn logic
+        // Handle portal respawn
         for (let i = this.respawningPortals.length - 1; i >= 0; i--) {
             const p = this.respawningPortals[i];
             p.timer -= deltaTime;
@@ -64,21 +54,6 @@ export const spawnManager = {
                 this.createSinglePortal();
                 this.respawningPortals.splice(i, 1);
             }
-        }
-        // Mob spawn
-        if (this.timer >= this.interval && this.mobsSpawned < this.mobsToSpawn && this.portals.length > 0) {
-            this.timer = 0;
-            const spawnChance = Math.min(1, voidRadius / 300);
-            if (Math.random() < spawnChance) {
-                const portal = this.portals[Math.floor(Math.random() * this.portals.length)];
-                portal.spawnMob(mobs);
-                this.mobsSpawned++;
-            }
-        }
-
-        // End of wave logic
-        if (this.mobsSpawned >= this.mobsToSpawn && !this.portalsDisappearing) {
-            this.startPortalsDisappearing();
         }
 
         // Check if all portals gone, start pause
@@ -90,14 +65,13 @@ export const spawnManager = {
     startPortalsDisappearing() {
         this.portalsDisappearing = true;
         for (let portal of this.portals) {
-            portal.startDisappearing();
+            portal.startDisappearing(true);
         }
     },
 
     schedulePortalRespawn() {
-        if (this.pause) return;
         this.respawningPortals.push({
-            timer: 2000 + Math.random() * 3000, // 2–5 sec avant re-spawn
+            timer: 2000 + Math.random() * 3000
         });
     },
 
@@ -105,7 +79,6 @@ export const spawnManager = {
         this.portals = [];
         this.respawningPortals = [];
         const types = ['basic', 'fast', 'tank'];
-
         for (let i = 0; i < this.portalCount; i++) {
             this.createSinglePortal(types);
         }
