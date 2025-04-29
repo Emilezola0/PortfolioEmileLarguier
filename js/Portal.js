@@ -107,16 +107,23 @@ export class Portal {
         ctx.save();
         ctx.globalAlpha = this.opacity;
 
+        // Centre pulsant
+        const pulse = 0.8 + 0.2 * Math.sin(Date.now() / 200);
+        const innerRadius = this.radius * 0.4 * pulse;
         const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+
         if (this.type === 'basic') {
-            gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
-            gradient.addColorStop(1, "rgba(0, 255, 255, 0.2)");
+            gradient.addColorStop(0, "rgba(0, 255, 255, 0.9)");
+            gradient.addColorStop(0.3, "rgba(0, 200, 255, 0.4)");
+            gradient.addColorStop(1, "rgba(0, 100, 255, 0.1)");
         } else if (this.type === 'fast') {
-            gradient.addColorStop(0, "rgba(255, 0, 255, 0.8)");
-            gradient.addColorStop(1, "rgba(0, 0, 255, 0.2)");
+            gradient.addColorStop(0, "rgba(255, 0, 255, 0.9)");
+            gradient.addColorStop(0.3, "rgba(200, 0, 200, 0.4)");
+            gradient.addColorStop(1, "rgba(100, 0, 150, 0.1)");
         } else if (this.type === 'tank') {
-            gradient.addColorStop(0, "rgba(0, 255, 0, 0.8)");
-            gradient.addColorStop(1, "rgba(0, 100, 0, 0.2)");
+            gradient.addColorStop(0, "rgba(0, 255, 100, 0.9)");
+            gradient.addColorStop(0.3, "rgba(0, 180, 80, 0.4)");
+            gradient.addColorStop(1, "rgba(0, 100, 60, 0.1)");
         }
 
         ctx.fillStyle = gradient;
@@ -124,19 +131,37 @@ export class Portal {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
+        // Centre lumineux
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.arc(this.x, this.y, innerRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Anneaux rotatifs
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
-
-        ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        for (let i = 0; i < 10; i++) {
-            const angle = i * Math.PI / 5;
-            const r = this.radius * (i / 10);
-            ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+        for (let i = 1; i <= 3; i++) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (4 - i)})`;
+            ctx.lineWidth = 1;
+            ctx.arc(0, 0, this.radius * (i / 3), 0, Math.PI * 2);
+            ctx.stroke();
         }
-        ctx.stroke();
+
+        // Sparks effet rétro
+        for (let i = 0; i < 8; i++) {
+            const angle = (i * Math.PI / 4) + this.rotation * 2;
+            const r = this.radius * 0.95;
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.3})`;
+            ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         ctx.restore();
     }
+
 }
