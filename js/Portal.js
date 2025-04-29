@@ -19,7 +19,7 @@ export class Portal {
         this.floatAngle = Math.random() * Math.PI * 2;
 
         // Spawn parameters
-        this.spawnInterval = 500; // 0.5 sec
+        this.spawnInterval = 1000; // 1 sec
         this.spawnTimer = 0;
     }
 
@@ -54,11 +54,9 @@ export class Portal {
 
     spawnMob(mobs) {
         const typeList = mobTypes[this.type];
-        debug.log("spawnMob type list : " + typeList);
         if (!typeList) return;
 
         const baseMobData = typeList[Math.floor(Math.random() * typeList.length)];
-        debug.log("spawnMob mob data : " + baseMobData);
         const mobData = this.scaleMobData(baseMobData, this.wave);
 
         const mob = new Mob(mobData, this.x, this.y, this.wave);

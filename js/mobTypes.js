@@ -10,7 +10,7 @@ export const mobTypes = {
             nutrition: 2,
             scrap: { base: 1 },
             color: "white",
-            sprite: "mine.png",
+            image: "mine.png",
             growth: {
                 hp: { flat: 5 },           // +5 HP par vague
                 speed: { percent: 2 },     // +2% par vague
@@ -25,7 +25,7 @@ export const mobTypes = {
             nutrition: 1,
             scrap: { base: 2 },
             color: "gray",
-            sprite: "asteroid.png",
+            image: "asteroid.png",
             growth: {
                 hp: { percent: 10 },       // +10% par vague
                 speed: { flat: 0.05 },
@@ -42,7 +42,7 @@ export const mobTypes = {
             nutrition: 1,
             scrap: { base: 1 },
             color: "cyan",
-            sprite: "rocket.png",
+            image: "rocket.png",
             growth: {
                 hp: { flat: 1 },
                 speed: { percent: 1.5 }
@@ -56,7 +56,7 @@ export const mobTypes = {
             nutrition: 5,
             scrap: { base: 4 },
             color: "purple",
-            sprite: "ufo.png",
+            image: "ufo.png",
             growth: {
                 hp: { percent: 4 },
                 scrap: { flat: 2 }
@@ -72,7 +72,7 @@ export const mobTypes = {
             nutrition: 10,
             scrap: { base: 12 },
             color: "green",
-            sprite: "bigAsteroid.png",
+            image: "bigAsteroid.png",
             growth: {
                 hp: { percent: 5 },
                 speed: { percent: 2 }
