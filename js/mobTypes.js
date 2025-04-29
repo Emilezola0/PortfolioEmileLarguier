@@ -1,5 +1,3 @@
-// mobTypes.js
-
 export const mobTypes = {
     basic: [
         {
@@ -8,13 +6,13 @@ export const mobTypes = {
             scale: 1.0,
             hp: { base: 2 },
             nutrition: 2,
-            scrap: { base: 1 },
+            scrap: { base: 2 },
             color: "white",
             image: "mine.png",
             growth: {
-                hp: { percent: 10 },           // +1 HP par vague
-                speed: { percent: 2 },     // +2% par vague
-                scrap: { flat: 1 }         // +1 scrap par vague
+                hp: { flat: 0.5 },               // croissance douce, reste fragile
+                speed: { flat: 0.02 },           // tres leger buff
+                scrap: { flat: 1 }
             }
         },
         {
@@ -23,13 +21,13 @@ export const mobTypes = {
             scale: 0.9,
             hp: { base: 3 },
             nutrition: 1,
-            scrap: { base: 2 },
+            scrap: { base: 3 },
             color: "gray",
             image: "asteroid.png",
             growth: {
-                hp: { percent: 15 },       // % mettre percent et flat = +
-                speed: { flat: 0.05 },
-                scrap: { flat: 2 }
+                hp: { percent: 10 },             // devient costaud plus tard
+                speed: { flat: 0.03 },
+                scrap: { flat: 1.5 }
             }
         }
     ],
@@ -40,11 +38,11 @@ export const mobTypes = {
             scale: 0.8,
             hp: { base: 1 },
             nutrition: 1,
-            scrap: { base: 1 },
+            scrap: { base: 2 },
             color: "cyan",
             image: "rocket.png",
             growth: {
-                hp: { flat: 1 },
+                hp: { flat: 0.3 },               // reste tres fragile
                 speed: { flat: 0.1 },
                 scrap: { flat: 1 }
             }
@@ -55,13 +53,13 @@ export const mobTypes = {
             scale: 1.0,
             hp: { base: 2 },
             nutrition: 5,
-            scrap: { base: 4 },
+            scrap: { base: 3 },
             color: "purple",
             image: "ufo.png",
             growth: {
-                hp: { percent: 10 },
-                speed: { flat: 0.15 },
-                scrap: { flat: 3 }
+                hp: { percent: 8 },              // devient une menace moderee
+                speed: { flat: 0.12 },
+                scrap: { flat: 2 }
             }
         }
     ],
@@ -70,15 +68,15 @@ export const mobTypes = {
             name: "Big Asteroid",
             speed: { base: 0.3, max: 1.5 },
             scale: 2.5,
-            hp: { base: 5 },
+            hp: { base: 6 },
             nutrition: 10,
-            scrap: { base: 12 },
+            scrap: { base: 10 },
             color: "green",
             image: "bigAsteroid.png",
             growth: {
-                hp: { percent: 20 },
-                speed: { flat: 0.03 },
-                scrap: { flat: 5 }
+                hp: { percent: 20 },             // scaling fort : boss
+                speed: { flat: 0.02 },
+                scrap: { flat: 4 }
             }
         }
     ]

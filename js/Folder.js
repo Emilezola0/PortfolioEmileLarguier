@@ -36,10 +36,10 @@ export class Folder {
 
         // === STATS personnalisables ===
         this.stats = {
-            atkSpeed: 1,        // shoot after atkSpeed seconds
-            atkDamage: 1,
-            range: 75,
-            bulletSpeed: 4,
+            atkSpeed: 0.8,        // shoot after atkSpeed seconds
+            atkDamage: 2,
+            range: 90,
+            bulletSpeed: 5,
             pierce: 1,
         };
         this.activeBuffs = []; // bonus is in (%)
