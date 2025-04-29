@@ -1,4 +1,3 @@
-// Portal.js
 import { mobTypes } from './mobTypes.js';
 import { Mob } from './Mob.js';
 
@@ -13,17 +12,17 @@ export class Portal {
         this.opacity = 1;
         this.dead = false;
         this.disappearing = false;
+        this.respawnable = true;
         this.rotation = Math.random() * Math.PI * 2;
-        this.rotationSpeed = (Math.random() - 0.5) * 0.001; // rotation lente
+        this.rotationSpeed = (Math.random() - 0.5) * 0.001;
 
-        this.floatAngle = Math.random() * Math.PI * 2; // pour mouvement flottant
+        this.floatAngle = Math.random() * Math.PI * 2;
     }
 
     update(mobs, deltaTime) {
-        // Rotation
-        this.rotation += this.rotationSpeed * deltaTime;
+        if (this.dead) return;
 
-        // Léger mouvement flottant
+        this.rotation += this.rotationSpeed * deltaTime;
         this.floatAngle += 0.001 * deltaTime;
         this.x += Math.cos(this.floatAngle) * 0.05 * deltaTime;
         this.y += Math.sin(this.floatAngle) * 0.05 * deltaTime;
@@ -36,8 +35,13 @@ export class Portal {
         }
     }
 
-    startDisappearing() {
+    /**
+     * Lance la disparition du portail. Si `isFinal` est vrai, il ne sera pas respawné.
+     */
+    startDisappearing(isFinal = false) {
+        if (this.disappearing) return; // eviter double appel
         this.disappearing = true;
+        this.respawnable = !isFinal;
     }
 
     spawnMob(mobs) {
@@ -55,7 +59,6 @@ export class Portal {
         ctx.save();
         ctx.globalAlpha = this.opacity;
 
-        // Créer un effet nébuleuse en spirale
         const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
         if (this.type === 'basic') {
             gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
@@ -73,7 +76,6 @@ export class Portal {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Spirale (simple decoratif)
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
 
