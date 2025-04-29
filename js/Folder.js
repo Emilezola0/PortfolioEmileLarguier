@@ -129,7 +129,7 @@ export class Folder {
                 self
             ));
             SoundManager.play('projectile');
-            this.cooldown = this.stats.atkSpeed;
+            this.cooldown = this.stats.atkSpeed * 1000;
         }
 
         // Planete rotation
