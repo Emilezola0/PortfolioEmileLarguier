@@ -56,10 +56,50 @@ export class Portal {
         const typeList = mobTypes[this.type];
         if (!typeList) return;
 
-        const mobData = typeList[Math.floor(Math.random() * typeList.length)];
+        const baseMobData = typeList[Math.floor(Math.random() * typeList.length)];
+        const mobData = this.scaleMobData(baseMobData, this.wave);
+
         const mob = new Mob(mobData, this.x, this.y, this.wave);
         mobs.push(mob);
     }
+
+    scaleMobData(data, wave) {
+        const scaled = structuredClone(data); // deep copy
+
+        const growth = data.growth || {};
+        const w = wave - 1; // vague 1 = base
+
+        // HP
+        if (data.hp?.base) {
+            const base = data.hp.base;
+            const flat = growth.hp?.flat ?? 0;
+            const percent = growth.hp?.percent ?? 0;
+            scaled.hp = base + (flat * w) + base * (percent / 100) * w;
+        }
+
+        // Scrap
+        if (data.scrap?.base !== undefined) {
+            const base = data.scrap.base;
+            const flat = growth.scrap?.flat ?? 0;
+            const percent = growth.scrap?.percent ?? 0;
+            scaled.scrap = base + (flat * w) + base * (percent / 100) * w;
+        }
+
+        // Speed
+        if (data.speed?.base !== undefined) {
+            const base = data.speed.base;
+            const flat = growth.speed?.flat ?? 0;
+            const percent = growth.speed?.percent ?? 0;
+            let value = base + (flat * w) + base * (percent / 100) * w;
+            if (data.speed.max !== undefined) {
+                value = Math.min(value, data.speed.max);
+            }
+            scaled.speed = value;
+        }
+
+        return scaled;
+    }
+
 
     draw(ctx) {
         if (this.dead) return;
