@@ -4,7 +4,7 @@ export const spawnManager = {
     timer: 0,
     wave: 1,
     pause: true,
-    pauseDuration: 20 * 1000,
+    pauseDuration: 15 * 1000,
     pauseTimer: 0,
     waveDuration: 25 * 1000, // 25 secondes
     waveTimer: 0,
@@ -48,9 +48,9 @@ export const spawnManager = {
 
         // Remove dead portals and track respawns
         this.portals = this.portals.filter(portal => {
-            if (portal.dead && !this.pause && portal.respawnable) {
-                this.schedulePortalRespawn();
-                return false;
+            if (portal.dead) {
+                if (portal.respawnable) this.schedulePortalRespawn();
+                return false; // always remove dead portals
             }
             return true;
         });
@@ -67,6 +67,7 @@ export const spawnManager = {
 
         // Check if all portals gone, start pause
         if (this.portalsDisappearing && this.portals.length === 0) {
+            console.log(`All the portals are dead. Start of the wave pause ${this.wave}`);
             this.pause = true;
         }
     },
@@ -74,7 +75,6 @@ export const spawnManager = {
     startPortalsDisappearing() {
         this.portalsDisappearing = true;
         this.pauseTimer = 0;
-        this.pause = true;
         this.waveTimer = 0;
         for (let portal of this.portals) {
             portal.startDisappearing(true);
