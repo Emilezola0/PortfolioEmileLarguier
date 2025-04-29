@@ -19,7 +19,7 @@ export class Portal {
         this.floatAngle = Math.random() * Math.PI * 2;
 
         // Spawn parameters
-        this.spawnInterval = 5000; // 5 sec
+        this.spawnInterval = Math.max(1000, 3000 - (wave - 1) * 200); // scale selon la vague
         this.spawnTimer = 0;
     }
 

@@ -6,7 +6,7 @@ export const spawnManager = {
     pause: true,
     pauseDuration: 10 * 1000,
     pauseTimer: 0,
-    waveDuration: 20 * 1000, // 20 secondes en ms
+    waveDuration: 25 * 1000, // 25 secondes
     waveTimer: 0,
 
     portalCount: 6,
