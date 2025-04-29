@@ -36,7 +36,7 @@ export class Folder {
 
         // === STATS personnalisables ===
         this.stats = {
-            atkSpeed: 1.5,        // shoot after atkSpeed seconds
+            atkSpeed: 1,        // shoot after atkSpeed seconds
             atkDamage: 1,
             range: 75,
             bulletSpeed: 4,

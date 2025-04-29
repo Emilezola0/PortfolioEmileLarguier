@@ -442,6 +442,7 @@ function updateGame() {
     collector.draw(ctx, totalNumberOfScraps);
     // Spawn Manager
     spawnManager.update(mobs, deltaTime);
+    spawnManager.draw(ctx);
     // Wave
     drawUI();
     updateWaveDisplay();

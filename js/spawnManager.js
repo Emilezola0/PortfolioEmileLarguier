@@ -6,6 +6,8 @@ export const spawnManager = {
     pause: true,
     pauseDuration: 10 * 1000,
     pauseTimer: 0,
+    waveDuration: 20 * 1000, // 20 secondes en ms
+    waveTimer: 0,
 
     portalCount: 6,
     portals: [],
@@ -21,6 +23,7 @@ export const spawnManager = {
                 this.pause = false;
                 this.pauseTimer = 0;
                 this.wave++;
+                this.waveTimer = 0;
                 this.portalsDisappearing = false;
 
                 const container = document.getElementById('waveSliderContainer');
@@ -28,6 +31,12 @@ export const spawnManager = {
 
                 this.spawnPortals();
                 this.waveChangeEvent();
+            } else {
+                this.waveTimer += deltaTime;
+
+                if (this.waveTimer >= this.waveDuration && !this.portalsDisappearing) {
+                    this.startPortalsDisappearing(); // force fermeture des portails
+                }
             }
             return;
         }
