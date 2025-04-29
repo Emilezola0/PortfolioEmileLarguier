@@ -19,7 +19,7 @@ export class Portal {
         this.floatAngle = Math.random() * Math.PI * 2;
 
         // Spawn parameters
-        this.spawnInterval = 1000; // 1 sec
+        this.spawnInterval = 5000; // 5 sec
         this.spawnTimer = 0;
     }
 
