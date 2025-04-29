@@ -69,6 +69,7 @@ export class Mob {
             ctx.rotate(this.rotation);
             ctx.globalAlpha = this.opacity;
 
+            console.log("This Image" + this.image);
             ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
 
             ctx.restore();

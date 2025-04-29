@@ -4,8 +4,8 @@ export const upgrades = [
         label: "Attack Speed",
         key: "atkSpeed",
         baseCost: 10,
-        growthFactor: 1.15, // Croissance douce
-        apply: folder => folder.stats.atkSpeed *= 0.9,
+        growthFactor: 1.15, // Price growth factor
+        apply: folder => folder.stats.atkSpeed *= 0.9, // Add 10% each time you buy an upgrade
     },
     {
         id: "atkDamage",

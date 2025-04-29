@@ -36,7 +36,7 @@ export class Folder {
 
         // === STATS personnalisables ===
         this.stats = {
-            atkSpeed: 1.5,        // test in seconds
+            atkSpeed: 1.5,        // shoot after atkSpeed seconds
             atkDamage: 1,
             range: 75,
             bulletSpeed: 4,
@@ -52,11 +52,6 @@ export class Folder {
             bulletSpeed: 0,
             pierce: 0,
         };
-
-
-        // Image
-        // this.folderImg = new Image();
-        // this.folderImg.src = "assets/folder.png";
     }
 
     // methode create button when folder dead
