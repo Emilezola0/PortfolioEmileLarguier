@@ -73,6 +73,8 @@ export const spawnManager = {
 
     startPortalsDisappearing() {
         this.portalsDisappearing = true;
+        this.pauseTimer = 0;
+        this.pause = true;
         this.waveTimer = 0;
         for (let portal of this.portals) {
             portal.startDisappearing(true);
