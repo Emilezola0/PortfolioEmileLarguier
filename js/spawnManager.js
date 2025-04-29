@@ -31,14 +31,14 @@ export const spawnManager = {
 
                 this.spawnPortals();
                 this.waveChangeEvent();
-            } else {
-                this.waveTimer += deltaTime;
-
-                if (this.waveTimer >= this.waveDuration && !this.portalsDisappearing) {
-                    this.startPortalsDisappearing(); // force fermeture des portails
-                }
             }
             return;
+        }
+
+        this.waveTimer += deltaTime;
+
+        if (this.waveTimer >= this.waveDuration && !this.portalsDisappearing) {
+            this.startPortalsDisappearing(); // force fermeture des portails
         }
 
         // Update portals
@@ -73,6 +73,7 @@ export const spawnManager = {
 
     startPortalsDisappearing() {
         this.portalsDisappearing = true;
+        this.waveTimer = 0;
         for (let portal of this.portals) {
             portal.startDisappearing(true);
         }
