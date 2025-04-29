@@ -6,7 +6,7 @@ export const spawnManager = {
     timer: 0,
     interval: 1 * 1000,
     wave: 1,
-    pause: false,
+    pause: true,
     pauseDuration: 10 * 1000,
     pauseTimer: 0,
 
