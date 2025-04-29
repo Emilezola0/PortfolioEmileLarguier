@@ -19,6 +19,13 @@ export class Mob {
 
         this.image = new Image();
         this.image.src = `assets/mobs/${type.image}`;
+        this.imageLoaded = false;
+        this.image.onload = () => {
+            this.imageLoaded = true;
+        };
+        this.image.onerror = () => {
+            console.error(`Failed to load image: ${this.image.src}`);
+        };
 
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() * 0.005 + 0.0025) * (Math.random() < 0.5 ? 1 : -1);
@@ -69,8 +76,9 @@ export class Mob {
             ctx.rotate(this.rotation);
             ctx.globalAlpha = this.opacity;
 
-            console.log("This Image" + this.image);
-            ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+            if (this.imageLoaded) {
+                ctx.drawImage(this.image, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+            }
 
             ctx.restore();
             ctx.globalAlpha = 1;
