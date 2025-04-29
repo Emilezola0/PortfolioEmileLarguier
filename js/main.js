@@ -496,7 +496,7 @@ content.innerHTML = `
   <p>
     <strong style="color: #ff4444;">Defeat condition:</strong><br>
     All folders have been sucked into the <span style="color: #ff4444;"><strong>black hole</strong></span>!<br>
-    (If a folder has been sucked in, it’s still available via a button on the right)
+    (If a folder has been sucked in, it is still available via a button on the right)
   </p>
 `;
 
