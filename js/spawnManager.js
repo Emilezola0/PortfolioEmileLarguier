@@ -24,6 +24,7 @@ export const spawnManager = {
             this.updateSlider();
 
             if (this.pauseTimer >= this.pauseDuration) {
+                console.log("is in pause" + this.pauseTimer);
                 this.pause = false;
                 this.pauseTimer = 0;
                 this.wave++;
@@ -65,7 +66,7 @@ export const spawnManager = {
                 this.respawningPortals.splice(i, 1);
             }
         }
-
+        console.log("Timer" + this.timer);
         // Mob spawn
         if (this.timer >= this.interval && this.mobsSpawned < this.mobsToSpawn && this.portals.length > 0) {
             this.timer = 0;
@@ -96,6 +97,7 @@ export const spawnManager = {
     },
 
     schedulePortalRespawn(canvas) {
+        if (this.pause) return;
         this.respawningPortals.push({
             timer: 2000 + Math.random() * 3000, // 2–5 sec avant re-spawn
             canvas: canvas

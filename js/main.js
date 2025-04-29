@@ -525,7 +525,6 @@ closeButton.addEventListener('click', () => {
             shop = new Shop(firstFolder.x + 50, firstFolder.y);
             // Ajouter l'instance au tableau items
             items.push(new CVBuffer(secondFolder.x + 50, firstFolder.y, folders, shop));
-            spawnManager.resume();
 
             // Demarrer le jeu apres l'initialisation
             updateGame();
