@@ -21,6 +21,40 @@ let project = null; // project being shown
 let index = 0;      // current slide
 let card = null;    // or a link card { title, text, url, label }
 
+// === Progressive image loading ===
+// Nothing is downloaded with the page. Images are fetched one at a time, in the
+// background: first the opened project, then the first slide of the others.
+const preloadQueue = [];
+const preloaded = new Set();
+let preloading = false;
+
+function nextPreload() {
+    const url = preloadQueue.shift();
+    if (!url) {
+        preloading = false;
+        return;
+    }
+    preloading = true;
+    const img = new Image();
+    img.onload = img.onerror = nextPreload;
+    img.src = url;
+}
+
+function preload(urls, first = false) {
+    const fresh = urls.filter(url => url && !preloaded.has(url));
+    for (const url of fresh) preloaded.add(url);
+    if (first) preloadQueue.unshift(...fresh);
+    else preloadQueue.push(...fresh);
+    if (!preloading) nextPreload();
+}
+
+// Called once the game runs: the first picture of each project, quietly
+export function preloadFirstSlides() {
+    const connection = navigator.connection;
+    if (connection && connection.saveData) return; // respect data saver
+    preload(PROJECTS.map(p => p.slides[0] && p.slides[0].img));
+}
+
 function youtubeId(url) {
     if (url.includes("youtu.be/")) return url.split("youtu.be/")[1].split(/[?&]/)[0];
     if (url.includes("watch?v=")) return url.split("watch?v=")[1].split("&")[0];
@@ -35,6 +69,7 @@ function showLink(url, label) {
 
 function renderMedia(slide) {
     mediaEl.innerHTML = "";
+    mediaEl.classList.remove("loading");
 
     if (slide.video) {
         const id = youtubeId(slide.video);
@@ -53,9 +88,12 @@ function renderMedia(slide) {
         }
     } else if (slide.img) {
         const img = document.createElement("img");
-        img.src = slide.img;
         img.alt = tr(project.title);
+        mediaEl.classList.add("loading");
+        img.onload = img.onerror = () => mediaEl.classList.remove("loading");
+        img.src = slide.img;
         mediaEl.appendChild(img);
+        if (img.complete) mediaEl.classList.remove("loading");
     }
 }
 
@@ -132,6 +170,8 @@ export function openProject(id) {
     index = 0;
     viewer.classList.remove("hidden");
     render();
+    // the other slides of this project, ahead of everything else
+    preload(project.slides.slice(1).map(slide => slide.img), true);
 }
 
 // data: { title, text, url, label } (texts can be { en, fr })

@@ -5,7 +5,7 @@ import { Effects } from "./Effects.js";
 import { Sun, SUN_MAX_BOUNCES } from "./Sun.js";
 import { LINKS } from "./links.js";
 import { PROJECTS } from "./data/projects.js";
-import { openProject, openLink } from "./ProjectViewer.js";
+import { openProject, openLink, preloadFirstSlides } from "./ProjectViewer.js";
 import { t, onLangChange } from "./i18n.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
@@ -653,6 +653,9 @@ closeButton.addEventListener('click', () => {
     for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");
 
     resumeGame();
+
+    // project pictures: loaded little by little once everything else is running
+    setTimeout(preloadFirstSlides, 3000);
 });
 
 startGamePopup.appendChild(header);

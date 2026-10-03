@@ -1207,3 +1207,29 @@ input[type="checkbox"] {
         background: #ffd75e;
         color: #0a0a0a;
     }
+
+/* image still downloading */
+#viewer-media {
+    position: relative;
+}
+
+    #viewer-media.loading img {
+        opacity: 0;
+    }
+
+    #viewer-media.loading::after {
+        content: "";
+        position: absolute;
+        width: 34px;
+        height: 34px;
+        border: 3px solid #00ffcc33;
+        border-top-color: #00ffcc;
+        border-radius: 50%;
+        animation: viewerSpin 0.8s linear infinite;
+    }
+
+@keyframes viewerSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
