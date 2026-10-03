@@ -2,6 +2,8 @@ import { Folder } from "./Folder.js";
 import { ShootingStar, STAR_TYPES } from "./ShootingStar.js";
 import { CosmicObject, CANNON_INTERVAL } from "./CosmicObject.js";
 import { Effects } from "./Effects.js";
+import { Sun, SUN_MAX_BOUNCES } from "./Sun.js";
+import { LINKS } from "./links.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
 import { Shop, formatDust } from "./Shop.js";
@@ -32,7 +34,7 @@ window.addEventListener("resize", () => {
     background.onResize();
 
     // keep everything reachable
-    for (const body of [...folders, ...cosmicObjects]) {
+    for (const body of [...folders, ...cosmicObjects, sun]) {
         body.x = Math.min(Math.max(body.x, 30), canvas.width - 30);
         body.y = Math.min(Math.max(body.y, 30), canvas.height - 30);
     }
@@ -62,6 +64,7 @@ const shopButton = document.getElementById('shopButton');
 const folders = [];        // portfolio planets
 const cosmicObjects = [];  // planets, pulsars, holes, orbiters, cannons
 const stars = [];
+const sun = new Sun(center.x, center.y); // burns comets, links to LinkedIn
 const effects = new Effects();
 let bouncers = [];         // everything a star bounces on
 let deflectors = [];       // everything that bends trajectories
@@ -160,11 +163,29 @@ function drawAimPreview(cannon) {
             }
         }
 
+        // the sun burns the shot
+        let burned = false;
+        {
+            const cx = ox - sun.x;
+            const cy = oy - sun.y;
+            const proj = cx * dx + cy * dy;
+            const c = cx * cx + cy * cy - sun.radius * sun.radius;
+            const disc = proj * proj - c;
+            if (c > 0 && disc >= 0) {
+                const t = -proj - Math.sqrt(disc);
+                if (t > 0.01 && t < tMin) {
+                    tMin = t;
+                    hit = null;
+                    burned = true;
+                }
+            }
+        }
+
         if (tMin === Infinity || tMin < 0) break;
         ox += dx * tMin;
         oy += dy * tMin;
         ctx.lineTo(ox, oy);
-        if (!hit) break;
+        if (!hit || burned) break;
 
         const nx = (ox - hit.x) / (hit.radius + 3);
         const ny = (oy - hit.y) / (hit.radius + 3);
@@ -219,6 +240,27 @@ function onBounce(star, body, x, y) {
     }
 }
 
+// The sun burns a comet: it pays for the bounces made since its last burn,
+// then the comet comes back from the edge of the screen
+function burnStar(star) {
+    const gain = Math.min(star.bounces, SUN_MAX_BOUNCES) * star.def.value;
+    const crowded = stars.length > 80;
+
+    effects.burst(star.x, star.y, sun.color, crowded ? 5 : 14, 0.18);
+    sun.bump = 1;
+    if (gain > 0) {
+        stardust += gain;
+        effects.text(star.x, star.y - 14, "+" + gain, "#ffd75e");
+    }
+
+    if (star.def.ephemeral) {
+        star.dead = true; // the cannon will fire a new one
+    } else {
+        star.bounces = 0;
+        star.enterFromEdge(canvas.width, canvas.height);
+    }
+}
+
 // === Shop ===
 let placing = null; // { object, cost } while a cosmic object follows the cursor
 
@@ -265,6 +307,7 @@ function findCannonHandle(x, y) {
 }
 
 function findTarget(x, y) {
+    if (sun.isHovered(x, y)) return sun;
     for (const obj of cosmicObjects) if (obj.isHovered(x, y)) return obj;
     for (const folder of folders) if (folder.isHovered(x, y)) return folder;
     return null;
@@ -328,7 +371,8 @@ canvas.addEventListener("pointermove", e => {
 
     if (placing) return;
 
-    let hovering = false;
+    sun.hovered = sun.isHovered(pointer.x, pointer.y);
+    let hovering = sun.hovered;
     for (const folder of folders) {
         folder.hovered = folder.isHovered(pointer.x, pointer.y);
         hovering = hovering || folder.hovered;
@@ -349,7 +393,7 @@ function endDrag() {
     if (!dragged) return;
     dragged.dragging = false;
 
-    if (dragged instanceof Folder && !dragMoved) {
+    if (!dragMoved && dragged.openFolderPopup) { // planets, CV, sun
         SoundManager.play('click');
         dragged.openFolderPopup();
     }
@@ -421,10 +465,12 @@ function updateGame(now) {
     for (const folder of folders) {
         folder.update(deltaTime);
     }
+    sun.update(deltaTime);
 
     for (let i = stars.length - 1; i >= 0; i--) {
         const star = stars[i];
         star.update(deltaTime, w, h, bouncers, deflectors, onBounce);
+        if (!star.dead && sun.touches(star)) burnStar(star);
         if (star.dead) {
             effects.burst(star.x, star.y, star.color, 4, 0.08);
             stars[i] = stars[stars.length - 1];
@@ -433,6 +479,7 @@ function updateGame(now) {
     }
     ShootingStar.drawAll(ctx, stars);
 
+    sun.draw(ctx);
     for (const folder of folders) {
         folder.draw(ctx);
     }
@@ -482,7 +529,8 @@ content.innerHTML = `
 
   <p>
     <span style="color: #ffffff;"><strong>Shooting stars</strong></span> bounce on the planets.<br>
-    Every bounce earns <span style="color: #ffd75e;"><strong>stardust</strong></span>.
+    Every bounce earns <span style="color: #ffd75e;"><strong>stardust</strong></span>.<br>
+    The <span style="color: #ffb347;"><strong>sun</strong></span> burns them for a bonus: the more bounces before, the bigger!
   </p>
 
   <p>
@@ -512,16 +560,19 @@ closeButton.addEventListener('click', () => {
                 folders.push(new Folder(x, y, proj.name, proj.JsName, proj.planetStyle));
             });
 
-            folders.push(new Folder(center.x, center.y, "CV", null, {}, {
+            // Portfolio icon above the sun (the link lives in links.js)
+            folders.push(new Folder(center.x, center.y - radius * 0.5, "Portfolio", null, {}, {
                 icon: "assets/Items/CVBuffer.png",
                 popupData: {
-                    title: "CV",
+                    title: "Portfolio",
                     slides: [
-                        { type: "image", img: "assets/Items/CVBuffer.png", desc: "<br><a href='https://emilelarguier2.wixsite.com/game-designer-portfo' target='_blank'>Portfolio</a>" }
+                        { type: "image", img: "assets/Items/CVBuffer.png", desc: `<br><a href='${LINKS.portfolio}' target='_blank'>Open my portfolio</a>` }
                     ]
                 }
             }));
 
+            sun.x = center.x;
+            sun.y = center.y;
             rebuildBodies();
 
             for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");
