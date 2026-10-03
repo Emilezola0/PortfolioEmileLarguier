@@ -829,3 +829,112 @@ input[type="checkbox"] {
 
 
 
+
+/* === STARDUST (contemplative mode) === */
+#stardustDisplay {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 12px;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00ffcc;
+    color: #00ffcc;
+    z-index: 1000;
+    text-shadow: 0 0 4px #00ffcc;
+    pointer-events: none;
+}
+
+.stardust-icon {
+    color: #ffd75e;
+    text-shadow: 0 0 6px #ffd75e;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+#gameCanvas {
+    touch-action: none;
+}
+
+#shopButton {
+    background: #0a0a0a;
+    color: #ffd75e;
+    border: 2px solid #ffd75e;
+    padding: 8px 16px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    box-shadow: 0 0 10px #ffd75e;
+    text-transform: uppercase;
+}
+
+    #shopButton:hover {
+        background: #ffd75e;
+        color: #0a0a0a;
+    }
+
+.shop-popup {
+    width: 340px;
+    left: 200px;
+    top: 20px;
+}
+
+.shop-content {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.shop-section {
+    color: #00ffcc;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 10px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #333;
+}
+
+    .shop-section:first-child {
+        margin-top: 0;
+    }
+
+.shop-item-info {
+    display: grid;
+    grid-template-columns: 10px 1fr;
+    column-gap: 8px;
+    row-gap: 5px;
+    align-items: center;
+}
+
+.shop-item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.shop-item-desc {
+    grid-column: 2;
+    font-size: 6px;
+    line-height: 1.5;
+    color: #777;
+}
+
+.shop-item-cost {
+    color: #ffd75e;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.shop-item.shop-item-disabled,
+.shop-item.shop-item-disabled:hover {
+    background: #111;
+    border-color: #442222;
+    color: #666;
+    cursor: not-allowed;
+}
+
+    .shop-item.shop-item-disabled .shop-item-cost {
+        color: #ff7777;
+    }

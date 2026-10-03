@@ -1,17 +1,10 @@
-import { Void } from "./Void.js";
 import { Folder } from "./Folder.js";
-import { Mob } from "./Mob.js";
-import { Bullet } from "./Bullet.js";
-import { spawnManager } from "./spawnManager.js";
-import { Particle } from "./Particle.js";
-import { ScrapCollector } from "./ScrapCollector.js";
-import { Scrap } from "./Scrap.js";
-import { MobDeathParticle } from "./MobDeathParticle.js";
+import { ShootingStar, STAR_TYPES } from "./ShootingStar.js";
+import { CosmicObject } from "./CosmicObject.js";
+import { Effects } from "./Effects.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
-import { upgrades, upgradeFolder } from './upgrades.js';
-import { Shop } from "./Shop.js";
-import { CVBuffer } from "./CVBuffer.js";
+import { Shop, formatDust } from "./Shop.js";
 import { setupPauseMenu } from './pauseMenu.js';
 import { gamePaused } from './pauseMenu.js';
 
@@ -19,67 +12,23 @@ import { gamePaused } from './pauseMenu.js';
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Création d'un écran de fin (overlay)
-const gameOverScreen = document.createElement("div");
-gameOverScreen.style.position = "fixed";
-gameOverScreen.style.top = "0";
-gameOverScreen.style.left = "0";
-gameOverScreen.style.width = "100vw";
-gameOverScreen.style.height = "100vh";
-gameOverScreen.style.background = "rgba(0, 0, 0, 0.8)";
-gameOverScreen.style.display = "flex";
-gameOverScreen.style.flexDirection = "column";
-gameOverScreen.style.justifyContent = "center";
-gameOverScreen.style.alignItems = "center";
-gameOverScreen.style.color = "white";
-gameOverScreen.style.fontFamily = "Arial, sans-serif";
-gameOverScreen.style.fontSize = "24px";
-gameOverScreen.style.zIndex = "10";
-gameOverScreen.style.display = "none";
-
-const message = document.createElement("div");
-message.innerText = "Game Over: all folders were consumed by the void.";
-
-const playAgainBtn = document.createElement("button");
-playAgainBtn.innerText = "Play Again";
-playAgainBtn.style.marginTop = "20px";
-playAgainBtn.style.padding = "10px 20px";
-playAgainBtn.style.fontSize = "18px";
-playAgainBtn.style.border = "none";
-playAgainBtn.style.borderRadius = "8px";
-playAgainBtn.style.background = "#ffffff";
-playAgainBtn.style.color = "#000000";
-playAgainBtn.style.cursor = "pointer";
-playAgainBtn.style.transition = "background 0.3s";
-
-playAgainBtn.addEventListener("mouseenter", () => {
-    playAgainBtn.style.background = "#dddddd";
-});
-playAgainBtn.addEventListener("mouseleave", () => {
-    playAgainBtn.style.background = "#ffffff";
-});
-playAgainBtn.addEventListener("click", () => {
-    location.reload(); // ou tu pourrais relancer le setup sans recharger la page
-});
-
-gameOverScreen.appendChild(message);
-gameOverScreen.appendChild(playAgainBtn);
-document.body.appendChild(gameOverScreen);
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const voidZone = new Void(canvas.width / 2, canvas.height / 2);
+// Free space in the middle: everything orbits around it
+const center = { x: canvas.width / 2, y: canvas.height / 2 };
 
-// Game Over to false
-let isGameOver = false;
-// UPDATE
+const MAX_STARS = 250;          // hard cap, keeps the frame rate smooth
+const BOUNCE_SOUND_DELAY = 140; // ms between two bounce sounds
+
 let lastTime = performance.now();
+let running = false;
 
 window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    voidZone.setCenter(canvas.width / 2, canvas.height / 2);
+    center.x = canvas.width / 2;
+    center.y = canvas.height / 2;
     background.onResize();
 });
 
@@ -91,444 +40,360 @@ window.addEventListener('DOMContentLoaded', () => {
 // Background
 const background = new Background(canvas);
 
-// Toggle for sound visual
+// Sound
 const soundToggle = document.getElementById("soundToggle");
-let soundEnabled = soundToggle.checked;
-
-// Wave Display
-const waveDisplay = document.getElementById('waveDisplay');
-
-// Sound manager
 SoundManager.soundEnabled = soundToggle.checked;
-
 soundToggle.addEventListener("change", () => {
-    soundEnabled = soundToggle.checked;
     SoundManager.soundEnabled = soundToggle.checked;
 });
 
-const folders = [];
-const bullets = [];
-const mobs = [];
-let particles = [];
-let voidParticles = [];
-let totalNumberOfScraps = 0;
-let flyingScraps = [];
-let mobParticles = [];
-const items = [];
+// HUD
+const stardustDisplay = document.getElementById('stardustDisplay');
+const stardustValue = document.getElementById('stardustValue');
+const shopButton = document.getElementById('shopButton');
 
-// Mouse
-let mouseDown = false;
-let shopStartX = 0;
-let shopStartY = 0;
-let folderStartX = 0;
-let folderStartY = 0;
-let itemStartX = 0;
-let itemStartY = 0;
+// World
+const folders = [];        // portfolio planets
+const cosmicObjects = [];  // black holes, white holes, pulsars
+const stars = [];
+const effects = new Effects();
+let bouncers = [];         // everything a star bounces on
+let deflectors = [];       // everything that bends trajectories
 
+let stardust = 0;
+let shownStardust = -1;
+let lastBounceSound = 0;
+let lastShopRefresh = 0;
+let shopDirty = false;
 
-let collector = new ScrapCollector(canvas.width / 2 + 100, canvas.height / 2);
-let shop = null; // initialize after charging folders
+const starCounts = {};
+for (const type of Object.keys(STAR_TYPES)) starCounts[type] = 0;
 
-// Images
-const scrapImg = new Image();
-scrapImg.src = "assets/scrap.png";
-
-// Drag
-let draggedFolder = null;
-let draggedShop = false;
-let draggedItem = null;
-
-canvas.addEventListener("mousedown", e => {
-    if (collector.isHovered(e.clientX, e.clientY)) {
-        collector.dragging = true;
-        return;
-    }
-
-    for (const folder of folders) {
-        if (folder.isHovered(e.clientX, e.clientY)) {
-            draggedFolder = folder;
-            folderStartX = e.clientX;
-            folderStartY = e.clientY;
-            folder.handleClick({ x: e.clientX, y: e.clientY });
-            draggedFolder.dragging = false;
-            return;
-        }
-    }
-
-    for (const item of items) {
-        if (item.isHovered(e.clientX, e.clientY)) {
-            draggedItem = item;
-            itemStartX = e.clientX;
-            itemStartY = e.clientY;
-            item.handleClick({ x: e.clientX, y: e.clientY });
-            draggedItem.dragging = false;
-            return;
-        }
-    }
-
-    if (shop && shop.isHovered(e.clientX, e.clientY)) {
-        draggedShop = true;
-        shopStartX = e.clientX;
-        shopStartY = e.clientY;
-        shop.wasDragged = false;
-        return;
-    }
-
-    mouseDown = true;
-});
-
-canvas.addEventListener("mousemove", e => {
-
-    // Update mouse pos for each folders
-    for (const folder of folders) {
-        // check if mouse hover folder
-        folder.hovered = folder.isHovered(e.clientX, e.clientY);
-    }
-    for (const item of items) {
-        item.hovered = item.isHovered(e.clientX, e.clientY);
-    }
-
-    if (collector.dragging) {
-        collector.update(e.clientX, e.clientY);
-        return;
-    }
-    if (draggedFolder) {
-        // OLD ONE == draggedFolder.x += (e.clientX - draggedFolder.x) * 0.2;
-        // OLD ONE == draggedFolder.y += (e.clientY - draggedFolder.y) * 0.2;
-        const dx = e.clientX - folderStartX;
-        const dy = e.clientY - folderStartY;
-
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-            draggedFolder.dragging = true;
-        }
-
-        draggedFolder.updatePosition(e.movementX, e.movementY);
-        folderStartX = e.clientX;
-        folderStartY = e.clientY;
-    }
-
-    if (draggedItem) {
-        const dx = e.clientX - itemStartX;
-        const dy = e.clientY - itemStartY;
-
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-            draggedItem.dragging = true;
-        }
-
-        draggedItem.updatePosition(e.movementX, e.movementY);
-        itemStartX = e.clientX;
-        itemStartY = e.clientY;
-    }
-
-    if (draggedShop && shop && !draggedFolder) {
-        const dx = e.clientX - shopStartX;
-        const dy = e.clientY - shopStartY;
-
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-            shop.wasDragged = true;
-        }
-
-        shop.updatePosition(e.movementX, e.movementY);
-        shopStartX = e.clientX;
-        shopStartY = e.clientY;
-    }
-});
-
-canvas.addEventListener("mouseup", (e) => {
-    // Collector
-    collector.dragging = false;
-    // Folder
-    if (draggedFolder && draggedFolder.isHovered(e.clientX, e.clientY)) {
-        draggedFolder.handleMouseUp({ x: e.clientX, y: e.clientY });
-    }
-    draggedFolder = null;
-
-    // Items
-    if (draggedItem && draggedItem.isHovered(e.clientX, e.clientY)) {
-        draggedItem.handleMouseUp({ x: e.clientX, y: e.clientY });
-    }
-    draggedItem = null;
-
-    // Shop
-    if (shop && shop.isHovered(e.clientX, e.clientY)) {
-        shop.handleMouseUp();
-    }
-    draggedShop = false;
-
-    mouseDown = false;
-});
-
-function drawUI() {
-    if (spawnManager.isPaused() && !isGameOver) {
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "white";
-        ctx.font = "16px 'PressStart2P', monospace"; // Si tu veux garder ton style arcade
-        ctx.fillText(`Vague ${spawnManager.getWave()}`, canvas.width / 2, 10);
-    }
+function rebuildBodies() {
+    bouncers = [...folders, ...cosmicObjects.filter(o => o.def.bouncer)];
+    deflectors = cosmicObjects.filter(o => o.pull);
 }
 
-function updateWaveDisplay() {
-    const wave = spawnManager.getWave();
-    waveDisplay.textContent = `Vague ${wave}`;
-
-    // Reset des classes avant d'appliquer les nouvelles
-    waveDisplay.classList.remove('wave-tier-2', 'wave-tier-3');
-
-    // Ajout des classes selon le niveau de vague
-    if (wave >= 10 && wave < 20) {
-        waveDisplay.classList.add('wave-tier-2');
-    } else if (wave >= 20) {
-        waveDisplay.classList.add('wave-tier-3');
-    }
+function addStar(type) {
+    if (stars.length >= MAX_STARS) return;
+    const star = new ShootingStar(type, canvas.width, canvas.height);
+    stars.push(star);
+    starCounts[type]++;
+    effects.burst(star.x, star.y, star.color, 12, 0.2);
 }
 
+// Called by a star each time it hits a planet / bumper
+function onBounce(star, body, x, y) {
+    const gain = star.def.value * body.valueMult;
+    stardust += gain;
+    body.bump = 1;
 
-function updateGame() {
+    const crowded = stars.length > 80;
+    effects.burst(x, y, star.color, crowded ? 3 : 7);
+    if (!crowded || Math.random() < 0.3) {
+        effects.text(x, y - 10, "+" + gain, star.color);
+    }
+
+    if (star.def.prism) star.shiftHue();
+
+    if (star.def.warp && bouncers.length > 1) {
+        let target = body;
+        while (target === body) {
+            target = bouncers[Math.floor(Math.random() * bouncers.length)];
+        }
+        star.warpTo(target);
+        effects.beam(x, y, star.x, star.y, star.color);
+        effects.burst(star.x, star.y, star.color, crowded ? 3 : 7);
+        target.bump = 1;
+    }
+
     const now = performance.now();
-    const deltaTime = now - lastTime;
-    lastTime = now;
-    if (isGameOver) return; // <== stop loop here if game over
-    if (gamePaused) return; // stop loop here if pause
+    if (now - lastBounceSound > BOUNCE_SOUND_DELAY) {
+        lastBounceSound = now;
+        SoundManager.play('bounce');
+    }
+}
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+// === Shop ===
+let placing = null; // { object, cost } while a cosmic object follows the cursor
+
+const shop = new Shop({
+    getDust: () => stardust,
+    spend(amount) {
+        if (stardust < amount) return false;
+        stardust -= amount;
+        return true;
+    },
+    starCount: type => starCounts[type],
+    canAddStar: () => stars.length < MAX_STARS,
+    addStar,
+    cosmicCount: kind => cosmicObjects.filter(o => o.kind === kind).length,
+    startPlacing(kind, cost) {
+        placing = { object: new CosmicObject(kind, pointer.x, pointer.y), cost };
+        canvas.style.cursor = "crosshair";
+    }
+});
+
+shopButton.addEventListener("click", () => {
+    SoundManager.play('click');
+    shop.toggle();
+});
+
+window.addEventListener("keydown", e => {
+    if (e.key === "Escape" && placing) {
+        placing = null; // nothing was spent yet
+        canvas.style.cursor = "";
+    }
+});
+
+// === Pointer: drag planets / cosmic objects, click a planet to open it ===
+const pointer = { x: center.x, y: center.y };
+let dragged = null;
+let dragMoved = false;
+let dragStartX = 0;
+let dragStartY = 0;
+
+function findTarget(x, y) {
+    for (const obj of cosmicObjects) if (obj.isHovered(x, y)) return obj;
+    for (const folder of folders) if (folder.isHovered(x, y)) return folder;
+    return null;
+}
+
+canvas.addEventListener("pointerdown", e => {
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+
+    if (placing) {
+        if (stardust >= placing.cost) {
+            stardust -= placing.cost;
+            placing.object.x = pointer.x;
+            placing.object.y = pointer.y;
+            cosmicObjects.push(placing.object);
+            rebuildBodies();
+            effects.burst(pointer.x, pointer.y, placing.object.color, 24, 0.25);
+            SoundManager.play('powerUp');
+        }
+        placing = null;
+        canvas.style.cursor = "";
+        return;
+    }
+
+    dragged = findTarget(pointer.x, pointer.y);
+    if (dragged) {
+        dragged.dragging = true; // also freezes the orbit while held
+        dragMoved = false;
+        dragStartX = pointer.x;
+        dragStartY = pointer.y;
+        canvas.setPointerCapture(e.pointerId);
+    }
+});
+
+canvas.addEventListener("pointermove", e => {
+    const dx = e.clientX - pointer.x;
+    const dy = e.clientY - pointer.y;
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+
+    if (dragged) {
+        if (Math.hypot(pointer.x - dragStartX, pointer.y - dragStartY) > 3) dragMoved = true;
+        if (dragMoved) {
+            dragged.x += dx;
+            dragged.y += dy;
+        }
+        return;
+    }
+
+    if (placing) return;
+
+    let hovering = false;
+    for (const folder of folders) {
+        folder.hovered = folder.isHovered(pointer.x, pointer.y);
+        hovering = hovering || folder.hovered;
+    }
+    for (const obj of cosmicObjects) {
+        obj.hovered = obj.isHovered(pointer.x, pointer.y);
+        hovering = hovering || obj.hovered;
+    }
+    canvas.style.cursor = hovering ? "pointer" : "";
+});
+
+function endDrag() {
+    if (!dragged) return;
+    dragged.dragging = false;
+
+    if (dragged instanceof Folder) {
+        if (dragMoved) {
+            dragged.setOrbitFromPosition(center); // keeps orbiting from where it was dropped
+        } else {
+            SoundManager.play('click');
+            dragged.openFolderPopup();
+        }
+    }
+    dragged = null;
+}
+
+canvas.addEventListener("pointerup", endDrag);
+canvas.addEventListener("pointercancel", endDrag);
+
+// === HUD ===
+function updateHud(now) {
+    const value = Math.floor(stardust);
+    if (value !== shownStardust) {
+        shownStardust = value;
+        shopDirty = true;
+        stardustValue.textContent = formatDust(value);
+
+        // Reuse the tier styles as the collection grows
+        stardustDisplay.classList.toggle('wave-tier-2', value >= 1000 && value < 100000);
+        stardustDisplay.classList.toggle('wave-tier-3', value >= 100000);
+    }
+
+    if (shopDirty && shop.isOpen() && now - lastShopRefresh > 200) {
+        lastShopRefresh = now;
+        shopDirty = false;
+        shop.refresh();
+    }
+}
+
+function drawOrbits() {
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,0.05)";
+    ctx.setLineDash([2, 8]);
+    for (const folder of folders) {
+        if (folder.dragging) continue;
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, folder.orbitRadius, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function updateGame(now) {
+    if (gamePaused) { // stop loop here if pause
+        running = false;
+        return;
+    }
+    // clamp: no huge jump after a pause or a hidden tab
+    const deltaTime = Math.min(now - lastTime, 50);
+    lastTime = now;
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.clearRect(0, 0, w, h);
     background.update();
     background.draw();
-    voidZone.draw(ctx);
+    drawOrbits();
 
-    if (Math.random() < 0.3) {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = voidZone.radius + 30 + Math.random() * 40;
-        const x = voidZone.center.x + radius * Math.cos(angle);
-        const y = voidZone.center.y + radius * Math.sin(angle);
-        voidParticles.push(new Particle(x, y, "purple", angle, radius));
+    for (const obj of cosmicObjects) {
+        obj.update(deltaTime);
+        obj.draw(ctx);
     }
 
     for (const folder of folders) {
-        folder.update(mobs, bullets, voidZone.center, voidZone.radius, deltaTime);
+        folder.update(center, deltaTime);
+    }
+
+    for (let i = 0; i < stars.length; i++) {
+        stars[i].update(deltaTime, w, h, bouncers, deflectors, onBounce);
+    }
+    ShootingStar.drawAll(ctx, stars);
+
+    for (const folder of folders) {
         folder.draw(ctx);
     }
 
-    for (const item of items) {
-        item.update();
-        item.draw(ctx);
+    effects.update(deltaTime);
+    effects.draw(ctx);
+
+    if (placing) {
+        placing.object.x = pointer.x;
+        placing.object.y = pointer.y;
+        placing.object.update(deltaTime);
+        placing.object.draw(ctx, true);
+
+        ctx.fillStyle = "white";
+        ctx.font = "10px 'PressStart2P', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("Click to place - Esc to cancel", pointer.x, pointer.y - 40);
     }
 
-    for (let i = mobs.length - 1; i >= 0; i--) {
-        const mob = mobs[i];
-        mob.update(voidZone.center);
-        mob.draw(ctx);
+    updateHud(now);
 
-        if (voidZone.absorb(mob)) {
-            mobs.splice(i, 1);
-            voidZone.grow(mob.nutrition);
-            continue;
-        }
-
-        if (mob.isReadyToRemove()) {
-            mobs.splice(i, 1);
-        }
-    }
-
-    for (const p of voidParticles) {
-        p.update(voidZone.center);
-        p.draw(ctx);
-    }
-
-    for (let i = folders.length - 1; i >= 0; i--) {
-        const f = folders[i];
-        if (f.absorbing && f.opacity <= 0) {
-            folders.splice(i, 1);
-        }
-    }
-
-    if (folders.length === 0 && !isGameOver) {
-        isGameOver = true;
-        gameOverScreen.style.display = "flex";
-        return;
-    }
-
-    for (let i = bullets.length - 1; i >= 0; i--) {
-        const bullet = bullets[i];
-        bullet.update();
-        bullet.draw(ctx);
-
-        for (let j = mobs.length - 1; j >= 0; j--) {
-            const mob = mobs[j];
-
-            if (bullet.hits(mob)) {
-                mob.takeDamage(bullet.damage); // damage
-
-                for (let k = 0; k < 10; k++) {
-                    particles.push(new Particle(bullet.x, bullet.y, "orange"));
-                }
-
-                const shouldDestroy = bullet.registerHit(); // update hitcount and check pierce
-
-                if (shouldDestroy) {
-                    bullets.splice(i, 1); // destroy if pierce is finished
-                }
-
-                if (mob.hp <= 0) {
-                    mobs.splice(j, 1);
-                    SoundManager.play('explode');
-
-                    const scrapCount = mob.scrapNumber || 1;
-                    for (let s = 0; s < scrapCount; s++) {
-                        const angle = Math.random() * 2 * Math.PI;
-                        const radius = 10 + Math.random() * 20;
-                        const x = mob.x + mob.width / 2 + Math.cos(angle) * radius;
-                        const y = mob.y + mob.height / 2 + Math.sin(angle) * radius;
-                        flyingScraps.push(new Scrap(x, y));
-                    }
-                }
-
-                break; // important cuz we don't touch only one mob per tick
-            }
-        }
-    }
-
-    particles = particles.filter(p => p.life > 0);
-    particles.forEach(p => {
-        p.update();
-        p.draw(ctx);
-    });
-
-    voidParticles = voidParticles.filter(p => p.life > 0);
-
-    for (let i = flyingScraps.length - 1; i >= 0; i--) {
-        const scrap = flyingScraps[i];
-        const result = scrap.update(collector);
-
-        if (result === "collected") {
-            totalNumberOfScraps += 1;
-            flyingScraps.splice(i, 1);
-
-            SoundManager.play('scrapCollect');
-
-            for (let p = 0; p < 6; p++) {
-                const angle = Math.random() * Math.PI * 2;
-                const radius = Math.random() * 15;
-                const px = collector.x + Math.cos(angle) * radius;
-                const py = collector.y + Math.sin(angle) * radius;
-                particles.push(new Particle(px, py, "yellow"));
-            }
-
-            continue;
-        }
-        scrap.draw(ctx);
-    }
-
-    if (shop) {
-        if (shop.numberOfScraps !== totalNumberOfScraps) {
-            // Update if number are not the same
-            shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
-            shop.refreshShopPopup(); // update pop up if open
-        } else {
-            // Don't if it's not the same
-            shop.setContext(totalNumberOfScraps, folders); // player stats == score == number of scrap in possession and folders
-        }
-        //For now no particle === shop.update(particles);
-        shop.draw(ctx);
-        shop.drawConnectionLine(ctx);
-
-        const popup = document.getElementById("shop-popup"); // Look if pop-up is open
-        if (popup && !popup.classList.contains("hidden")) {
-            shop.drawConnectionWithScrapCollector(ctx, collector);
-        }
-    }
-
-    // Collector
-    collector.draw(ctx, totalNumberOfScraps);
-    // Spawn Manager
-    spawnManager.update(mobs, deltaTime);
-    spawnManager.draw(ctx);
-    // Wave
-    drawUI();
-    updateWaveDisplay();
-
-    // Mob particle Effect
-    mobParticles = mobParticles.filter(p => p.life > 0);
-    mobParticles.forEach(p => {
-        p.update();
-        p.draw(ctx);
-    });
-
-    requestAnimationFrame(updateGame); // <== continue que si pas Game Over
+    requestAnimationFrame(updateGame);
 }
 
-export function spendScrap(amount) {
-    if (totalNumberOfScraps >= amount) {
-        totalNumberOfScraps -= amount;
-        shop.setContext(totalNumberOfScraps, folders);
-        return true;
-    }
-    return false;
-}
-
-// Creer le pop-up de demarrage
+// Start pop-up
 const startGamePopup = document.createElement('div');
 startGamePopup.classList.add('popup-start-game');
 
 const header = document.createElement('div');
 header.classList.add('popup-header');
-header.innerHTML = 'Welcome to my game and portfolio!'; // Titre du pop-up
+header.innerHTML = 'Welcome to my portfolio!';
 
 const content = document.createElement('div');
 content.classList.add('popup-content');
 content.innerHTML = `
-  <p>Click on game elements with your mouse to move them.</p>
+  <p>Sit back and watch: nothing to lose here, the sky just gets busier.</p>
 
   <p>
-    The <span style="color: #00ccff;"><strong>planets</strong></span> are my projects, whether 
-    <span style="color: #ffcc00;"><strong>School</strong></span>, 
-    <span style="color: #ff66cc;"><strong>Personal</strong></span>, or 
+    The <span style="color: #00ccff;"><strong>planets</strong></span> are my projects, whether
+    <span style="color: #ffcc00;"><strong>School</strong></span>,
+    <span style="color: #ff66cc;"><strong>Personal</strong></span>, or
     <span style="color: #66ff66;"><strong>Jam</strong></span>.<br>
-    Click on a <span style="color: #00ccff;"><strong>planet</strong></span> to discover the project!
-  </p>
-
-  <p>As for the other game items:</p>
-  <p>
-    The <span style="color: #ffaa00;"><strong>bag</strong></span> lets you collect metal pieces to upgrade your planets<br>
-    The <span style="color: #ff00ff;"><strong>computer</strong></span> opens a store window linked to the nearest folder
+    Click on a <span style="color: #00ccff;"><strong>planet</strong></span> to discover the project,
+    or drag it to change its orbit!
   </p>
 
   <p>
-    <strong style="color: #ff4444;">Defeat condition:</strong><br>
-    All folders have been sucked into the <span style="color: #ff4444;"><strong>black hole</strong></span>!<br>
-    (If a folder has been sucked in, it is still available via a button on the right)
+    <span style="color: #ffffff;"><strong>Shooting stars</strong></span> bounce on the planets.<br>
+    Every bounce earns <span style="color: #ffd75e;"><strong>stardust</strong></span>.
+  </p>
+
+  <p>
+    Spend it in the <span style="color: #ff00ff;"><strong>shop</strong></span>: more stars, new kinds of stars,<br>
+    and <span style="color: #b48cff;"><strong>black holes</strong></span> to bend their trajectories.
   </p>
 `;
 
 const closeButton = document.createElement('button');
 closeButton.classList.add('popup-close-btn', 'shop-item', 'play-button');
-closeButton.innerHTML = 'PLAY';
+closeButton.innerHTML = 'START';
 
 closeButton.addEventListener('click', () => {
-    startGamePopup.style.display = 'none'; // Cache le pop-up lorsque le jeu commence
+    startGamePopup.style.display = 'none';
     SoundManager.play('click');
-    // Ici tu peux demarrer ton jeu apres la fermeture du pop-up
+
     fetch("public/projects.json")
         .then(res => res.json())
         .then(data => {
-            const radius = 300;
+            const radius = Math.max(140, Math.min(300, Math.min(canvas.width, canvas.height) / 2 - 80));
             const step = (2 * Math.PI) / data.length;
             data.forEach((proj, i) => {
                 const angle = i * step;
-                const x = canvas.width / 2 + radius * Math.cos(angle);
-                const y = canvas.height / 2 + radius * Math.sin(angle);
+                const x = center.x + radius * Math.cos(angle);
+                const y = center.y + radius * Math.sin(angle);
                 folders.push(new Folder(x, y, proj.name, proj.JsName, proj.planetStyle));
             });
 
-            // Assure-toi de bien initialiser le shop après avoir ajoute les dossiers
-            const firstFolder = folders[0];
-            const secondFolder = folders[1];
-            shop = new Shop(firstFolder.x + 50, firstFolder.y);
-            // Ajouter l'instance au tableau items
-            items.push(new CVBuffer(secondFolder.x + 50, firstFolder.y, folders, shop));
+            // CV on an inner orbit, turning the other way
+            folders.push(new Folder(center.x + radius * 0.42, center.y, "CV", null, {}, {
+                icon: "assets/Items/CVBuffer.png",
+                orbitDir: -1,
+                popupData: {
+                    title: "CV",
+                    slides: [
+                        { type: "image", img: "assets/Items/CVBuffer.png", desc: "<br><a href='https://emilelarguier2.wixsite.com/game-designer-portfo' target='_blank'>Portfolio</a>" }
+                    ]
+                }
+            }));
 
-            // Demarrer le jeu apres l'initialisation
-            updateGame();
+            for (const folder of folders) folder.setOrbitFromPosition(center);
+            rebuildBodies();
+
+            for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");
+
+            resumeGame();
         });
 });
 
@@ -539,5 +404,8 @@ startGamePopup.appendChild(closeButton);
 document.body.appendChild(startGamePopup);
 
 export function resumeGame() {
-    updateGame();
+    if (running) return;
+    running = true;
+    lastTime = performance.now();
+    requestAnimationFrame(updateGame);
 }

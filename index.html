@@ -9,15 +9,12 @@
 <body>
     <!-- GAME CANVAS -->
     <canvas id="gameCanvas"></canvas>
-    <!-- Wave Display-->
-    <div id="waveDisplay">Vague 1</div>
-    <div class="wave-slider-container hidden" id="waveSliderContainer">
-        <div class="wave-slider-header">Prochaine Wave</div>
-        <input type="range" id="waveSlider" min="0" value="0" disabled>
-    </div>
+    <!-- Stardust (currency) -->
+    <div id="stardustDisplay"><span class="stardust-icon">&#10022;</span> <span id="stardustValue">0</span></div>
     <!-- Pause Button and Sound Toggle -->
     <div id="menuControls">
         <button id="pauseButton">Pause</button>
+        <button id="shopButton">Shop</button>
 
         <div id="soundToggleContainer">
             <label class="toggle-wrapper">
@@ -46,7 +43,7 @@
     <!-- Shop Pop-up -->
     <div id="shop-popup" class="shop-popup hidden">
         <div class="shop-header">
-            <span>UPGRADE SHOP</span>
+            <span>STARDUST SHOP</span>
             <button class="close-btn" onclick="closeShop()">×</button>
         </div>
         <div class="shop-content" id="shop-content">
@@ -65,12 +62,8 @@
         <div class="popup-nav" id="popup-nav"></div>
         <div class="resize-handle"></div>
     </div>
-    <!-- Folder button when dead -->
-    <div id="folder-shortcuts" style="position: fixed; top: 100px; right: 10px; z-index: 999;"></div>
     <!-- Audio -->
     <audio id="scrapSound" src="assets/sounds/collect.mp3" preload="auto"></audio>
-    <audio id="projectileSound" src="assets/sounds/projectileSoundEffect.mp3" preload="auto"></audio>
-    <audio id="explodeSound" src="assets/sounds/objectExplodeSoundEffect.mp3" preload="auto"></audio>
     <audio id="clickSound" src="assets/sounds/clickCrt.mp3" preload="auto"></audio>
     <audio id="powerUp" src="assets/sounds/powerUp.mp3" preload="auto"></audio>
     <script type="module" src="js/main.js"></script>

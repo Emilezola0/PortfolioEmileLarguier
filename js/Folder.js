@@ -1,142 +1,79 @@
-import { Bullet } from "./Bullet.js";
 import { SoundManager } from './SoundManager.js';
+import { openCustomPopup } from './PopupManager.js';
+
+const BASE_ORBIT_SPEED = 0.00005; // rad / ms at 300px from the center
 
 export class Folder {
-    constructor(x, y, name, JsName, planetStyle = {}) {
+    // options.icon      : image drawn instead of a planet
+    // options.popupData : static popup content (instead of a project module)
+    constructor(x, y, name, JsName, planetStyle = {}, options = {}) {
         this.x = x;
         this.y = y;
         this.name = name;
         this.JsName = JsName;
-        this.cooldown = 0;
-        this.absorbing = false;
-        this.absorbAngle = 0;
         this.opacity = 1;
-        this.initialDistance = 0;
 
         // Planete Style
         this.planetStyle = {
             baseColor: planetStyle.baseColor || "#44f",
             coreColor: planetStyle.coreColor || "#ccf",
-            size: planetStyle.size || 16, // Rayon planète
-            floatAmplitude: planetStyle.floatAmplitude || 1.5, // Flottement haut-bas
-            floatSpeed: planetStyle.floatSpeed || 0.05, // Vitesse flottement
-            rotationSpeed: planetStyle.rotationSpeed || 0.01, // Rotation planète
-            ringRotationSpeed: planetStyle.ringRotationSpeed || 0.015 // Rotation anneau
+            size: planetStyle.size || 16, // Planet radius
+            floatAmplitude: planetStyle.floatAmplitude || 1.5,
+            floatSpeed: planetStyle.floatSpeed || 0.05,
+            rotationSpeed: planetStyle.rotationSpeed || 0.01,
+            ringRotationSpeed: planetStyle.ringRotationSpeed || 0.015
         };
-        this.craters = this.getCraters(planetStyle.size);
-        this.floatOffset = Math.random() * Math.PI * 2; // pour décaler chaque planète
+        this.craters = this.getCraters(this.planetStyle.size);
+        this.floatOffset = Math.random() * Math.PI * 2;
         this.planetRotation = 0;
         this.ringRotation = 0;
 
-        // Apparence & interaction
+        this.popupData = options.popupData || null;
+        this.icon = null;
+        if (options.icon) {
+            this.icon = new Image();
+            this.icon.src = options.icon;
+        }
+
+        // Bounce surface for shooting stars
+        this.radius = this.icon ? 18 : this.planetStyle.size * 1.2;
+        this.color = this.planetStyle.baseColor;
+        this.valueMult = 1;
+        this.bump = 0; // 1 -> 0 after a bounce (visual feedback)
+
+        // Orbit around the screen center
+        this.orbitRadius = 0;
+        this.orbitAngle = 0;
+        this.orbitDir = options.orbitDir || 1;
+
+        // Interaction
         this.dragging = false;
-        this.mouseDownPos = null;
-        this.width = 32;
-        this.height = 32;
-
-        // === STATS personnalisables ===
-        this.stats = {
-            atkSpeed: 0.8,        // shoot after atkSpeed seconds
-            atkDamage: 2,
-            range: 90,
-            bulletSpeed: 5,
-            pierce: 1,
-        };
-        this.activeBuffs = []; // bonus is in (%)
-
-        // === Upgrade Levels ===
-        this.upgradeLevels = {
-            atkSpeed: 0,
-            atkDamage: 0,
-            range: 0,
-            bulletSpeed: 0,
-            pierce: 0,
-        };
+        this.hovered = false;
     }
 
-    // methode create button when folder dead
-    createShortcutButton() {
-        const container = document.getElementById("folder-shortcuts");
-
-        const btn = document.createElement("button");
-        btn.classList.add("folder-shortcut-button");
-        btn.textContent = this.name;
-
-        btn.onclick = () => {
-            SoundManager.play('click');
-            this.openFolderPopup();
-        };
-
-        container.appendChild(btn);
+    // Recompute the orbit from the current position (spawn, end of a drag)
+    setOrbitFromPosition(center) {
+        const dx = this.x - center.x;
+        const dy = this.y - center.y;
+        this.orbitRadius = Math.hypot(dx, dy);
+        this.orbitAngle = Math.atan2(dy, dx);
     }
 
+    update(center, dt) {
+        const frames = dt / 16.67;
 
-    update(mobs, bullets, voidCenter, voidRadius, deltaTime) {
-        if (this.absorbing) {
-            this.absorbAngle += 0.05;
-            const dist = voidRadius - 10;
-            this.x = voidCenter.x + dist * Math.cos(this.absorbAngle);
-            this.y = voidCenter.y + dist * Math.sin(this.absorbAngle);
-            this.opacity -= 0.01;
-            return;
+        if (!this.dragging) {
+            const speed = BASE_ORBIT_SPEED * Math.sqrt(300 / Math.max(this.orbitRadius, 60));
+            this.orbitAngle += this.orbitDir * speed * dt;
+            this.x = center.x + this.orbitRadius * Math.cos(this.orbitAngle);
+            this.y = center.y + this.orbitRadius * Math.sin(this.orbitAngle);
         }
 
-        const dx = this.x - voidCenter.x;
-        const dy = this.y - voidCenter.y;
-        const d = Math.hypot(dx, dy);
-        if (d < voidRadius + 30 && !this.absorbing) {
-            this.absorbing = true;
-            this.absorbAngle = Math.random() * Math.PI * 2;
-            this.createShortcutButton();
-            return;
-        }
+        if (this.bump > 0) this.bump = Math.max(0, this.bump - dt / 350);
 
-        if (this.cooldown > 0) {
-            this.cooldown -= deltaTime;
-            return;
-        }
-
-        let closest = null;
-        let closestDist = Infinity;
-
-        for (const mob of mobs) {
-            const dx = mob.x - this.x;
-            const dy = mob.y - this.y;
-            const dist = Math.hypot(dx, dy);
-
-            if (dist < this.stats.range && dist < closestDist) {
-                closest = mob;
-                closestDist = dist;
-            }
-        }
-
-        if (closest) {
-            const dx = closest.x - this.x;
-            const dy = closest.y - this.y;
-            const dist = Math.hypot(dx, dy);
-
-            const normDx = dx / dist;
-            const normDy = dy / dist;
-
-            bullets.push(new Bullet(
-                this.x,
-                this.y,
-                normDx,
-                normDy,
-                this.stats.atkDamage,     // damage
-                this.stats.pierce,        // pierce
-                this.stats.bulletSpeed,    // speed projectile
-                self
-            ));
-            SoundManager.play('projectile');
-            this.cooldown = this.stats.atkSpeed * 1000;
-        }
-
-        // Planete rotation
-        this.planetRotation += this.planetStyle.rotationSpeed;
-        this.ringRotation += this.planetStyle.ringRotationSpeed;
-        this.floatOffset += this.planetStyle.floatSpeed;
-
+        this.planetRotation += this.planetStyle.rotationSpeed * frames;
+        this.ringRotation += this.planetStyle.ringRotationSpeed * frames;
+        this.floatOffset += this.planetStyle.floatSpeed * frames;
     }
 
     // draw planete
@@ -260,9 +197,6 @@ export class Folder {
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
 
-        // Appliquer une rotation si en absorption
-        if (this.absorbing) ctx.rotate(this.absorbAngle);
-
         // Scale depending of state
         let scale = 1.0;
         if (this.dragging) {
@@ -270,6 +204,7 @@ export class Folder {
         } else if (this.hovered) {
             scale = 1.1;
         }
+        scale += this.bump * 0.15;
         ctx.scale(scale, scale);
 
         // Shadow if drag or hover
@@ -277,64 +212,53 @@ export class Folder {
             ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
             ctx.shadowBlur = 20;
         } else if (this.hovered) {
-            // Halo lumineux avec un flou plus intense
-            ctx.shadowColor = "rgba(255, 255, 255, 0.75)"; // Blanc lumineux
-            ctx.shadowBlur = 30; // Plus de flou pour cr er l'effet de halo
-            ctx.shadowOffsetX = 0; // Pas de d calage horizontal
-            ctx.shadowOffsetY = 0; // Pas de d calage vertical
+            ctx.shadowColor = "rgba(255, 255, 255, 0.75)";
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         }
 
-        this.drawPlanet(ctx);
+        if (this.icon) {
+            if (this.icon.complete && this.icon.naturalWidth) {
+                ctx.drawImage(this.icon, -16, -16, 32, 32);
+            }
+        } else {
+            this.drawPlanet(ctx);
+        }
 
         ctx.restore();
 
-        // Dessiner le texte sous le dossier
-        if (!this.absorbing) {
-            ctx.fillStyle = "white";
-            ctx.font = "14px 'Press Start 2P', monospace"; // Mets le font ici directement
-            ctx.textAlign = "center";
-            ctx.fillText(this.name, this.x, this.y + 35);
+        // Bounce ripple
+        if (this.bump > 0) {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius + (1 - this.bump) * 26, 0, Math.PI * 2);
+            ctx.strokeStyle = this.color;
+            ctx.globalAlpha = this.bump * 0.8;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
         }
 
-        // Debogage : rayon de detection
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.stats.range, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.stroke();
+        // Name under the planet
+        ctx.fillStyle = "white";
+        ctx.font = "14px 'Press Start 2P', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(this.name, this.x, this.y + this.radius + 16);
     }
-
 
     isHovered(mx, my) {
-        const isHovered = mx >= this.x - this.width / 2 && mx <= this.x + this.width / 2 &&
-            my >= this.y - this.height / 2 && my <= this.y + this.height / 2;
-        this.hovered = isHovered; // update state 'hovered'
-        return isHovered;
-    }
-
-    handleClick(mouse) {
-        this.mouseDownPos = { x: mouse.x, y: mouse.y };
-    }
-
-    handleMouseUp(mouse) {
-        if (this.mouseDownPos) {
-            const dx = mouse.x - this.mouseDownPos.x;
-            const dy = mouse.y - this.mouseDownPos.y;
-            const moved = Math.hypot(dx, dy) > 2;
-            console.log(Math.hypot(dx, dy));
-
-            if (!moved) {
-                SoundManager.play('click');
-                this.openFolderPopup();
-            }
-        }
-        this.dragging = false;
-        this.mouseDownPos = null;
+        return Math.hypot(mx - this.x, my - this.y) < Math.max(this.radius, 18);
     }
 
     openFolderPopup() {
         const popup = document.getElementById("folder-popup");
         const container = document.getElementById("folder-content");
         const title = document.getElementById("folder-title");
+
+        if (this.popupData) {
+            openCustomPopup(this.popupData);
+            return;
+        }
 
         import(`./projects/project_${this.JsName}.js`)
             .then(module => {
@@ -406,27 +330,6 @@ export class Folder {
                 popup.classList.remove("hidden");
             });
     }
-
-    getBuffedStat(statKey) {
-        let baseStat = this[statKey] || 0;
-        let buffValue = 0;
-
-        if (this.activeBuffs) {
-            for (const buff of this.activeBuffs) {
-                if (buff.type === statKey) {
-                    buffValue += buff.value;
-                }
-            }
-        }
-
-        return baseStat * (1 + buffValue);
-    }
-
-
-    updatePosition(dx, dy) {
-        this.x += dx;
-        this.y += dy;
-    }
 }
 
 function convertToEmbedURL(url) {
@@ -477,13 +380,6 @@ window.makeFolderPopupDraggable = function () {
         document.body.style.userSelect = "";
     });
 };
-
-export function applyBuff(folder, buffType, buffValue) {
-    if (!folder.activeBuffs) {
-        folder.activeBuffs = [];
-    }
-    folder.activeBuffs.push({ type: buffType, value: buffValue });
-}
 
 window.makeFolderPopupDraggable();
 
