@@ -9,8 +9,8 @@ const TWO_PI = Math.PI * 2;
 
 export const STAR_TYPES = {
     classic: {
-        label: "Comet",
-        desc: "A classic shooting star",
+        label: { en: "Comet", fr: "Comète" },
+        desc: { en: "A classic shooting star", fr: "Une étoile filante classique" },
         rgb: [255, 255, 255],
         speed: 0.28,
         value: 1,
@@ -20,8 +20,8 @@ export const STAR_TYPES = {
         growth: 1.35
     },
     swift: {
-        label: "Swift",
-        desc: "Twice as fast, longer trail",
+        label: { en: "Swift", fr: "Rapide" },
+        desc: { en: "Twice as fast, longer trail", fr: "Deux fois plus rapide, longue traînée" },
         rgb: [95, 224, 255],
         speed: 0.56,
         value: 1,
@@ -31,8 +31,8 @@ export const STAR_TYPES = {
         growth: 1.4
     },
     sinuous: {
-        label: "Serpent",
-        desc: "Snakes through space, x2 stardust",
+        label: { en: "Serpent", fr: "Serpent" },
+        desc: { en: "Snakes through space, x2 stardust", fr: "Ondule dans l'espace, poussière x2" },
         rgb: [255, 122, 217],
         speed: 0.26,
         value: 2,
@@ -44,8 +44,8 @@ export const STAR_TYPES = {
         growth: 1.4
     },
     warp: {
-        label: "Warp",
-        desc: "Teleports to another planet on bounce, x3",
+        label: { en: "Warp", fr: "Warp" },
+        desc: { en: "Teleports to another planet on bounce, x3", fr: "Se téléporte vers une autre planète au rebond, x3" },
         rgb: [125, 255, 154],
         speed: 0.3,
         value: 3,
@@ -56,8 +56,8 @@ export const STAR_TYPES = {
         growth: 1.45
     },
     prism: {
-        label: "Prism",
-        desc: "Changes color on every bounce, x5",
+        label: { en: "Prism", fr: "Prisme" },
+        desc: { en: "Changes color on every bounce, x5", fr: "Change de couleur à chaque rebond, x5" },
         rgb: [255, 220, 120],
         speed: 0.34,
         value: 5,
@@ -72,7 +72,7 @@ export const STAR_TYPES = {
 // Fired by comet cannons: straight, predictable shots that leave the screen.
 // Every bounce of the same comet is worth one more stardust (chain).
 export const CANNON_STAR = {
-    label: "Cannon comet",
+    label: { en: "Cannon comet", fr: "Comète de canon" },
     rgb: [255, 170, 80],
     speed: 0.42,
     value: 1,

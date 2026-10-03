@@ -1,28 +1,28 @@
-// Canvas
-const canvas = document.getElementById("planetCanvas");
-const ctx = canvas.getContext("2d");
-
 // pauseMenu.js
 import { SoundManager } from './SoundManager.js';
 import { Planet } from './Planet.js';
 import { resumeGame } from './main.js';
+import { PROJECTS } from './data/projects.js';
+import { tr, applyStaticTexts } from './i18n.js';
+
+// Canvas
+const canvas = document.getElementById("planetCanvas");
+const ctx = canvas.getContext("2d");
 
 export let gamePaused = false;
 
-// On garde une référence des planètes générées pour pouvoir les supprimer apres
+// Planets shown while paused (removed on resume)
 let generatedPlanets = [];
 
-// Setup du pause menu
 export function setupPauseMenu() {
     const pauseButton = document.getElementById('pauseButton');
     const pauseOverlay = document.getElementById('pauseOverlay');
     const resumeButton = document.getElementById('resumeButton');
-    const planetContainer = document.getElementById('planetContainer');
     const pauseMenu = document.getElementById('pauseMenu');
 
-    // Création du bouton Restart
+    // Restart button
     const restartButton = document.createElement('button');
-    restartButton.textContent = 'Restart Game';
+    restartButton.dataset.i18n = 'restart';
     restartButton.classList.add('restart-button');
 
     restartButton.addEventListener('mouseover', () => {
@@ -40,76 +40,46 @@ export function setupPauseMenu() {
 
     if (pauseMenu) {
         pauseMenu.appendChild(restartButton);
+        applyStaticTexts();
     }
 
-    let projects = [];
-
-    // Fetch les projets une fois
-    fetch('public/projects.json')
-        .then(response => response.json())
-        .then(data => {
-            projects = data;
-        })
-        .catch(error => {
-            console.error("Erreur de chargement de projects.json :", error);
-        });
-
-    // Event : Cliquer sur Pause
     pauseButton.addEventListener('click', () => {
         SoundManager.play('click');
         gamePaused = true;
         pauseOverlay.classList.remove('hidden');
+        resizeCanvas();
 
-        // generate planet when pause
-        generatePlanets(projects);
+        generatePlanets();
         animatePlanets();
     });
 
-    // Event : Cliquer sur Reprendre
     resumeButton.addEventListener('click', () => {
         SoundManager.play('click');
         gamePaused = false;
         resumeGame();
         pauseOverlay.classList.add('hidden');
-
-        // Retire toutes les planetes quand on reprend
-        removeGeneratedPlanets();
+        generatedPlanets = [];
     });
 
-    function generatePlanets(projects) {
-        console.log("generate planet");
-
+    function generatePlanets() {
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
         const radius = 250;
 
-        const totalPlanets = projects.length;
-
-        projects.forEach((proj, index) => {
-            const angle = (index / totalPlanets) * 2 * Math.PI;
-
+        generatedPlanets = PROJECTS.map((proj, index) => {
+            const angle = (index / PROJECTS.length) * 2 * Math.PI;
             const x = centerX + Math.cos(angle) * radius;
             const y = centerY + Math.sin(angle) * radius;
 
-            const planet = new Planet(x, y, proj.name, proj.JsName, proj.planetStyle || {});
+            const planet = new Planet(x, y, tr(proj.name), proj.id, proj.planet || {});
             planet.orbitRadius = radius;
             planet.orbitAngle = angle;
-            generatedPlanets.push(planet);
+            return planet;
         });
-    }
-
-
-    function removeGeneratedPlanets() {
-        generatedPlanets.forEach(planet => {
-            if (planet && planet.remove) {
-                planet.remove(); // <- Assure-toi que ton objet Planet a une méthode remove() pour bien nettoyer
-            }
-        });
-        generatedPlanets = [];
     }
 
     function animatePlanets() {
-        if (!gamePaused) return; // Stop si pas en pause
+        if (!gamePaused) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -166,4 +136,4 @@ function resizeCanvas() {
     canvas.height = canvas.clientHeight;
 }
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Appel immediat au chargement
+resizeCanvas();

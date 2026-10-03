@@ -1,14 +1,14 @@
 import { SoundManager } from './SoundManager.js';
-import { openCustomPopup } from './PopupManager.js';
+import { tr } from './i18n.js';
 
 export class Folder {
-    // options.icon      : image drawn instead of a planet
-    // options.popupData : static popup content (instead of a project module)
-    constructor(x, y, name, JsName, planetStyle = {}, options = {}) {
+    // name            : string or { en, fr }
+    // options.icon    : image drawn instead of a planet
+    // options.onOpen  : called when the planet is clicked
+    constructor(x, y, name, planetStyle = {}, options = {}) {
         this.x = x;
         this.y = y;
         this.name = name;
-        this.JsName = JsName;
         this.opacity = 1;
 
         // Planete Style
@@ -26,7 +26,7 @@ export class Folder {
         this.planetRotation = 0;
         this.ringRotation = 0;
 
-        this.popupData = options.popupData || null;
+        this.onOpen = options.onOpen || null;
         this.icon = null;
         if (options.icon) {
             this.icon = new Image();
@@ -221,7 +221,7 @@ export class Folder {
         ctx.fillStyle = "white";
         ctx.font = "14px 'Press Start 2P', monospace";
         ctx.textAlign = "center";
-        ctx.fillText(this.name, this.x, this.y + this.radius + 16);
+        ctx.fillText(tr(this.name), this.x, this.y + this.radius + 16);
     }
 
     isHovered(mx, my) {
@@ -229,161 +229,11 @@ export class Folder {
     }
 
     openFolderPopup() {
-        const popup = document.getElementById("folder-popup");
-        const container = document.getElementById("folder-content");
-        const title = document.getElementById("folder-title");
+        if (this.onOpen) this.onOpen();
+    }
 
-        if (this.popupData) {
-            openCustomPopup(this.popupData);
-            return;
-        }
-
-        import(`./projects/project_${this.JsName}.js`)
-            .then(module => {
-                const data = module.getProjectContent();
-                let currentIndex = 0;
-
-                const updateSlide = () => {
-                    const slide = data.slides[currentIndex];
-
-                    let mediaHTML = "";
-                    if (slide.type === "image") {
-                        mediaHTML = `<img src="${slide.img}" class="popup-image" />`;
-                    } else if (slide.type === "video") {
-                        const embedURL = convertToEmbedURL(slide.video);
-
-                        if (embedURL.includes("youtube.com/embed/")) {
-                            mediaHTML = `
-                            <div class="video-container">
-                            <iframe
-                            src="${embedURL}"
-                            title="YouTube video"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen
-                            ></iframe>
-                            </div>
-                            `;
-                        } else {
-                            const videoId =
-                                (slide.video.includes("youtu.be/") && slide.video.split("youtu.be/")[1]) ||
-                                (slide.video.includes("watch?v=") && slide.video.split("watch?v=")[1].split("&")[0]);
-
-                            const thumbnailURL = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-
-                            mediaHTML = `
-                            <a href="${slide.video}" target="_blank" class="video-link video-thumbnail-wrapper">
-                            <img src="${thumbnailURL}" class="popup-image" alt="Video thumbnail" />
-                            <div class="video-play-button">Play</div>
-                            </a>`;
-                        }
-                    }
-
-                    container.innerHTML = `
-                    ${mediaHTML}
-                    <p>${slide.desc}</p>
-                    `;
-
-                    nav.innerHTML = `
-                    ${currentIndex > 0 ? '<button id="prev-slide"><-</button>' : ''}
-                    ${currentIndex < data.slides.length - 1 ? '<button id="next-slide">-></button>' : ''}
-                    `;
-
-                    if (currentIndex > 0)
-                        document.getElementById("prev-slide").onclick = () => { currentIndex--; updateSlide(); };
-                    if (currentIndex < data.slides.length - 1)
-                        document.getElementById("next-slide").onclick = () => { currentIndex++; updateSlide(); };
-                };
-
-                title.textContent = data.title;
-                const nav = document.getElementById("popup-nav");
-                SoundManager.play('click');
-                updateSlide();
-                popup.classList.remove("hidden");
-            })
-            .catch(err => {
-                title.textContent = "Erreur";
-                container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
-                document.getElementById("popup-nav").innerHTML = "";
-                popup.classList.remove("hidden");
-            });
+    updatePosition(dx, dy) {
+        this.x += dx;
+        this.y += dy;
     }
 }
-
-function convertToEmbedURL(url) {
-    if (!url) return "";
-
-    if (url.includes("youtu.be/")) {
-        const videoId = url.split("youtu.be/")[1];
-        return `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    if (url.includes("watch?v=")) {
-        const videoId = url.split("watch?v=")[1].split("&")[0];
-        return `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    // Not a YouTube URL? Return as-is (will fallback to a clickable link)
-    return url;
-}
-
-window.closeFolderPopup = function () {
-    SoundManager.play('click');
-    document.getElementById("folder-popup").classList.add("hidden");
-};
-
-window.makeFolderPopupDraggable = function () {
-    const popup = document.getElementById("folder-popup");
-    const header = document.querySelector(".popup-header");
-
-    let isDragging = false;
-    let offsetX, offsetY;
-
-    header.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        offsetX = e.clientX - popup.offsetLeft;
-        offsetY = e.clientY - popup.offsetTop;
-        document.body.style.userSelect = "none";
-    });
-
-    document.addEventListener("mousemove", (e) => {
-        if (isDragging) {
-            popup.style.left = `${e.clientX - offsetX}px`;
-            popup.style.top = `${e.clientY - offsetY}px`;
-        }
-    });
-
-    document.addEventListener("mouseup", () => {
-        isDragging = false;
-        document.body.style.userSelect = "";
-    });
-};
-
-window.makeFolderPopupDraggable();
-
-(function enablePopupResize() {
-    const popup = document.getElementById("folder-popup");
-    const resizeHandle = document.querySelector(".resize-handle");
-
-    let isResizing = false;
-
-    resizeHandle.addEventListener("mousedown", (e) => {
-        isResizing = true;
-        e.preventDefault();
-    });
-
-    window.addEventListener("mousemove", (e) => {
-        if (!isResizing) return;
-
-        const rect = popup.getBoundingClientRect();
-        const newWidth = e.clientX - rect.left;
-        const newHeight = e.clientY - rect.top;
-
-        popup.style.width = `${newWidth}px`;
-        popup.style.height = `${newHeight}px`;
-    });
-
-    window.addEventListener("mouseup", () => {
-        isResizing = false;
-    });
-})();

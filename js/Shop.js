@@ -1,6 +1,7 @@
 import { STAR_TYPES } from "./ShootingStar.js";
 import { COSMIC_TYPES } from "./CosmicObject.js";
 import { SoundManager } from './SoundManager.js';
+import { t, tr, onLangChange } from './i18n.js';
 
 export function formatDust(n) {
     if (n < 1000) return String(Math.floor(n));
@@ -20,6 +21,7 @@ export class Shop {
         this.container = document.getElementById("shop-content");
         this.rows = [];
         this.build();
+        onLangChange(() => this.build());
     }
 
     // --- Prices ---
@@ -41,14 +43,14 @@ export class Shop {
         this.container.innerHTML = "";
         this.rows = [];
 
-        this.addSection("Shooting stars");
+        this.addSection(t("shopStars"));
         for (const type of Object.keys(STAR_TYPES)) {
             const def = STAR_TYPES[type];
             const color = `rgb(${def.rgb.join(",")})`;
-            this.addRow(color, def.desc, {
+            this.addRow(color, tr(def.desc), {
                 label: () => {
                     const owned = this.game.starCount(type);
-                    return owned === 0 ? `Unlock ${def.label}` : `${def.label} x${owned}`;
+                    return owned === 0 ? `${t("unlock")} ${tr(def.label)}` : `${tr(def.label)} x${owned}`;
                 },
                 cost: () => this.starCost(type),
                 available: () => this.game.canAddStar(),
@@ -63,7 +65,7 @@ export class Shop {
 
         this.addCosmicRow("cannon");
 
-        this.addSection("Cosmic objects");
+        this.addSection(t("shopCosmic"));
         for (const kind of Object.keys(COSMIC_TYPES)) {
             if (kind !== "cannon") this.addCosmicRow(kind);
         }
@@ -74,8 +76,8 @@ export class Shop {
     // Objects placed on the map: paid when actually dropped
     addCosmicRow(kind) {
         const def = COSMIC_TYPES[kind];
-        this.addRow(def.color, def.desc, {
-            label: () => `${def.label} ${this.game.cosmicCount(kind)}/${def.max}`,
+        this.addRow(def.color, tr(def.desc), {
+            label: () => `${tr(def.label)} ${this.game.cosmicCount(kind)}/${def.max}`,
             cost: () => this.cosmicCost(kind),
             available: () => this.game.cosmicCount(kind) < def.max,
             buy: (cost) => {
@@ -131,7 +133,7 @@ export class Shop {
             const available = row.available();
             const cost = row.cost();
             row.name.textContent = row.label();
-            row.price.textContent = available ? `${formatDust(cost)} ✦` : "MAX";
+            row.price.textContent = available ? `${formatDust(cost)} ✦` : t("max");
             row.div.classList.toggle("shop-item-disabled", !available || dust < cost);
         }
     }

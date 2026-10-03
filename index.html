@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Portfolio Game</title>
+    <title>Emile Larguier - Portfolio</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/x-icon" href="favicone.ico">
 </head>
@@ -13,21 +13,22 @@
     <div id="stardustDisplay"><span class="stardust-icon">&#10022;</span> <span id="stardustValue">0</span></div>
     <!-- Pause Button and Sound Toggle -->
     <div id="menuControls">
-        <button id="pauseButton">Pause</button>
-        <button id="shopButton">Shop</button>
+        <button id="projectsButton" data-i18n="projects">Projects</button>
+        <button id="shopButton" data-i18n="shop">Shop</button>
+        <button id="pauseButton" data-i18n="pause">Pause</button>
 
         <div id="soundToggleContainer">
             <label class="toggle-wrapper">
                 <input type="checkbox" id="soundToggle" checked>
                 <span class="custom-toggle"></span>
-                <span class="toggle-label">Activate Sound</span>
+                <span class="toggle-label" data-i18n="sound">Sound</span>
             </label>
         </div>
     </div>
     <!-- Pause Overlay -->
     <div id="pauseOverlay" class="hidden">
         <div id="pauseContent">
-            <h1 class="pause-title">Pause Menu</h1>
+            <h1 class="pause-title" data-i18n="pauseTitle">Pause Menu</h1>
 
             <!-- Ajoute ici le vrai pauseMenu -->
             <div id="pauseMenu"></div>
@@ -37,30 +38,43 @@
             <div id="planetContainer"></div>
 
             <!-- Bouton Reprendre -->
-            <button id="resumeButton">Reprendre</button>
+            <button id="resumeButton" data-i18n="resume">Resume</button>
         </div>
     </div>
     <!-- Shop Pop-up -->
     <div id="shop-popup" class="shop-popup hidden">
         <div class="shop-header">
-            <span>STARDUST SHOP</span>
+            <span data-i18n="shopTitle">Stardust shop</span>
             <button class="close-btn" onclick="closeShop()">×</button>
         </div>
         <div class="shop-content" id="shop-content">
             <!-- Items added dynamically -->
         </div>
     </div>
-    <!-- Folder Pop-up -->
-    <div id="folder-popup" class="popup hidden">
-        <div class="popup-header">
-            <span id="folder-title">...</span>
-            <button class="popup-close-btn" onclick="closeFolderPopup()">×</button>
+    <!-- Language -->
+    <div id="langSwitch">
+        <button data-lang="fr">FR</button>
+        <button data-lang="en">EN</button>
+    </div>
+    <!-- Project window (content comes from js/data/projects.js) -->
+    <div id="viewer" class="viewer hidden">
+        <div class="viewer-window" role="dialog" aria-modal="true" aria-labelledby="viewer-title">
+            <div class="viewer-header">
+                <span id="viewer-title"></span>
+                <button id="viewer-close" data-i18n-title="viewerClose">&times;</button>
+            </div>
+            <nav id="viewer-tabs"></nav>
+            <div class="viewer-body">
+                <div id="viewer-stage">
+                    <button id="viewer-prev" class="viewer-arrow" data-i18n-title="viewerPrev">&#9664;</button>
+                    <div id="viewer-media"></div>
+                    <button id="viewer-next" class="viewer-arrow" data-i18n-title="viewerNext">&#9654;</button>
+                </div>
+                <div id="viewer-dots"></div>
+                <p id="viewer-text"></p>
+                <a id="viewer-link" class="hidden" target="_blank" rel="noopener"></a>
+            </div>
         </div>
-        <div class="popup-content" id="folder-content">
-            <!-- image + texte -->
-        </div>
-        <div class="popup-nav" id="popup-nav"></div>
-        <div class="resize-handle"></div>
     </div>
     <!-- Audio -->
     <audio id="scrapSound" src="assets/sounds/collect.mp3" preload="auto"></audio>

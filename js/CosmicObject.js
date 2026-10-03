@@ -15,8 +15,8 @@ const PLANET_COLORS = ["#6fa8ff", "#ff8fa3", "#8fe3a0", "#ffc46b", "#c79bff", "#
 
 export const COSMIC_TYPES = {
     planet: {
-        label: "Planet",
-        desc: "A simple planet, stars bounce on it",
+        label: { en: "Planet", fr: "Planète" },
+        desc: { en: "A simple planet, stars bounce on it", fr: "Une simple planète, les étoiles rebondissent dessus" },
         color: "#6fa8ff",
         radius: 14,
         bouncer: true,
@@ -26,8 +26,8 @@ export const COSMIC_TYPES = {
         max: 12
     },
     orbiter: {
-        label: "Orbiter",
-        desc: "Planets in its radius turn around it",
+        label: { en: "Orbiter", fr: "Orbiteur" },
+        desc: { en: "Planets in its radius turn around it", fr: "Les planètes dans son rayon tournent autour de lui" },
         color: "#7fffd4",
         radius: 10,
         range: 220,
@@ -37,8 +37,8 @@ export const COSMIC_TYPES = {
         max: 4
     },
     pulsar: {
-        label: "Pulsar",
-        desc: "A bumper worth double stardust",
+        label: { en: "Pulsar", fr: "Pulsar" },
+        desc: { en: "A bumper worth double stardust", fr: "Un bumper qui rapporte le double" },
         color: "#ffd75e",
         radius: 13,
         bouncer: true,
@@ -48,8 +48,8 @@ export const COSMIC_TYPES = {
         max: 6
     },
     blackhole: {
-        label: "Black Hole",
-        desc: "Pulls star trajectories toward it",
+        label: { en: "Black Hole", fr: "Trou noir" },
+        desc: { en: "Pulls star trajectories toward it", fr: "Attire la trajectoire des étoiles" },
         color: "#b48cff",
         radius: 16,
         pull: 22,
@@ -59,8 +59,8 @@ export const COSMIC_TYPES = {
         max: 5
     },
     whitehole: {
-        label: "White Hole",
-        desc: "Pushes star trajectories away",
+        label: { en: "White Hole", fr: "Trou blanc" },
+        desc: { en: "Pushes star trajectories away", fr: "Repousse la trajectoire des étoiles" },
         color: "#bff4ff",
         radius: 14,
         pull: -22,
@@ -71,8 +71,8 @@ export const COSMIC_TYPES = {
     },
     // listed with the shooting stars in the shop
     cannon: {
-        label: "Comet Cannon",
-        desc: "Fires comets where you aim it. Chained bounces pay more",
+        label: { en: "Comet Cannon", fr: "Canon à comètes" },
+        desc: { en: "Fires comets where you aim it. Chained bounces pay more", fr: "Tire des comètes là où vous visez. Les rebonds enchaînés rapportent plus" },
         color: "#ffaa50",
         radius: 12,
         baseCost: 80,

@@ -2,7 +2,8 @@
 // The sun burns every comet that touches it: the comet pays stardust for the
 // bounces it made since its last burn, then comes back from the edge of the screen.
 // Like the CV, clicking it opens a popup (link to LinkedIn).
-import { openCustomPopup } from './PopupManager.js';
+import { openLink } from './ProjectViewer.js';
+import { t } from './i18n.js';
 import { LINKS } from './links.js';
 
 const TWO_PI = Math.PI * 2;
@@ -53,11 +54,11 @@ export class Sun {
     }
 
     openFolderPopup() {
-        openCustomPopup({
-            title: "LinkedIn",
-            slides: [
-                { type: "text", desc: `<a href='${LINKS.linkedin}' target='_blank'>Open my LinkedIn</a>` }
-            ]
+        openLink({
+            title: t("linkedinTitle"),
+            text: t("linkedinText"),
+            url: LINKS.linkedin,
+            label: t("linkedinButton")
         });
     }
 

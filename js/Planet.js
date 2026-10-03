@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager.js';
+import { openProject } from './ProjectViewer.js';
 export class Planet {
     constructor(x, y, name, JsName, planetStyle = {}) {
         this.x = x;
@@ -25,14 +26,14 @@ export class Planet {
         this.planetStyle = {
             baseColor: planetStyle.baseColor || "#44f",
             coreColor: planetStyle.coreColor || "#ccf",
-            size: planetStyle.size || 16, // Rayon planète
+            size: planetStyle.size || 16, // Rayon plan?te
             floatAmplitude: planetStyle.floatAmplitude || 1.5, // Flottement haut-bas
             floatSpeed: planetStyle.floatSpeed || 0.05, // Vitesse flottement
-            rotationSpeed: planetStyle.rotationSpeed || 0.01, // Rotation planète
+            rotationSpeed: planetStyle.rotationSpeed || 0.01, // Rotation plan?te
             ringRotationSpeed: planetStyle.ringRotationSpeed || 0.015 // Rotation anneau
         };
         this.craters = this.getCraters(planetStyle.size);
-        this.floatOffset = Math.random() * Math.PI * 2; // pour décaler chaque planète
+        this.floatOffset = Math.random() * Math.PI * 2; // pour d?caler chaque plan?te
         this.planetRotation = 0;
         this.ringRotation = 0;
         this.opacity = 1;
@@ -227,7 +228,6 @@ export class Planet {
             const dx = mouse.x - this.mouseDownPos.x;
             const dy = mouse.y - this.mouseDownPos.y;
             const moved = Math.hypot(dx, dy) > 2;
-            console.log(Math.hypot(dx, dy));
 
             if (!moved) {
                 SoundManager.play('click');
@@ -239,78 +239,6 @@ export class Planet {
     }
 
     openFolderPopup() {
-        const popup = document.getElementById("folder-popup");
-        const container = document.getElementById("folder-content");
-        const title = document.getElementById("folder-title");
-
-        import(`./projects/project_${this.JsName}.js`)
-            .then(module => {
-                const data = module.getProjectContent();
-                let currentIndex = 0;
-
-                const updateSlide = () => {
-                    const slide = data.slides[currentIndex];
-
-                    let mediaHTML = "";
-                    if (slide.type === "image") {
-                        mediaHTML = `<img src="${slide.img}" class="popup-image" />`;
-                    } else if (slide.type === "video") {
-                        const embedURL = convertToEmbedURL(slide.video);
-
-                        if (embedURL.includes("youtube.com/embed/")) {
-                            mediaHTML = `
-                            <div class="video-container">
-                            <iframe
-                            src="${embedURL}"
-                            title="YouTube video"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen
-                            ></iframe>
-                            </div>
-                            `;
-                        } else {
-                            const videoId =
-                                (slide.video.includes("youtu.be/") && slide.video.split("youtu.be/")[1]) ||
-                                (slide.video.includes("watch?v=") && slide.video.split("watch?v=")[1].split("&")[0]);
-
-                            const thumbnailURL = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-
-                            mediaHTML = `
-                            <a href="${slide.video}" target="_blank" class="video-link video-thumbnail-wrapper">
-                            <img src="${thumbnailURL}" class="popup-image" alt="Video thumbnail" />
-                            <div class="video-play-button">Play</div>
-                            </a>`;
-                        }
-                    }
-
-                    container.innerHTML = `
-                    ${mediaHTML}
-                    <p>${slide.desc}</p>
-                    `;
-
-                    nav.innerHTML = `
-                    ${currentIndex > 0 ? '<button id="prev-slide"><-</button>' : ''}
-                    ${currentIndex < data.slides.length - 1 ? '<button id="next-slide">-></button>' : ''}
-                    `;
-
-                    if (currentIndex > 0)
-                        document.getElementById("prev-slide").onclick = () => { currentIndex--; updateSlide(); };
-                    if (currentIndex < data.slides.length - 1)
-                        document.getElementById("next-slide").onclick = () => { currentIndex++; updateSlide(); };
-                };
-
-                title.textContent = data.title;
-                const nav = document.getElementById("popup-nav");
-                SoundManager.play('click');
-                updateSlide();
-                popup.classList.remove("hidden");
-            })
-            .catch(err => {
-                title.textContent = "Erreur";
-                container.innerHTML = "<p>Erreur de chargement du dossier.</p>";
-                document.getElementById("popup-nav").innerHTML = "";
-                popup.classList.remove("hidden");
-            });
+        openProject(this.JsName);
     }
 }

@@ -4,6 +4,9 @@ import { CosmicObject, CANNON_INTERVAL } from "./CosmicObject.js";
 import { Effects } from "./Effects.js";
 import { Sun, SUN_MAX_BOUNCES } from "./Sun.js";
 import { LINKS } from "./links.js";
+import { PROJECTS } from "./data/projects.js";
+import { openProject, openLink } from "./ProjectViewer.js";
+import { t, onLangChange } from "./i18n.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
 import { Shop, formatDust } from "./Shop.js";
@@ -59,6 +62,7 @@ soundToggle.addEventListener("change", () => {
 const stardustDisplay = document.getElementById('stardustDisplay');
 const stardustValue = document.getElementById('stardustValue');
 const shopButton = document.getElementById('shopButton');
+const projectsButton = document.getElementById('projectsButton');
 
 // World
 const folders = [];        // portfolio planets
@@ -281,6 +285,12 @@ const shop = new Shop({
     }
 });
 
+// Direct access to the projects, without looking for a planet
+projectsButton.addEventListener("click", () => {
+    SoundManager.play('click');
+    openProject(PROJECTS[0].id);
+});
+
 shopButton.addEventListener("click", () => {
     SoundManager.play('click');
     shop.toggle();
@@ -497,7 +507,7 @@ function updateGame(now) {
         ctx.fillStyle = "white";
         ctx.font = "10px 'PressStart2P', monospace";
         ctx.textAlign = "center";
-        ctx.fillText("Click to place - Esc to cancel", pointer.x, pointer.y - 40);
+        ctx.fillText(t("placeHint"), pointer.x, pointer.y - 40);
     }
 
     updateHud(now);
@@ -511,74 +521,55 @@ startGamePopup.classList.add('popup-start-game');
 
 const header = document.createElement('div');
 header.classList.add('popup-header');
-header.innerHTML = 'Welcome to my portfolio!';
 
 const content = document.createElement('div');
 content.classList.add('popup-content');
-content.innerHTML = `
-  <p>Sit back and watch: nothing to lose here, the sky just gets busier.</p>
-
-  <p>
-    The <span style="color: #00ccff;"><strong>planets</strong></span> are my projects, whether
-    <span style="color: #ffcc00;"><strong>School</strong></span>,
-    <span style="color: #ff66cc;"><strong>Personal</strong></span>, or
-    <span style="color: #66ff66;"><strong>Jam</strong></span>.<br>
-    Click on a <span style="color: #00ccff;"><strong>planet</strong></span> to discover the project,
-    or drag it anywhere you like!
-  </p>
-
-  <p>
-    <span style="color: #ffffff;"><strong>Shooting stars</strong></span> bounce on the planets.<br>
-    Every bounce earns <span style="color: #ffd75e;"><strong>stardust</strong></span>.<br>
-    The <span style="color: #ffb347;"><strong>sun</strong></span> burns them for a bonus: the more bounces before, the bigger!
-  </p>
-
-  <p>
-    Spend it in the <span style="color: #ff00ff;"><strong>shop</strong></span>: more stars, new kinds of stars,<br>
-    <span style="color: #ffaa50;"><strong>comet cannons</strong></span> you can aim, and cosmic objects<br>
-    like <span style="color: #b48cff;"><strong>black holes</strong></span> to shape their trajectories.
-  </p>
-`;
 
 const closeButton = document.createElement('button');
 closeButton.classList.add('popup-close-btn', 'shop-item', 'play-button');
-closeButton.innerHTML = 'START';
+
+function renderStartPopup() {
+    header.textContent = t("introTitle");
+    content.innerHTML = t("introBody");
+    closeButton.textContent = t("start");
+}
+renderStartPopup();
+onLangChange(renderStartPopup);
 
 closeButton.addEventListener('click', () => {
     startGamePopup.style.display = 'none';
     SoundManager.play('click');
 
-    fetch("public/projects.json")
-        .then(res => res.json())
-        .then(data => {
-            const radius = Math.max(140, Math.min(300, Math.min(canvas.width, canvas.height) / 2 - 80));
-            const step = (2 * Math.PI) / data.length;
-            data.forEach((proj, i) => {
-                const angle = i * step;
-                const x = center.x + radius * Math.cos(angle);
-                const y = center.y + radius * Math.sin(angle);
-                folders.push(new Folder(x, y, proj.name, proj.JsName, proj.planetStyle));
-            });
+    // One planet per project (see data/projects.js)
+    const radius = Math.max(140, Math.min(300, Math.min(canvas.width, canvas.height) / 2 - 80));
+    const step = (2 * Math.PI) / PROJECTS.length;
+    PROJECTS.forEach((proj, i) => {
+        const angle = i * step;
+        const x = center.x + radius * Math.cos(angle);
+        const y = center.y + radius * Math.sin(angle);
+        folders.push(new Folder(x, y, proj.name, proj.planet, {
+            onOpen: () => openProject(proj.id)
+        }));
+    });
 
-            // Portfolio icon above the sun (the link lives in links.js)
-            folders.push(new Folder(center.x, center.y - radius * 0.5, "Portfolio", null, {}, {
-                icon: "assets/Items/CVBuffer.png",
-                popupData: {
-                    title: "Portfolio",
-                    slides: [
-                        { type: "image", img: "assets/Items/CVBuffer.png", desc: `<br><a href='${LINKS.portfolio}' target='_blank'>Open my portfolio</a>` }
-                    ]
-                }
-            }));
+    // Portfolio icon above the sun (the link lives in links.js)
+    folders.push(new Folder(center.x, center.y - radius * 0.5, "Portfolio", {}, {
+        icon: "assets/Items/CVBuffer.png",
+        onOpen: () => openLink({
+            title: t("portfolioTitle"),
+            text: t("portfolioText"),
+            url: LINKS.portfolio,
+            label: t("portfolioButton")
+        })
+    }));
 
-            sun.x = center.x;
-            sun.y = center.y;
-            rebuildBodies();
+    sun.x = center.x;
+    sun.y = center.y;
+    rebuildBodies();
 
-            for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");
+    for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");
 
-            resumeGame();
-        });
+    resumeGame();
 });
 
 startGamePopup.appendChild(header);
