@@ -4,6 +4,9 @@
 //  - orbiters          : make the planets inside their radius turn around them
 //  - black/white holes : bend star trajectories
 //  - cannons           : fire comets along an aim the player can rotate
+//  - launchers         : throw the planet dropped on them, it bounces around for a while
+//  - amplifiers        : each pass charges a comet (x2, x3...), spent on its next bounce
+//  - nebulae           : bounces made inside their radius are worth more
 
 const TWO_PI = Math.PI * 2;
 
@@ -69,12 +72,46 @@ export const COSMIC_TYPES = {
         growth: 1.8,
         max: 5
     },
+    launcher: {
+        label: { en: "Planet Launcher", fr: "Lance-planète" },
+        desc: { en: "Drop a planet on it: it flies and bounces around for a while", fr: "Déposez-y une planète : elle part rebondir un moment" },
+        color: "#ff7ad9",
+        radius: 20,
+        aimable: true,
+        launchSpeed: 0.26,   // px / ms
+        launchTime: 12000,   // ms
+        baseCost: 200,
+        growth: 1.8,
+        max: 3
+    },
+    amplifier: {
+        label: { en: "Amplifier", fr: "Amplificateur" },
+        desc: { en: "Each pass charges a comet (up to x5), spent on its next bounce", fr: "Chaque passage charge la comète (jusqu'à x5), dépensé au prochain rebond" },
+        color: "#9dff5e",
+        radius: 30,
+        maxMult: 5,
+        baseCost: 300,
+        growth: 2,
+        max: 4
+    },
+    nebula: {
+        label: { en: "Nebula", fr: "Nébuleuse" },
+        desc: { en: "Bounces inside its radius are worth double", fr: "Les rebonds dans son rayon rapportent le double" },
+        color: "#ff9f6b",
+        radius: 12,
+        range: 150,
+        bonus: 2,
+        baseCost: 400,
+        growth: 2,
+        max: 3
+    },
     // listed with the shooting stars in the shop
     cannon: {
         label: { en: "Comet Cannon", fr: "Canon à comètes" },
         desc: { en: "Fires comets where you aim it. Chained bounces pay more", fr: "Tire des comètes là où vous visez. Les rebonds enchaînés rapportent plus" },
         color: "#ffaa50",
         radius: 12,
+        aimable: true,
         baseCost: 80,
         growth: 1.7,
         max: 6
@@ -100,7 +137,7 @@ export class CosmicObject {
         this.hovered = false;
         this.dragging = false;
 
-        // Cannon only
+        // Cannon / launcher
         this.aim = -Math.PI / 4;
         this.fireTimer = 0;
         this.rotating = false;
@@ -121,7 +158,7 @@ export class CosmicObject {
 
     // Cannon: small handle used to rotate it
     isHandleHovered(mx, my) {
-        if (this.kind !== "cannon") return false;
+        if (!this.def.aimable) return false;
         const hx = this.x + Math.cos(this.aim) * CANNON_HANDLE;
         const hy = this.y + Math.sin(this.aim) * CANNON_HANDLE;
         return Math.hypot(mx - hx, my - hy) < 10;
@@ -152,6 +189,9 @@ export class CosmicObject {
         else if (this.kind === "pulsar") this.drawPulsar(ctx);
         else if (this.kind === "planet") this.drawPlanet(ctx);
         else if (this.kind === "orbiter") this.drawOrbiter(ctx, ghost);
+        else if (this.kind === "launcher") this.drawLauncher(ctx);
+        else if (this.kind === "amplifier") this.drawAmplifier(ctx);
+        else if (this.kind === "nebula") this.drawNebula(ctx, ghost);
         else this.drawCannon(ctx);
 
         ctx.restore();
@@ -227,6 +267,122 @@ export class CosmicObject {
             ctx.arc(0, 0, r * 1.5, start, start + 1.2);
             ctx.stroke();
         }
+    }
+
+    // Small round handle used to rotate cannons and launchers (ctx already rotated)
+    drawAimHandle(ctx, from) {
+        const handling = this.handleHovered || this.rotating;
+        ctx.strokeStyle = this.color;
+        ctx.globalAlpha *= handling ? 0.9 : 0.4;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 3]);
+        ctx.beginPath();
+        ctx.moveTo(from, 0);
+        ctx.lineTo(CANNON_HANDLE - 5, 0);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(CANNON_HANDLE, 0, 5, 0, TWO_PI);
+        if (handling) {
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+        ctx.stroke();
+    }
+
+    drawLauncher(ctx) {
+        const r = this.radius;
+
+        ctx.save();
+        ctx.rotate(this.aim);
+        ctx.save();
+        this.drawAimHandle(ctx, r + 2);
+        ctx.restore();
+
+        // chevrons showing the launch direction
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        const slide = (this.angle * 6) % 8;
+        for (let i = 0; i < 3; i++) {
+            const x = -10 + i * 8 + slide;
+            ctx.globalAlpha = 0.35 + 0.2 * i;
+            ctx.beginPath();
+            ctx.moveTo(x - 4, -6);
+            ctx.lineTo(x + 2, 0);
+            ctx.lineTo(x - 4, 6);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // pad
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.lineDashOffset = -this.angle * 20;
+        ctx.beginPath();
+        ctx.arc(0, 0, r + this.bump * 10, 0, TWO_PI);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "rgba(255,122,217,0.08)";
+        ctx.fill();
+    }
+
+    drawAmplifier(ctx) {
+        const r = this.radius;
+
+        ctx.fillStyle = "rgba(157,255,94,0.06)";
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, TWO_PI);
+        ctx.fill();
+
+        // spinning gate
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2 + this.bump * 2;
+        for (let i = 0; i < 4; i++) {
+            const start = this.angle * 1.5 + i * Math.PI / 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, r, start, start + 1);
+            ctx.stroke();
+        }
+
+        ctx.fillStyle = this.color;
+        ctx.font = "10px 'PressStart2P', monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("x+", 0, 1);
+        ctx.textBaseline = "alphabetic";
+
+        this.drawBounceRing(ctx);
+    }
+
+    drawNebula(ctx, ghost) {
+        const active = ghost || this.hovered || this.dragging;
+        const pulse = 1 + Math.sin(this.angle * 2) * 0.03;
+
+        const cloud = ctx.createRadialGradient(0, 0, 0, 0, 0, this.range * pulse);
+        cloud.addColorStop(0, "rgba(255,159,107,0.16)");
+        cloud.addColorStop(0.7, "rgba(255,110,160,0.07)");
+        cloud.addColorStop(1, "rgba(255,110,160,0)");
+        ctx.fillStyle = cloud;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.range * pulse, 0, TWO_PI);
+        ctx.fill();
+
+        ctx.strokeStyle = active ? "rgba(255,159,107,0.45)" : "rgba(255,159,107,0.15)";
+        ctx.setLineDash([3, 9]);
+        ctx.beginPath();
+        ctx.arc(0, 0, this.range, 0, TWO_PI);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // core
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 4 + this.bump * 3, 0, TWO_PI);
+        ctx.fill();
+        ctx.font = "8px 'PressStart2P', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("x" + this.def.bonus, 0, -10);
     }
 
     drawCannon(ctx) {

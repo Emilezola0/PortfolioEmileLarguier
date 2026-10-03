@@ -120,6 +120,8 @@ export class ShootingStar {
         this.def = STAR_TYPES[type] || CANNON_STAR;
         this.speed = this.def.ephemeral ? this.def.speed : this.def.speed * (0.9 + Math.random() * 0.2);
         this.dead = false;
+        this.mult = 1;      // charge given by amplifiers, spent on the next bounce
+        this.ampIn = null;  // amplifier the star is currently crossing
         this.bounces = 0;
         this.age = 0;
 
@@ -300,7 +302,13 @@ export class ShootingStar {
             ctx.strokeStyle = grad;
             ctx.stroke();
         }
-        ctx.drawImage(this.sprite, this.x - 20, this.y - 20);
+        if (this.mult > 1) {
+            // charged comets glow bigger
+            const size = 40 + (this.mult - 1) * 14;
+            ctx.drawImage(this.sprite, this.x - size / 2, this.y - size / 2, size, size);
+        } else {
+            ctx.drawImage(this.sprite, this.x - 20, this.y - 20);
+        }
     }
 
     // Draw every star in one pass (shared canvas state)

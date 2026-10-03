@@ -74,6 +74,10 @@ let bouncers = [];         // everything a star bounces on
 let deflectors = [];       // everything that bends trajectories
 let orbiters = [];         // make nearby planets turn around them
 let cannons = [];
+let aimables = [];         // cannons + launchers (rotation handle)
+let launchers = [];
+let amplifiers = [];
+let nebulae = [];
 
 let stardust = 0;
 let shownStardust = -1;
@@ -89,6 +93,69 @@ function rebuildBodies() {
     deflectors = cosmicObjects.filter(o => o.pull);
     orbiters = cosmicObjects.filter(o => o.def.spin);
     cannons = cosmicObjects.filter(o => o.kind === "cannon");
+    aimables = cosmicObjects.filter(o => o.def.aimable);
+    launchers = cosmicObjects.filter(o => o.kind === "launcher");
+    amplifiers = cosmicObjects.filter(o => o.kind === "amplifier");
+    nebulae = cosmicObjects.filter(o => o.kind === "nebula");
+}
+
+// A planet dropped on a launcher is thrown in the launcher's direction
+function tryLaunch(body) {
+    if (!bouncers.includes(body)) return;
+    for (const launcher of launchers) {
+        if (Math.hypot(body.x - launcher.x, body.y - launcher.y) > launcher.radius + 12) continue;
+
+        body.x = launcher.x;
+        body.y = launcher.y;
+        body.vx = Math.cos(launcher.aim) * launcher.def.launchSpeed;
+        body.vy = Math.sin(launcher.aim) * launcher.def.launchSpeed;
+        body.launchTime = launcher.def.launchTime;
+        launcher.bump = 1;
+        effects.burst(launcher.x, launcher.y, launcher.color, 20, 0.22);
+        SoundManager.play('powerUp');
+        return;
+    }
+}
+
+// Launched planets fly, bounce on the screen edges, then slow down and stop
+function moveLaunched(dt, w, h) {
+    for (const b of bouncers) {
+        if (!b.launchTime || b.launchTime <= 0) continue;
+        b.launchTime -= dt;
+
+        const slow = Math.min(1, b.launchTime / 2500); // ease out at the end
+        b.x += b.vx * slow * dt;
+        b.y += b.vy * slow * dt;
+
+        const m = b.radius + 6;
+        if (b.x < m && b.vx < 0) { b.x = m; b.vx = -b.vx; }
+        else if (b.x > w - m && b.vx > 0) { b.x = w - m; b.vx = -b.vx; }
+        if (b.y < m && b.vy < 0) { b.y = m; b.vy = -b.vy; }
+        else if (b.y > h - m && b.vy > 0) { b.y = h - m; b.vy = -b.vy; }
+    }
+}
+
+// Each pass through an amplifier charges the comet one more level
+function applyAmplifiers(star) {
+    for (const amp of amplifiers) {
+        const dx = star.x - amp.x;
+        const dy = star.y - amp.y;
+        const inside = dx * dx + dy * dy < amp.radius * amp.radius;
+
+        if (inside && star.ampIn !== amp) {
+            star.ampIn = amp;
+            if (star.mult < amp.def.maxMult) {
+                star.mult++;
+                amp.bump = 1;
+                if (stars.length <= 80) {
+                    effects.burst(star.x, star.y, amp.color, 4, 0.1);
+                    effects.text(star.x, star.y - 12, "x" + star.mult, amp.color);
+                }
+            }
+        } else if (!inside && star.ampIn === amp) {
+            star.ampIn = null;
+        }
+    }
 }
 
 // Planets inside an orbiter's radius turn around it
@@ -214,7 +281,19 @@ function addStar(type) {
 function onBounce(star, body, x, y) {
     // cannon comets: each bounce of the same shot is worth one more
     const chain = star.def.chain ? Math.min(star.bounces, star.def.maxChain) : 1;
-    const gain = star.def.value * chain * body.valueMult;
+    let gain = star.def.value * chain * body.valueMult;
+
+    // amplifier charge: spent now, back to level 1
+    gain *= star.mult;
+    star.mult = 1;
+
+    // bounces inside a nebula are worth more
+    for (const nebula of nebulae) {
+        if (Math.hypot(x - nebula.x, y - nebula.y) < nebula.range) {
+            gain *= nebula.def.bonus;
+            nebula.bump = 1;
+        }
+    }
     stardust += gain;
     body.bump = 1;
 
@@ -312,7 +391,7 @@ let dragStartX = 0;
 let dragStartY = 0;
 
 function findCannonHandle(x, y) {
-    for (const cannon of cannons) if (cannon.isHandleHovered(x, y)) return cannon;
+    for (const obj of aimables) if (obj.isHandleHovered(x, y)) return obj;
     return null;
 }
 
@@ -352,6 +431,7 @@ canvas.addEventListener("pointerdown", e => {
     dragged = findTarget(pointer.x, pointer.y);
     if (dragged) {
         dragged.dragging = true;
+        dragged.launchTime = 0; // catching a flying planet stops it
         dragMoved = false;
         dragStartX = pointer.x;
         dragStartY = pointer.y;
@@ -402,6 +482,7 @@ function endDrag() {
     }
     if (!dragged) return;
     dragged.dragging = false;
+    if (dragMoved) tryLaunch(dragged);
 
     if (!dragMoved && dragged.openFolderPopup) { // planets, CV, sun
         SoundManager.play('click');
@@ -412,7 +493,7 @@ function endDrag() {
 
 // Mouse wheel over a cannon: fine aiming
 canvas.addEventListener("wheel", e => {
-    for (const cannon of cannons) {
+    for (const cannon of aimables) {
         if (cannon.isHovered(e.clientX, e.clientY) || cannon.isHandleHovered(e.clientX, e.clientY)) {
             cannon.aim += Math.sign(e.deltaY) * 0.04;
             e.preventDefault();
@@ -460,6 +541,7 @@ function updateGame(now) {
     background.update();
     background.draw();
     applyOrbiters(deltaTime);
+    moveLaunched(deltaTime, w, h);
     fireCannons(deltaTime);
 
     for (const obj of cosmicObjects) {
@@ -480,6 +562,7 @@ function updateGame(now) {
     for (let i = stars.length - 1; i >= 0; i--) {
         const star = stars[i];
         star.update(deltaTime, w, h, bouncers, deflectors, onBounce);
+        if (amplifiers.length) applyAmplifiers(star);
         if (!star.dead && sun.touches(star)) burnStar(star);
         if (star.dead) {
             effects.burst(star.x, star.y, star.color, 4, 0.08);
