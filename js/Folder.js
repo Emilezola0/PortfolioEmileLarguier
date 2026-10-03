@@ -1,8 +1,6 @@
 import { SoundManager } from './SoundManager.js';
 import { openCustomPopup } from './PopupManager.js';
 
-const BASE_ORBIT_SPEED = 0.00005; // rad / ms at 300px from the center
-
 export class Folder {
     // options.icon      : image drawn instead of a planet
     // options.popupData : static popup content (instead of a project module)
@@ -41,33 +39,13 @@ export class Folder {
         this.valueMult = 1;
         this.bump = 0; // 1 -> 0 after a bounce (visual feedback)
 
-        // Orbit around the screen center
-        this.orbitRadius = 0;
-        this.orbitAngle = 0;
-        this.orbitDir = options.orbitDir || 1;
-
         // Interaction
         this.dragging = false;
         this.hovered = false;
     }
 
-    // Recompute the orbit from the current position (spawn, end of a drag)
-    setOrbitFromPosition(center) {
-        const dx = this.x - center.x;
-        const dy = this.y - center.y;
-        this.orbitRadius = Math.hypot(dx, dy);
-        this.orbitAngle = Math.atan2(dy, dx);
-    }
-
-    update(center, dt) {
+    update(dt) {
         const frames = dt / 16.67;
-
-        if (!this.dragging) {
-            const speed = BASE_ORBIT_SPEED * Math.sqrt(300 / Math.max(this.orbitRadius, 60));
-            this.orbitAngle += this.orbitDir * speed * dt;
-            this.x = center.x + this.orbitRadius * Math.cos(this.orbitAngle);
-            this.y = center.y + this.orbitRadius * Math.sin(this.orbitAngle);
-        }
 
         if (this.bump > 0) this.bump = Math.max(0, this.bump - dt / 350);
 

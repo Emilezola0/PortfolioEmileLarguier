@@ -61,23 +61,29 @@ export class Shop {
             });
         }
 
+        this.addCosmicRow("cannon");
+
         this.addSection("Cosmic objects");
         for (const kind of Object.keys(COSMIC_TYPES)) {
-            const def = COSMIC_TYPES[kind];
-            this.addRow(def.color, def.desc, {
-                label: () => `${def.label} ${this.game.cosmicCount(kind)}/${def.max}`,
-                cost: () => this.cosmicCost(kind),
-                available: () => this.game.cosmicCount(kind) < def.max,
-                buy: (cost) => {
-                    // paid when the object is actually placed on the map
-                    SoundManager.play('click');
-                    this.game.startPlacing(kind, cost);
-                    this.close();
-                }
-            });
+            if (kind !== "cannon") this.addCosmicRow(kind);
         }
 
         this.refresh();
+    }
+
+    // Objects placed on the map: paid when actually dropped
+    addCosmicRow(kind) {
+        const def = COSMIC_TYPES[kind];
+        this.addRow(def.color, def.desc, {
+            label: () => `${def.label} ${this.game.cosmicCount(kind)}/${def.max}`,
+            cost: () => this.cosmicCost(kind),
+            available: () => this.game.cosmicCount(kind) < def.max,
+            buy: (cost) => {
+                SoundManager.play('click');
+                this.game.startPlacing(kind, cost);
+                this.close();
+            }
+        });
     }
 
     addSection(title) {

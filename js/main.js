@@ -1,6 +1,6 @@
 import { Folder } from "./Folder.js";
 import { ShootingStar, STAR_TYPES } from "./ShootingStar.js";
-import { CosmicObject } from "./CosmicObject.js";
+import { CosmicObject, CANNON_INTERVAL } from "./CosmicObject.js";
 import { Effects } from "./Effects.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
@@ -15,7 +15,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Free space in the middle: everything orbits around it
+// Free space in the middle of the screen
 const center = { x: canvas.width / 2, y: canvas.height / 2 };
 
 const MAX_STARS = 250;          // hard cap, keeps the frame rate smooth
@@ -30,6 +30,12 @@ window.addEventListener("resize", () => {
     center.x = canvas.width / 2;
     center.y = canvas.height / 2;
     background.onResize();
+
+    // keep everything reachable
+    for (const body of [...folders, ...cosmicObjects]) {
+        body.x = Math.min(Math.max(body.x, 30), canvas.width - 30);
+        body.y = Math.min(Math.max(body.y, 30), canvas.height - 30);
+    }
 });
 
 // pause menu
@@ -54,11 +60,13 @@ const shopButton = document.getElementById('shopButton');
 
 // World
 const folders = [];        // portfolio planets
-const cosmicObjects = [];  // black holes, white holes, pulsars
+const cosmicObjects = [];  // planets, pulsars, holes, orbiters, cannons
 const stars = [];
 const effects = new Effects();
 let bouncers = [];         // everything a star bounces on
 let deflectors = [];       // everything that bends trajectories
+let orbiters = [];         // make nearby planets turn around them
+let cannons = [];
 
 let stardust = 0;
 let shownStardust = -1;
@@ -72,6 +80,101 @@ for (const type of Object.keys(STAR_TYPES)) starCounts[type] = 0;
 function rebuildBodies() {
     bouncers = [...folders, ...cosmicObjects.filter(o => o.def.bouncer)];
     deflectors = cosmicObjects.filter(o => o.pull);
+    orbiters = cosmicObjects.filter(o => o.def.spin);
+    cannons = cosmicObjects.filter(o => o.kind === "cannon");
+}
+
+// Planets inside an orbiter's radius turn around it
+function applyOrbiters(dt) {
+    for (const o of orbiters) {
+        for (const b of bouncers) {
+            if (b.dragging) continue;
+            const dx = b.x - o.x;
+            const dy = b.y - o.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 > o.range * o.range || d2 < 4) continue;
+
+            const a = o.def.spin * Math.sqrt(120 / Math.max(Math.sqrt(d2), 40)) * dt;
+            const cos = Math.cos(a);
+            const sin = Math.sin(a);
+            b.x = o.x + dx * cos - dy * sin;
+            b.y = o.y + dx * sin + dy * cos;
+        }
+    }
+}
+
+function fireCannons(dt) {
+    for (const cannon of cannons) {
+        cannon.fireTimer += dt;
+        if (cannon.fireTimer < CANNON_INTERVAL || cannon.dragging) continue;
+        cannon.fireTimer = 0;
+        cannon.bump = 1;
+
+        const star = new ShootingStar("cannon", canvas.width, canvas.height);
+        const muzzle = cannon.muzzle();
+        star.launch(muzzle.x, muzzle.y, cannon.aim);
+        stars.push(star);
+        effects.burst(muzzle.x, muzzle.y, star.color, 4, 0.1);
+    }
+}
+
+// Dotted preview of a cannon shot and its first bounces (ignores black / white holes)
+function drawAimPreview(cannon) {
+    const w = canvas.width;
+    const h = canvas.height;
+    const start = cannon.muzzle();
+    let ox = start.x;
+    let oy = start.y;
+    let dx = Math.cos(cannon.aim);
+    let dy = Math.sin(cannon.aim);
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,170,80,0.45)";
+    ctx.setLineDash([3, 7]);
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+
+    for (let bounce = 0; bounce < 8; bounce++) {
+        // distance to the screen edge
+        let tMin = Infinity;
+        if (dx > 0) tMin = Math.min(tMin, (w - ox) / dx);
+        else if (dx < 0) tMin = Math.min(tMin, -ox / dx);
+        if (dy > 0) tMin = Math.min(tMin, (h - oy) / dy);
+        else if (dy < 0) tMin = Math.min(tMin, -oy / dy);
+
+        // nearest planet on the way
+        let hit = null;
+        for (const b of bouncers) {
+            const r = b.radius + 3;
+            const cx = ox - b.x;
+            const cy = oy - b.y;
+            const proj = cx * dx + cy * dy;
+            const c = cx * cx + cy * cy - r * r;
+            if (c <= 0) continue; // starting inside
+            const disc = proj * proj - c;
+            if (disc < 0) continue;
+            const t = -proj - Math.sqrt(disc);
+            if (t > 0.01 && t < tMin) {
+                tMin = t;
+                hit = b;
+            }
+        }
+
+        if (tMin === Infinity || tMin < 0) break;
+        ox += dx * tMin;
+        oy += dy * tMin;
+        ctx.lineTo(ox, oy);
+        if (!hit) break;
+
+        const nx = (ox - hit.x) / (hit.radius + 3);
+        const ny = (oy - hit.y) / (hit.radius + 3);
+        const dot = dx * nx + dy * ny;
+        dx -= 2 * dot * nx;
+        dy -= 2 * dot * ny;
+    }
+
+    ctx.stroke();
+    ctx.restore();
 }
 
 function addStar(type) {
@@ -84,7 +187,9 @@ function addStar(type) {
 
 // Called by a star each time it hits a planet / bumper
 function onBounce(star, body, x, y) {
-    const gain = star.def.value * body.valueMult;
+    // cannon comets: each bounce of the same shot is worth one more
+    const chain = star.def.chain ? Math.min(star.bounces, star.def.maxChain) : 1;
+    const gain = star.def.value * chain * body.valueMult;
     stardust += gain;
     body.bump = 1;
 
@@ -149,9 +254,15 @@ window.addEventListener("keydown", e => {
 // === Pointer: drag planets / cosmic objects, click a planet to open it ===
 const pointer = { x: center.x, y: center.y };
 let dragged = null;
+let rotating = null; // cannon being aimed
 let dragMoved = false;
 let dragStartX = 0;
 let dragStartY = 0;
+
+function findCannonHandle(x, y) {
+    for (const cannon of cannons) if (cannon.isHandleHovered(x, y)) return cannon;
+    return null;
+}
 
 function findTarget(x, y) {
     for (const obj of cosmicObjects) if (obj.isHovered(x, y)) return obj;
@@ -178,9 +289,16 @@ canvas.addEventListener("pointerdown", e => {
         return;
     }
 
+    rotating = findCannonHandle(pointer.x, pointer.y);
+    if (rotating) {
+        rotating.rotating = true;
+        canvas.setPointerCapture(e.pointerId);
+        return;
+    }
+
     dragged = findTarget(pointer.x, pointer.y);
     if (dragged) {
-        dragged.dragging = true; // also freezes the orbit while held
+        dragged.dragging = true;
         dragMoved = false;
         dragStartX = pointer.x;
         dragStartY = pointer.y;
@@ -193,6 +311,11 @@ canvas.addEventListener("pointermove", e => {
     const dy = e.clientY - pointer.y;
     pointer.x = e.clientX;
     pointer.y = e.clientY;
+
+    if (rotating) {
+        rotating.aim = Math.atan2(pointer.y - rotating.y, pointer.x - rotating.x);
+        return;
+    }
 
     if (dragged) {
         if (Math.hypot(pointer.x - dragStartX, pointer.y - dragStartY) > 3) dragMoved = true;
@@ -212,25 +335,37 @@ canvas.addEventListener("pointermove", e => {
     }
     for (const obj of cosmicObjects) {
         obj.hovered = obj.isHovered(pointer.x, pointer.y);
-        hovering = hovering || obj.hovered;
+        obj.handleHovered = obj.isHandleHovered(pointer.x, pointer.y);
+        hovering = hovering || obj.hovered || obj.handleHovered;
     }
     canvas.style.cursor = hovering ? "pointer" : "";
 });
 
 function endDrag() {
+    if (rotating) {
+        rotating.rotating = false;
+        rotating = null;
+    }
     if (!dragged) return;
     dragged.dragging = false;
 
-    if (dragged instanceof Folder) {
-        if (dragMoved) {
-            dragged.setOrbitFromPosition(center); // keeps orbiting from where it was dropped
-        } else {
-            SoundManager.play('click');
-            dragged.openFolderPopup();
-        }
+    if (dragged instanceof Folder && !dragMoved) {
+        SoundManager.play('click');
+        dragged.openFolderPopup();
     }
     dragged = null;
 }
+
+// Mouse wheel over a cannon: fine aiming
+canvas.addEventListener("wheel", e => {
+    for (const cannon of cannons) {
+        if (cannon.isHovered(e.clientX, e.clientY) || cannon.isHandleHovered(e.clientX, e.clientY)) {
+            cannon.aim += Math.sign(e.deltaY) * 0.04;
+            e.preventDefault();
+            return;
+        }
+    }
+}, { passive: false });
 
 canvas.addEventListener("pointerup", endDrag);
 canvas.addEventListener("pointercancel", endDrag);
@@ -255,19 +390,6 @@ function updateHud(now) {
     }
 }
 
-function drawOrbits() {
-    ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.05)";
-    ctx.setLineDash([2, 8]);
-    for (const folder of folders) {
-        if (folder.dragging) continue;
-        ctx.beginPath();
-        ctx.arc(center.x, center.y, folder.orbitRadius, 0, Math.PI * 2);
-        ctx.stroke();
-    }
-    ctx.restore();
-}
-
 function updateGame(now) {
     if (gamePaused) { // stop loop here if pause
         running = false;
@@ -283,19 +405,31 @@ function updateGame(now) {
     ctx.clearRect(0, 0, w, h);
     background.update();
     background.draw();
-    drawOrbits();
+    applyOrbiters(deltaTime);
+    fireCannons(deltaTime);
 
     for (const obj of cosmicObjects) {
         obj.update(deltaTime);
         obj.draw(ctx);
     }
-
-    for (const folder of folders) {
-        folder.update(center, deltaTime);
+    for (const cannon of cannons) {
+        if (cannon.hovered || cannon.handleHovered || cannon.dragging || cannon.rotating) {
+            drawAimPreview(cannon);
+        }
     }
 
-    for (let i = 0; i < stars.length; i++) {
-        stars[i].update(deltaTime, w, h, bouncers, deflectors, onBounce);
+    for (const folder of folders) {
+        folder.update(deltaTime);
+    }
+
+    for (let i = stars.length - 1; i >= 0; i--) {
+        const star = stars[i];
+        star.update(deltaTime, w, h, bouncers, deflectors, onBounce);
+        if (star.dead) {
+            effects.burst(star.x, star.y, star.color, 4, 0.08);
+            stars[i] = stars[stars.length - 1];
+            stars.pop();
+        }
     }
     ShootingStar.drawAll(ctx, stars);
 
@@ -311,6 +445,7 @@ function updateGame(now) {
         placing.object.y = pointer.y;
         placing.object.update(deltaTime);
         placing.object.draw(ctx, true);
+        if (placing.object.kind === "cannon") drawAimPreview(placing.object);
 
         ctx.fillStyle = "white";
         ctx.font = "10px 'PressStart2P', monospace";
@@ -342,7 +477,7 @@ content.innerHTML = `
     <span style="color: #ff66cc;"><strong>Personal</strong></span>, or
     <span style="color: #66ff66;"><strong>Jam</strong></span>.<br>
     Click on a <span style="color: #00ccff;"><strong>planet</strong></span> to discover the project,
-    or drag it to change its orbit!
+    or drag it anywhere you like!
   </p>
 
   <p>
@@ -352,7 +487,8 @@ content.innerHTML = `
 
   <p>
     Spend it in the <span style="color: #ff00ff;"><strong>shop</strong></span>: more stars, new kinds of stars,<br>
-    and <span style="color: #b48cff;"><strong>black holes</strong></span> to bend their trajectories.
+    <span style="color: #ffaa50;"><strong>comet cannons</strong></span> you can aim, and cosmic objects<br>
+    like <span style="color: #b48cff;"><strong>black holes</strong></span> to shape their trajectories.
   </p>
 `;
 
@@ -376,10 +512,8 @@ closeButton.addEventListener('click', () => {
                 folders.push(new Folder(x, y, proj.name, proj.JsName, proj.planetStyle));
             });
 
-            // CV on an inner orbit, turning the other way
-            folders.push(new Folder(center.x + radius * 0.42, center.y, "CV", null, {}, {
+            folders.push(new Folder(center.x, center.y, "CV", null, {}, {
                 icon: "assets/Items/CVBuffer.png",
-                orbitDir: -1,
                 popupData: {
                     title: "CV",
                     slides: [
@@ -388,7 +522,6 @@ closeButton.addEventListener('click', () => {
                 }
             }));
 
-            for (const folder of folders) folder.setOrbitFromPosition(center);
             rebuildBodies();
 
             for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");

@@ -69,6 +69,20 @@ export const STAR_TYPES = {
     }
 };
 
+// Fired by comet cannons: straight, predictable shots that leave the screen.
+// Every bounce of the same comet is worth one more stardust (chain).
+export const CANNON_STAR = {
+    label: "Cannon comet",
+    rgb: [255, 170, 80],
+    speed: 0.42,
+    value: 1,
+    ephemeral: true,    // dies when leaving the screen
+    chain: true,
+    maxChain: 10,
+    maxBounces: 25,
+    maxAge: 20000
+};
+
 // Pre-rendered glow sprites, one per color (no shadowBlur at runtime)
 const glowCache = new Map();
 function getGlow(colorKey, rgb) {
@@ -103,8 +117,11 @@ function hueToRgb(h) {
 export class ShootingStar {
     constructor(type, w, h) {
         this.type = type;
-        this.def = STAR_TYPES[type];
-        this.speed = this.def.speed * (0.9 + Math.random() * 0.2);
+        this.def = STAR_TYPES[type] || CANNON_STAR;
+        this.speed = this.def.ephemeral ? this.def.speed : this.def.speed * (0.9 + Math.random() * 0.2);
+        this.dead = false;
+        this.bounces = 0;
+        this.age = 0;
 
         this.x = 0;
         this.y = 0;
@@ -165,6 +182,14 @@ export class ShootingStar {
         this.resetTrail();
     }
 
+    // Start from a precise point in a precise direction (cannon)
+    launch(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.heading = angle;
+        this.resetTrail();
+    }
+
     // Jump next to a body and leave it outward (warp stars)
     warpTo(body) {
         const angle = Math.random() * TWO_PI;
@@ -199,6 +224,15 @@ export class ShootingStar {
         this.x += vx * this.speed * dt;
         this.y += vy * this.speed * dt;
 
+        if (this.def.ephemeral) {
+            this.age += dt;
+            if (this.x < 0 || this.x > w || this.y < 0 || this.y > h ||
+                this.age > this.def.maxAge || this.bounces >= this.def.maxBounces) {
+                this.dead = true;
+                return;
+            }
+        }
+
         // --- Screen edges: soft bounce, no reward ---
         let reflected = false;
         if (this.x < 0 && vx < 0) { this.x = 0; vx = -vx; reflected = true; }
@@ -223,7 +257,8 @@ export class ShootingStar {
             if (dot >= 0) continue; // already leaving
 
             // reflect + tiny random spin so loops never repeat forever
-            const jitter = (Math.random() - 0.5) * 0.3;
+            // (cannon comets stay perfectly predictable)
+            const jitter = this.def.ephemeral ? 0 : (Math.random() - 0.5) * 0.3;
             const rx = vx - 2 * dot * nx;
             const ry = vy - 2 * dot * ny;
             const cos = Math.cos(jitter);
@@ -233,6 +268,7 @@ export class ShootingStar {
             this.x = b.x + nx * r;
             this.y = b.y + ny * r;
 
+            this.bounces++;
             onBounce(this, b, this.x, this.y);
             break;
         }
