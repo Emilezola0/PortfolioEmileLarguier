@@ -1,8 +1,8 @@
 // Sun.js
 // The sun burns every comet that touches it: the comet pays stardust for the
 // bounces it made since its last burn, then comes back from the edge of the screen.
-// Like the CV, clicking it opens a popup (link to LinkedIn).
-import { openLink } from './ProjectViewer.js';
+// Clicking it opens the "about me" card: projects, portfolio and LinkedIn.
+import { openCard, openOverview } from './ProjectViewer.js';
 import { t } from './i18n.js';
 import { LINKS } from './links.js';
 
@@ -33,7 +33,6 @@ export class Sun {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.name = "LinkedIn";
         this.radius = 26;
         this.color = "#ffb347";
         this.time = Math.random() * 1000;
@@ -54,11 +53,14 @@ export class Sun {
     }
 
     openFolderPopup() {
-        openLink({
-            title: t("linkedinTitle"),
-            text: t("linkedinText"),
-            url: LINKS.linkedin,
-            label: t("linkedinButton")
+        openCard({
+            title: t("aboutTitle"),
+            text: t("aboutText"),
+            actions: [
+                { label: t("introSeeProjects"), onClick: openOverview, primary: true },
+                { label: t("portfolioButton"), url: LINKS.portfolio },
+                { label: t("linkedinButton"), url: LINKS.linkedin }
+            ]
         });
     }
 
@@ -113,6 +115,6 @@ export class Sun {
         ctx.fillStyle = "white";
         ctx.font = "14px 'Press Start 2P', monospace";
         ctx.textAlign = "center";
-        ctx.fillText(this.name, this.x, this.y + this.radius + 26);
+        ctx.fillText(t("sunName"), this.x, this.y + this.radius + 26);
     }
 }

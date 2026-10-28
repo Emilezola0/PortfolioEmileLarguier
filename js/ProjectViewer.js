@@ -23,6 +23,7 @@ const dotsEl = document.getElementById("viewer-dots");
 const textEl = document.getElementById("viewer-text");
 const linkEl = document.getElementById("viewer-link");
 const footerEl = document.getElementById("viewer-footer");
+const actionsEl = document.getElementById("viewer-actions");
 const prevProjectBtn = document.getElementById("viewer-prev-project");
 const nextProjectBtn = document.getElementById("viewer-next-project");
 const closeBtn = document.getElementById("viewer-close");
@@ -30,7 +31,7 @@ const closeBtn = document.getElementById("viewer-close");
 let view = "overview"; // "overview" | "project" | "card"
 let project = null;    // project being shown
 let index = 0;         // current slide
-let card = null;       // link card { title, text, url, label }
+let card = null;       // card { title, text, actions: [{ label, url | onClick, primary }] }
 
 // === Progressive image loading ===
 // Nothing is downloaded with the page. Images are fetched one at a time, in the
@@ -221,6 +222,7 @@ function render() {
     show(stageEl, view === "project");
     show(footerEl, view === "project" && PROJECTS.length > 1);
     show(linkEl, false);
+    show(actionsEl, view === "card");
     backBtn.textContent = "← " + t("allProjects");
 
     if (view === "overview") {
@@ -231,7 +233,27 @@ function render() {
         titleEl.textContent = tr(card.title);
         show(dotsEl, false);
         textEl.textContent = tr(card.text);
-        showLink(card.url, tr(card.label));
+        renderActions();
+    }
+}
+
+function renderActions() {
+    actionsEl.innerHTML = "";
+    for (const action of card.actions || []) {
+        const el = document.createElement(action.url ? "a" : "button");
+        el.className = "viewer-action" + (action.primary ? " primary" : "");
+        el.textContent = tr(action.label) + (action.url ? " \u2197" : "");
+        if (action.url) {
+            el.href = action.url;
+            el.target = "_blank";
+            el.rel = "noopener";
+        } else {
+            el.addEventListener("click", () => {
+                SoundManager.play('click');
+                action.onClick();
+            });
+        }
+        actionsEl.appendChild(el);
     }
 }
 
@@ -271,14 +293,23 @@ export function openProject(id) {
     preload(project.slides.slice(1).map(slide => slide.img), true);
 }
 
-// data: { title, text, url, label } (texts can be { en, fr })
-export function openLink(data) {
+// data: { title, text, actions: [{ label, url | onClick, primary }] } (texts can be { en, fr })
+export function openCard(data) {
     view = "card";
     project = null;
     card = data;
     mediaEl.innerHTML = "";
     setHash("");
     open();
+}
+
+// shortcut for a card with a single link: { title, text, url, label }
+export function openLink(data) {
+    openCard({
+        title: data.title,
+        text: data.text,
+        actions: [{ label: data.label, url: data.url, primary: true }]
+    });
 }
 
 export function closeViewer() {

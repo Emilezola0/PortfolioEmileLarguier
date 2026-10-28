@@ -450,6 +450,12 @@ canvas.addEventListener("pointermove", e => {
         return;
     }
 
+    // no button pressed any more (release missed: window change, popup...): drop it
+    if ((dragged || rotating) && e.buttons === 0) {
+        cancelDrag();
+        return;
+    }
+
     if (dragged) {
         if (Math.hypot(pointer.x - dragStartX, pointer.y - dragStartY) > 3) dragMoved = true;
         if (dragMoved) {
@@ -491,6 +497,24 @@ function endDrag() {
     dragged = null;
 }
 
+// Stop holding anything, without opening it
+function cancelDrag() {
+    if (rotating) {
+        rotating.rotating = false;
+        rotating = null;
+    }
+    if (dragged) {
+        dragged.dragging = false;
+        dragged = null;
+    }
+}
+
+// Leaving the page (other tab, other window) releases what was held
+window.addEventListener("blur", cancelDrag);
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") cancelDrag();
+});
+
 // Mouse wheel over a cannon: fine aiming
 canvas.addEventListener("wheel", e => {
     for (const cannon of aimables) {
@@ -503,7 +527,8 @@ canvas.addEventListener("wheel", e => {
 }, { passive: false });
 
 canvas.addEventListener("pointerup", endDrag);
-canvas.addEventListener("pointercancel", endDrag);
+canvas.addEventListener("pointercancel", cancelDrag);
+canvas.addEventListener("lostpointercapture", cancelDrag);
 
 // === HUD ===
 function updateHud(now) {

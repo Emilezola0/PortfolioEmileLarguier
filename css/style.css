@@ -1627,3 +1627,45 @@ input[type="checkbox"] {
     pointer-events: none;
     z-index: 900;
 }
+
+/* === CARD ACTIONS (sun / about) === */
+#viewer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 18px 0 6px;
+}
+
+    #viewer-actions.hidden {
+        display: none;
+    }
+
+.viewer-action {
+    display: inline-block;
+    padding: 12px 16px;
+    background: #111;
+    color: #ffd75e;
+    border: 2px solid #ffd75e;
+    border-radius: 6px;
+    font-family: 'PressStart2P', monospace;
+    font-size: 10px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .viewer-action:hover {
+        background: #ffd75e;
+        color: #0a0a0a;
+    }
+
+    .viewer-action.primary {
+        background: #00ffcc;
+        color: #0a0a0a;
+        border-color: #00ffcc;
+        box-shadow: 0 0 12px #00ffcc77;
+    }
+
+        .viewer-action.primary:hover {
+            box-shadow: 0 0 20px #00ffccbb;
+        }
