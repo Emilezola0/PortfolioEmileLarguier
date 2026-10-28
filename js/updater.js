@@ -3,13 +3,14 @@
 //  - version.json is rewritten by GitHub Pages on every deploy (commit id + date).
 //  - The page checks it regularly: when a new version is online, a popup offers
 //    to update. "Update" downloads fresh copies of the site files, then reloads.
-//  - If an old cached file breaks the page right after a deploy, the same
-//    repair runs automatically (once).
+//  - When a visitor comes back after a deploy, or an old cached file breaks the
+//    page, the same refresh runs automatically (once), so CSS and JS always match.
 // Classic script (not a module) so it still works when a module fails to load.
 (function () {
     const VERSION_URL = "version.json";
     const CHECK_EVERY = 3 * 60 * 1000; // ms
     const REPAIR_KEY = "portfolio-repaired";
+    const SEEN_KEY = "portfolio-version"; // last version this browser displayed
 
     const TEXTS = {
         en: { message: "A new version of the site is available", update: "Update", later: "Later" },
@@ -67,6 +68,7 @@
         update.className = "update-now";
         update.textContent = txt.update;
         update.addEventListener("click", () => {
+            remember(version);
             update.disabled = true;
             update.textContent = "...";
             hardRefresh();
@@ -91,10 +93,23 @@
             if (currentVersion === null) {
                 currentVersion = data.version;
                 showVersionTag(data);
+                // the site changed since this browser's last visit: its cached
+                // files (CSS, JS) may be old, so fetch fresh ones once
+                const seen = recall();
+                remember(data.version);
+                if (seen && seen !== data.version) repairOnce();
             } else if (data.version !== currentVersion) {
                 showToast(data.version);
             }
         });
+    }
+
+    function recall() {
+        try { return localStorage.getItem(SEEN_KEY); } catch (e) { return null; }
+    }
+
+    function remember(version) {
+        try { localStorage.setItem(SEEN_KEY, version); } catch (e) { }
     }
 
     function showVersionTag(data) {
