@@ -5,6 +5,9 @@
     <title>Emile Larguier - Portfolio</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/x-icon" href="favicone.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- update popup + automatic repair after a deploy (must load before the modules) -->
+    <script src="js/updater.js"></script>
 </head>
 <body>
     <!-- GAME CANVAS -->
@@ -16,6 +19,7 @@
         <button id="projectsButton" data-i18n="projects">Projects</button>
         <button id="shopButton" data-i18n="shop">Shop</button>
         <button id="pauseButton" data-i18n="pause">Pause</button>
+        <button id="helpButton" data-i18n-title="help">?</button>
 
         <div id="soundToggleContainer">
             <label class="toggle-wrapper">
@@ -56,15 +60,33 @@
         <button data-lang="fr">FR</button>
         <button data-lang="en">EN</button>
     </div>
+    <!-- Welcome screen (texts in js/i18n.js) -->
+    <div id="intro">
+        <div class="intro-card" role="dialog" aria-modal="true" aria-labelledby="intro-name">
+            <h1 id="intro-name" data-i18n="introName">Emile Larguier</h1>
+            <p class="intro-role" data-i18n="introRole">Game Designer</p>
+            <p class="intro-text" data-i18n="introText"></p>
+            <div class="intro-actions">
+                <button id="introProjects" class="intro-primary" data-i18n="introSeeProjects">See my projects</button>
+                <button id="introExplore" class="intro-secondary" data-i18n="introExplore">Explore the universe</button>
+            </div>
+            <ul class="intro-hints">
+                <li><span class="intro-dot" style="--dot: #00ccff"></span><span data-i18n="introHint1"></span></li>
+                <li><span class="intro-dot" style="--dot: #ff7ad9"></span><span data-i18n="introHint2"></span></li>
+                <li><span class="intro-dot" style="--dot: #ffd75e"></span><span data-i18n="introHint3"></span></li>
+            </ul>
+        </div>
+    </div>
     <!-- Project window (content comes from js/data/projects.js) -->
     <div id="viewer" class="viewer hidden">
         <div class="viewer-window" role="dialog" aria-modal="true" aria-labelledby="viewer-title">
             <div class="viewer-header">
+                <button id="viewer-back" class="hidden"></button>
                 <span id="viewer-title"></span>
                 <button id="viewer-close" data-i18n-title="viewerClose">&times;</button>
             </div>
-            <nav id="viewer-tabs"></nav>
-            <div class="viewer-body">
+            <div id="viewer-overview"></div>
+            <div id="viewer-body" class="hidden">
                 <div id="viewer-stage">
                     <button id="viewer-prev" class="viewer-arrow" data-i18n-title="viewerPrev">&#9664;</button>
                     <div id="viewer-media"></div>
@@ -73,9 +95,15 @@
                 <div id="viewer-dots"></div>
                 <p id="viewer-text"></p>
                 <a id="viewer-link" class="hidden" target="_blank" rel="noopener"></a>
+                <div id="viewer-footer">
+                    <button id="viewer-prev-project"></button>
+                    <button id="viewer-next-project"></button>
+                </div>
             </div>
         </div>
     </div>
+    <!-- Version of the site (filled from version.json) -->
+    <div id="versionTag"></div>
     <!-- Audio -->
     <audio id="scrapSound" src="assets/sounds/collect.mp3" preload="auto"></audio>
     <audio id="clickSound" src="assets/sounds/clickCrt.mp3" preload="auto"></audio>

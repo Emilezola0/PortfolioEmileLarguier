@@ -1,0 +1,7 @@
+---
+# Filled in by GitHub Pages (Jekyll) on every deploy: nothing to change by hand.
+---
+{
+    "version": "{{ site.github.build_revision }}",
+    "date": "{{ site.time | date: '%Y-%m-%d %H:%M' }} UTC"
+}

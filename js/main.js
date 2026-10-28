@@ -5,7 +5,7 @@ import { Effects } from "./Effects.js";
 import { Sun, SUN_MAX_BOUNCES } from "./Sun.js";
 import { LINKS } from "./links.js";
 import { PROJECTS } from "./data/projects.js";
-import { openProject, openLink, preloadFirstSlides } from "./ProjectViewer.js";
+import { openProject, openOverview, openLink, openFromHash, preloadFirstSlides } from "./ProjectViewer.js";
 import { t, onLangChange } from "./i18n.js";
 import { SoundManager } from './SoundManager.js';
 import { Background } from "./Background.js";
@@ -367,7 +367,7 @@ const shop = new Shop({
 // Direct access to the projects, without looking for a planet
 projectsButton.addEventListener("click", () => {
     SoundManager.play('click');
-    openProject(PROJECTS[0].id);
+    openOverview();
 });
 
 shopButton.addEventListener("click", () => {
@@ -598,31 +598,8 @@ function updateGame(now) {
     requestAnimationFrame(updateGame);
 }
 
-// Start pop-up
-const startGamePopup = document.createElement('div');
-startGamePopup.classList.add('popup-start-game');
-
-const header = document.createElement('div');
-header.classList.add('popup-header');
-
-const content = document.createElement('div');
-content.classList.add('popup-content');
-
-const closeButton = document.createElement('button');
-closeButton.classList.add('popup-close-btn', 'shop-item', 'play-button');
-
-function renderStartPopup() {
-    header.textContent = t("introTitle");
-    content.innerHTML = t("introBody");
-    closeButton.textContent = t("start");
-}
-renderStartPopup();
-onLangChange(renderStartPopup);
-
-closeButton.addEventListener('click', () => {
-    startGamePopup.style.display = 'none';
-    SoundManager.play('click');
-
+// === World: built right away, it lives behind the welcome screen ===
+function buildWorld() {
     // One planet per project (see data/projects.js)
     const radius = Math.max(140, Math.min(300, Math.min(canvas.width, canvas.height) / 2 - 80));
     const step = (2 * Math.PI) / PROJECTS.length;
@@ -651,18 +628,44 @@ closeButton.addEventListener('click', () => {
     rebuildBodies();
 
     for (let i = 0; i < STAR_TYPES.classic.free; i++) addStar("classic");
+}
 
-    resumeGame();
+// === Welcome screen (markup in index.html, texts in i18n.js) ===
+const intro = document.getElementById("intro");
 
-    // project pictures: loaded little by little once everything else is running
-    setTimeout(preloadFirstSlides, 3000);
+function closeIntro() {
+    intro.classList.add("hidden");
+}
+
+document.getElementById("introProjects").addEventListener("click", () => {
+    SoundManager.play('click');
+    closeIntro();
+    openOverview();
+});
+document.getElementById("introExplore").addEventListener("click", () => {
+    SoundManager.play('click');
+    closeIntro();
+});
+document.getElementById("helpButton").addEventListener("click", () => {
+    SoundManager.play('click');
+    intro.classList.remove("hidden");
+});
+window.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !intro.classList.contains("hidden")) closeIntro();
+});
+// click outside the card = explore
+intro.addEventListener("pointerdown", e => {
+    if (e.target === intro) closeIntro();
 });
 
-startGamePopup.appendChild(header);
-startGamePopup.appendChild(content);
-startGamePopup.appendChild(closeButton);
+buildWorld();
+resumeGame();
 
-document.body.appendChild(startGamePopup);
+// A shared link (#project=2021, #projects) opens directly, without the welcome screen
+if (openFromHash()) closeIntro();
+
+// project pictures: loaded little by little once everything else is running
+setTimeout(preloadFirstSlides, 3000);
 
 export function resumeGame() {
     if (running) return;

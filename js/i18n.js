@@ -18,20 +18,19 @@ const STRINGS = {
         unlock: "Unlock",
         max: "MAX",
         placeHint: "Click to place - Esc to cancel",
-        introTitle: "Welcome to my portfolio!",
-        introBody: `
-  <p>
-    Each <span style="color: #00ccff;"><strong>planet</strong></span> is one of my projects.<br>
-    <strong>Click a planet</strong> to discover it, or use the
-    <span style="color: #00ffcc;"><strong>Projects</strong></span> button to see them all.
-  </p>
-  <p>
-    Around them, a small relaxing game: <strong>shooting stars</strong> bounce on the planets
-    and earn <span style="color: #ffd75e;"><strong>stardust</strong></span> to spend in the
-    <span style="color: #ffd75e;"><strong>shop</strong></span>.
-  </p>
-  <p>Nothing to lose: you can drag everything around.</p>`,
-        start: "START",
+        introName: "Emile Larguier",
+        introRole: "Game Designer",
+        introText: "Welcome to my universe: each planet is one of my projects.",
+        introSeeProjects: "See my projects",
+        introExplore: "Explore the universe",
+        introHint1: "Click a planet to open its project",
+        introHint2: "Drag planets and objects to move them",
+        introHint3: "Shooting stars earn stardust: spend it in the shop to fill the sky",
+        help: "Help",
+        myProjects: "My projects",
+        allProjects: "All projects",
+        prevProject: "Previous project",
+        nextProject: "Next project",
         viewerClose: "Close",
         viewerPrev: "Previous",
         viewerNext: "Next",
@@ -57,20 +56,19 @@ const STRINGS = {
         unlock: "Débloquer",
         max: "MAX",
         placeHint: "Cliquez pour placer - Échap pour annuler",
-        introTitle: "Bienvenue sur mon portfolio !",
-        introBody: `
-  <p>
-    Chaque <span style="color: #00ccff;"><strong>planète</strong></span> est un de mes projets.<br>
-    <strong>Cliquez sur une planète</strong> pour le découvrir, ou utilisez le bouton
-    <span style="color: #00ffcc;"><strong>Projets</strong></span> pour tous les voir.
-  </p>
-  <p>
-    Autour, un petit jeu relaxant : des <strong>étoiles filantes</strong> rebondissent sur les planètes
-    et rapportent de la <span style="color: #ffd75e;"><strong>poussière d'étoile</strong></span>
-    à dépenser dans la <span style="color: #ffd75e;"><strong>boutique</strong></span>.
-  </p>
-  <p>Rien à perdre : tout peut être déplacé à la souris.</p>`,
-        start: "COMMENCER",
+        introName: "Emile Larguier",
+        introRole: "Game Designer",
+        introText: "Bienvenue dans mon univers : chaque planète est un de mes projets.",
+        introSeeProjects: "Voir mes projets",
+        introExplore: "Explorer l'univers",
+        introHint1: "Cliquez sur une planète pour ouvrir son projet",
+        introHint2: "Glissez les planètes et les objets pour les déplacer",
+        introHint3: "Les étoiles filantes rapportent de la poussière d'étoile : dépensez-la dans la boutique pour remplir le ciel",
+        help: "Aide",
+        myProjects: "Mes projets",
+        allProjects: "Tous les projets",
+        prevProject: "Projet précédent",
+        nextProject: "Projet suivant",
         viewerClose: "Fermer",
         viewerPrev: "Précédent",
         viewerNext: "Suivant",
